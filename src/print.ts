@@ -1,3 +1,8 @@
+/**
+ * Module containing a print interface for application formatted
+ * message logging.
+ */
+
 
 // TODO: Intercept app log
 

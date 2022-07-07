@@ -1,6 +1,8 @@
 
-/* export abstract class Test {
+export abstract class Test {
 
-    constructor
+    constructor() {
+        
+    }
 
-} */
+}
