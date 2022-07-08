@@ -43,3 +43,10 @@ export function success(message: string) {
 export function failure(message: string) {
     log(styleWrapStr(`✘ ${message} `, colorFrom(Layer.FG, 225, 25, 125)));
 }
+
+export function error(caption: string, err: Error) {
+    log(`${styleWrapStr(`${caption}:`, colorFrom(Layer.FG, 225, 25, 125))} ${err.message}`);
+    err.stack && log(err.stack);
+
+    process.exit(1);
+}

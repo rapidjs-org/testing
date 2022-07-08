@@ -6,7 +6,8 @@
   "scripts": {
     "compile:once": "tsc --outDir ./dist",
     "compile:watch": "tsc -w --outDir ./dist",
-    "lint": "./node_modules/.bin/eslint --ext .ts --fix ./src"
+    "lint": "./node_modules/.bin/eslint --ext .ts --fix ./src",
+    "test": "node ./dist/app ../test"
   },
   "repository": {
     "type": "git",
