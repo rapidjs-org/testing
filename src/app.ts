@@ -10,6 +10,7 @@ import { existsSync, readdir } from "fs";
 import * as print from "./print";
 
 import { Test } from "./Test";
+import { UnitTest } from "./UnitTest";
 
 
 const args = process.argv.slice(2);
@@ -18,6 +19,10 @@ const testDirPath: string = !isAbsolute(args[0]) ? join(require.main.path, args[
 if(!existsSync(testDirPath)) {
     throw new ReferenceError(`Given test file directory '${testDirPath}' does not exist`);
 }
+
+
+// Provide globals for test scripts in order not to require any includes
+global.UnitTest = UnitTest;
 
 
 /*
@@ -34,13 +39,13 @@ process.on("exit", () => {
 
     // Error has occurred throughout test suite execution
     if(!Test.suiteSuccessful()) {
-        print.failure(`Test suite run failed ${testResultsDepiction}.`);
+        print.close(`Test suite run failed ${testResultsDepiction}.`, false);
 
         process.exit(1);
     }
 
     // No test has failed => SUCCESS
-    print.success(`Test suite run succeeded ${testResultsDepiction}.`);
+    print.close(`Test suite run succeeded ${testResultsDepiction}.`);
 });
 
 

@@ -13,8 +13,8 @@ enum Layer {
 }
 
 
-function log(message: string) {
-    process.stdout.write(`${message}\n`);
+function log(message: string, spaceOut: boolean = true) {
+    process.stdout.write(`${message}\n${spaceOut ? "\n" : ""}`);
 }
 
 function colorFrom(layer: Layer, r: number, g: number, b: number|string): string {
@@ -44,9 +44,20 @@ export function failure(message: string) {
     log(styleWrapStr(`✘ ${message} `, colorFrom(Layer.FG, 225, 25, 125)));
 }
 
+export function warning(message: string) {
+    log(styleWrapStr(message, [ "2", "3", colorFrom(Layer.FG, 235, 235, 245) ]), false);
+}
+
 export function error(caption: string, err: Error) {
     log(`${styleWrapStr(`${caption}:`, colorFrom(Layer.FG, 225, 25, 125))} ${err.message}`);
     err.stack && log(err.stack);
 
     process.exit(1);
 }
+
+export function close(message: string, succeeded: boolean = true) {
+    message = `➜ ${message}`;
+
+    log(styleWrapStr(Array.from({ length: message.length }, () => "─").join(""), "2"));
+    log(styleWrapStr(message, succeeded ? colorFrom(Layer.FG, 25, 225, 125) : colorFrom(Layer.FG, 225, 25, 125)));
+}   // TODO: Recurring colors mapping
