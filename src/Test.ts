@@ -27,12 +27,13 @@ export abstract class Test {
     private readonly id: number;
     private readonly caption: string;
     
-    protected readonly interfaceProperty: ((...args) => any);
+    protected readonly interfaceProperty;
+    protected badgeColor: number[];
 
     private activations: number = 0;
     private conductions: number = 0;
     
-    constructor(caption: string, interfaceProperty: ((...args) => any)) {
+    constructor(caption: string, interfaceProperty) {
         this.id = Test.idCounter++;
         this.caption = caption;
         this.interfaceProperty = interfaceProperty;
@@ -44,7 +45,7 @@ export abstract class Test {
 
     public conduct(...args) {
         (this.id !== Test.lastActiveId)
-        && print.badge(`${this.caption}${(this.activations++ > 0) ? ` (${this.activations})` : ""}`, 255, 155, 195);
+        && print.badge(`${this.caption}${(this.activations++ > 0) ? ` (${this.activations})` : ""}`, this.badgeColor[0], this.badgeColor[1], this.badgeColor[2]);
 
         Test.lastActiveId = this.id;
         

@@ -6,8 +6,12 @@ import { Test } from "./Test";
 
 export class UnitTest extends Test {
 
+    private static badgeColor: number[] = [255, 155, 195];
+    
     constructor(caption: string, func: ((...args) => any)) {
         super(caption, func);
+        
+        super.badgeColor = UnitTest.badgeColor;
     }
 
     private arraysEqual(arr1, arr2): boolean {

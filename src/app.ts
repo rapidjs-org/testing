@@ -11,6 +11,7 @@ import * as print from "./print";
 
 import { Test } from "./Test";
 import { UnitTest } from "./UnitTest";
+import { NetworkTest } from "./NetworkTest";
 
 
 const args = process.argv.slice(2);
@@ -22,6 +23,7 @@ if(!existsSync(testDirPath)) {
 
 
 // Provide globals for test scripts in order not to require any includes
+global.NetworkTest = NetworkTest;
 global.UnitTest = UnitTest;
 
 
