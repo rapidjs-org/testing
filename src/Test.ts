@@ -75,8 +75,7 @@ export abstract class Test {
                 // Failure
                 Test.counter.failed++;
 
-                print.failure(caption);
-                
+                print.failure(caption, expectedResult, actualResult);
             }
 
         };
