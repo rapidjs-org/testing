@@ -26,12 +26,14 @@ export abstract class Test {
     
     private readonly id: number;
     private readonly caption: string;
+    private readonly pushedWarnings: string[] = [];
     
     protected readonly interfaceProperty;
-    protected badgeColor: number[];
 
     private activations: number = 0;
     private conductions: number = 0;
+
+    protected badgeColor: number[];
     
     constructor(caption: string, interfaceProperty) {
         this.id = Test.idCounter++;
@@ -43,12 +45,11 @@ export abstract class Test {
 
     protected abstract compareEqual(expectedResult, actualResult): boolean|Promise<any>;
 
-    public conduct(...args) {
-        (this.id !== Test.lastActiveId)
-        && print.badge(`${this.caption}${(this.activations++ > 0) ? ` (${this.activations})` : ""}`, this.badgeColor[0], this.badgeColor[1], this.badgeColor[2]);
+    protected pushWarning(message: string) {
+        this.pushedWarnings.push(message);
+    }
 
-        Test.lastActiveId = this.id;
-        
+    public conduct(...args) {
         let actualResult;
         try {
             actualResult = this.invokeInterfaceProperty(...args);
@@ -68,6 +69,16 @@ export abstract class Test {
                 isEqual = this.compareEqual(expectedResult, actualResult);
                 if(isEqual instanceof Promise) {
                     isEqual = await isEqual;
+                }
+                
+                (this.id !== Test.lastActiveId)
+                && print.badge(`${this.caption}${(this.activations++ > 0) ? ` (${this.activations})` : ""}`, this.badgeColor[0], this.badgeColor[1], this.badgeColor[2]);
+        
+                Test.lastActiveId = this.id;
+                
+                let warning: string;
+                while(warning = this.pushedWarnings.pop()) {
+                    print.warning(warning);
                 }
 
                 if(isEqual === true) {

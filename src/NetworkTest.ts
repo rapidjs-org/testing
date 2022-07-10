@@ -90,8 +90,8 @@ export class NetworkTest extends Test {
             .catch((err: Error) => {
                 resolve(err);
 
-                print.warning(`Could not perform request to '${this.interfaceProperty}'`);
-                print.warning(`Skipping more instructions of test object`);
+                this.pushWarning(`Could not perform request to '${this.interfaceProperty}'`);
+                this.pushWarning(`Skipping more instructions of test object`);
             })
             .finally(() => {
                 clearTimeout(this.testTimeout);

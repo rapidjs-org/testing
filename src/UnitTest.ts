@@ -1,5 +1,4 @@
 import { isObject } from "./util";
-import * as print from "./print";
 import { Test } from "./Test";
 
 
@@ -59,7 +58,7 @@ export class UnitTest extends Test {
         }
 
         if(expectedResult !== actualResult) {
-            print.warning("Result type mismatch");
+            this.pushWarning("Result type mismatch");
         }
 
         return true;

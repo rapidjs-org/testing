@@ -1,8 +1,31 @@
 # no-fuss
 
-Test your Java and TypeScript applications without much effort. TDD needs to be a no-brainer.
+Test your Java- and TypeScript applications without much effort. TDD needs to be a no-brainer.
 
 ``` js
+const util = require("../src/utilities");
+
+const vcTest = new UnitTest("Value comparisons", util.compare);
+
+vcTest
+.conduct(1, 1)
+.for(true,
+    "Compare value and type identical objects");
+
+vcTest
+.conduct(1, "1")
+.for(false,
+    "Compare value identical, but type different objects");
+
+vcTest
+.conduct(1, 2)
+.for(false,
+    "Compare value different, but type identical objects");
+
+vcTest
+.conduct(1, "2")
+.for(false,
+    "Compare value and type different objects");
 ```
 
 ## Installation
@@ -18,8 +41,8 @@ no-fuss <path-to-test-directory> [(--timeout-length|-T)=3000]
 ```
 
 | Parameter | Description |
-| --------- | ----------- |
-| --timeout | Test conduct timeout in ms |
+| --------- | ----------- |
+| --timeout | Test conduct timeout in ms |
 
 ## Test files
 
