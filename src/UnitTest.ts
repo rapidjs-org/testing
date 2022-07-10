@@ -1,6 +1,5 @@
 import { isObject } from "./util";
 import * as print from "./print";
-
 import { Test } from "./Test";
 
 
@@ -10,7 +9,7 @@ export class UnitTest extends Test {
     
     constructor(caption: string, func: ((...args) => any)) {
         super(caption, func);
-        
+
         super.badgeColor = UnitTest.badgeColor;
     }
 

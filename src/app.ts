@@ -51,25 +51,37 @@ process.on("exit", () => {
 });
 
 
+function traverseTestDir(path: string) {
+    readdir(path, {
+        withFileTypes: true
+    }, (_, dirents) => {
+        (dirents || []).forEach(dirent => {
+            const testFilePath: string = join(path, dirent.name);
+    
+            if(dirent.isDirectory()) {
+                traverseTestDir(testFilePath);
+
+                return;
+            }
+
+            if(!/\.test\.js$/i.test(dirent.name)) {
+                return;
+            }
+            
+            print.fileName(dirent.name);
+    
+            try {
+                require(testFilePath);
+            } catch(err) {
+                print.error("An error occured upon test file evaluation", err);
+            }
+        });
+    });
+}
+
+
 // RUN TEST SUITE
 // Evaluate each *.test.js file in the test directory in order of scan
-readdir(testDirPath, {
-    withFileTypes: true
-}, (_, dirents) => {
-    (dirents || []).forEach(dirent => {
-        const testFilePath: string = join(testDirPath, dirent.name);
+traverseTestDir(testDirPath);
 
-        if(dirent.isDirectory()
-        || !/\.test\.js$/i.test(dirent.name)) {
-            return;
-        }
-        
-        print.fileName(dirent.name);
-
-        try {
-            require(testFilePath);
-        } catch(err) {
-            print.error("An error occured upon test file evaluation", err);
-        }
-    });
-});
+print.badge("TEST SUITE", 245, 235, 155);

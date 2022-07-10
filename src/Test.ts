@@ -41,7 +41,7 @@ export abstract class Test {
     
     protected abstract invokeInterfaceProperty(...args);
 
-    protected abstract compareEqual<T>(expectedResult: T, actualResult: T): boolean;
+    protected abstract compareEqual(expectedResult, actualResult): boolean|Promise<any>;
 
     public conduct(...args) {
         (this.id !== Test.lastActiveId)
@@ -59,12 +59,17 @@ export abstract class Test {
 
         return {
 
-            for: (expectedResult, caption?: string) => {
+            for: async (expectedResult, caption?: string) => {
                 // TODO: Only allow for use once?
+
+                let isEqual: boolean|Promise<boolean> = this.compareEqual(expectedResult, actualResult);
+                if(isEqual instanceof Promise) {
+                    isEqual = await isEqual;
+                }
 
                 caption = caption || `Test ${++this.conductions}`;
                 
-                if(this.compareEqual(expectedResult, actualResult)) {
+                if(isEqual) {
                     // Success
                     Test.counter.succeeded++;
 

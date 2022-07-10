@@ -91,3 +91,6 @@ export function close(message: string, succeeded: boolean = true) {
     logLine(message.length);
     log(styleWrapStr(message, succeeded ? colorFrom(Layer.FG, 25, 225, 125) : colorFrom(Layer.FG, 225, 25, 125)));
 }   // TODO: Recurring colors mapping
+
+
+log("", true);    // Initial padding
