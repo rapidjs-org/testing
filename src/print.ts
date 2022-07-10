@@ -46,7 +46,7 @@ export function success(message: string) {
     log(styleWrapStr(`✔ ${message} `, colorFrom(Layer.FG, 25, 225, 125)));
 }
 
-export function failure(message: string, expectedResult, actualResult) {
+export function failure(message: string, expectedResult?, actualResult?) {
     const formatResult = result => {
         if(isObject(result)) {
             return result;
@@ -66,11 +66,16 @@ export function failure(message: string, expectedResult, actualResult) {
     message = `✘ ${message}`;
 
     console.group(styleWrapStr(message, colorFrom(Layer.FG, 225, 25, 125)));
-    log(styleWrapStr("\nExpected result:", colorFrom(Layer.FG, 215, 215, 225)));
-    log(formatResult(expectedResult), true);
-    log(styleWrapStr("\nActual result:", colorFrom(Layer.FG, 215, 215, 225)));
-    log(formatResult(actualResult));
+    if(expectedResult) {
+        log(styleWrapStr("\nExpected result:", colorFrom(Layer.FG, 215, 215, 225)));
+        log(formatResult(expectedResult), true);
+    }
+    if(actualResult) {
+        log(styleWrapStr("\nActual result:", colorFrom(Layer.FG, 215, 215, 225)));
+        log(formatResult(actualResult));
+    }
     console.groupEnd();
+    
     logLine(message.length);
 }
 

@@ -77,9 +77,7 @@ export class NetworkTest extends Test {
         });
     }
 
-    protected compareEqual(expectedResult: Object, actualResult: Promise<IResponseData>): Promise<boolean> {  
-        const testTimeout: number|NodeJS.Timeout = this.testTimeout;
-
+    protected compareEqual(expectedResult: Object, actualResult: Promise<IResponseData>): Promise<boolean|Error> {  
         return new Promise(resolve => {
             actualResult
             .then((actualResult: IResponseData) => {
@@ -90,13 +88,13 @@ export class NetworkTest extends Test {
                 resolve(true);
             })
             .catch((err: Error) => {
-                resolve(false);
+                resolve(err);
 
                 print.warning(`Could not perform request to '${this.interfaceProperty}'`);
                 print.warning(`Skipping more instructions of test object`);
             })
             .finally(() => {
-                clearTimeout(testTimeout);
+                clearTimeout(this.testTimeout);
             });
         });
     }

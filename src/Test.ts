@@ -61,27 +61,29 @@ export abstract class Test {
 
             for: async (expectedResult, caption?: string) => {
                 // TODO: Only allow for use once?
+                let isEqual: boolean|Promise<boolean|Error>|Error;
 
-                let isEqual: boolean|Promise<boolean> = this.compareEqual(expectedResult, actualResult);
+                caption = caption || `Test ${++this.conductions}`;
+
+                isEqual = this.compareEqual(expectedResult, actualResult);
                 if(isEqual instanceof Promise) {
                     isEqual = await isEqual;
                 }
 
-                caption = caption || `Test ${++this.conductions}`;
-                
-                if(isEqual) {
+                if(isEqual === true) {
                     // Success
                     Test.counter.succeeded++;
-
+                    
                     print.success(caption);
 
                     return;
                 }
 
-                // Failure
                 Test.counter.failed++;
 
-                print.failure(caption, expectedResult, actualResult);
+                (isEqual instanceof Error)
+                ? print.failure(caption)  // Erroneous failure
+                : print.failure(caption, expectedResult, actualResult);  // Correct failure
             }
 
         };
