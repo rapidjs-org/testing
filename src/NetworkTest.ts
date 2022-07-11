@@ -19,14 +19,10 @@ interface IResponseData {
 }
 
 
-const testTimeoutDuration: number = 5000; // TODO: How provide custom value?
-
 export class NetworkTest extends Test {
     
     private static badgeColor: number[] = [125, 155, 255];
     private static commonHost: string;
-
-    private testTimeout: number|NodeJS.Timeout;
 
     public static setCommonHost(hostname: string) {
         NetworkTest.commonHost = hostname;
@@ -70,11 +66,6 @@ export class NetworkTest extends Test {
     }
 
     protected invokeInterfaceProperty(options: IRequestOptions = {}, body?: Object): Promise<IResponseData> {
-        this.testTimeout = setTimeout(_ => {
-            print.warning("A network test timed out");  // TODO: Info on how to change
-            process.exit(1);
-        }, testTimeoutDuration);
-
         const location: string = this.interfaceProperty;
         
         const hasExplicitHost: boolean = (location.charAt(0) != "/");
@@ -149,8 +140,6 @@ export class NetworkTest extends Test {
 
                 isSuccessful = false;
         }
-        
-        clearTimeout(this.testTimeout);
 
         return isSuccessful;
     }

@@ -2,6 +2,11 @@ import { isObject } from "./util";
 import * as print from "./print";
 
 
+const config = {
+    testTimeoutDuration: 5000  // TODO: How provide custom value?
+};
+
+
 export abstract class Test {
 
     private static idCounter: number = 0;
@@ -13,7 +18,7 @@ export abstract class Test {
         failed: 0
     };
     private static lastActiveId: number;
-    
+
     public static evalResults(): number[] {
         return [
             Test.counter.succeeded,
@@ -31,6 +36,7 @@ export abstract class Test {
     
     protected readonly interfaceProperty;
 
+    private testTimeout: number|NodeJS.Timeout;
     private activations: number = 0;
     private conductions: number = 0;
 
@@ -110,6 +116,13 @@ export abstract class Test {
     }
 
     public conduct(...args) {
+        this.testTimeout = setTimeout(_ => {
+            print.warning(`Test suite timeout (initiated by test object '${this.caption}')`);
+            //print.usageInfo("");  // TODO: Info on how to change timeout limit
+
+            process.exit(1);
+        }, config.testTimeoutDuration);
+
         let actualResult;
         try {
             actualResult = this.invokeInterfaceProperty(...args);
@@ -129,45 +142,52 @@ export abstract class Test {
 
             for: async (expectedResult, caption?: string) => {
                 // TODO: Only allow for use once?
-                let isEqual: boolean|Promise<boolean|Error>|Error;
+                const resolve = () => {
+                    clearTimeout(this.testTimeout);
 
-                caption = caption || `Test ${this.id}.${++this.conductions}`;
+                    caption = caption || `Test ${this.id}.${++this.conductions}`;
 
-                if(actualResult instanceof Promise) {
-                    try {
-                        actualResult = await actualResult;
-                        
-                        actualResult = this.filterActualResult(expectedResult, actualResult);
-                    } catch(err) {
-                        this.handleInvocationError(err);
+                    !(actualResult instanceof Error)
+                    && this.filterActualResult(expectedResult, actualResult)
 
-                        actualResult = err;
-                    }
-                }
-
-                isEqual = this.compareEqual(expectedResult, actualResult);
-                
-                (this.id !== Test.lastActiveId)
-                && print.badge(`${this.caption}${(this.activations++ > 0) ? ` (${this.activations})` : ""}`, this.badgeColor[0], this.badgeColor[1], this.badgeColor[2]);
-                
-                Test.lastActiveId = this.id;
-                
-                this.printWarningLog();
-
-                if(isEqual === true) {
-                    // Success
-                    Test.counter.succeeded++;
+                    const isEqual: boolean|Promise<boolean|Error>|Error = this.compareEqual(expectedResult, actualResult);
                     
-                    print.success(caption);
+                    (this.id !== Test.lastActiveId)
+                    && print.badge(`${this.caption}${(this.activations++ > 0) ? ` (${this.activations})` : ""}`, this.badgeColor[0], this.badgeColor[1], this.badgeColor[2]);
+                    
+                    Test.lastActiveId = this.id;
+                    
+                    this.printWarningLog();
 
-                    return;
-                }
+                    if(isEqual === true) {
+                        // Success
+                        Test.counter.succeeded++;
+                        
+                        print.success(caption);
 
-                Test.counter.failed++;
+                        return;
+                    }
 
-                !(actualResult instanceof Error)
-                ? print.failure(caption, expectedResult, actualResult)
-                : print.failure(caption);
+                    Test.counter.failed++;
+
+                    !(actualResult instanceof Error)
+                    ? print.failure(caption, expectedResult, actualResult)
+                    : print.failure(caption);
+                };
+
+                (actualResult instanceof Promise)
+                ? (actualResult
+                .then(resolvedResult => {
+                    actualResult = resolvedResult;
+                })
+                .catch((err: Error) => {
+                    this.handleInvocationError(err);
+                    
+                    actualResult = err;
+                })
+                .finally(resolve))
+                : resolve();
+            
             }
 
         };
