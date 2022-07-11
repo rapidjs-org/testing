@@ -42,10 +42,10 @@ export abstract class Test {
 
     protected badgeColor: number[];
     
-    constructor(caption: string, interfaceProperty) {
+    constructor(interfaceProperty, caption: string) {
         this.id = ++Test.idCounter;
-        this.caption = caption;
         this.interfaceProperty = interfaceProperty;
+        this.caption = caption;
     }
 
     protected abstract invokeInterfaceProperty(...args);
@@ -115,9 +115,11 @@ export abstract class Test {
         this.pushedWarnings.push(message);
     }
 
+    // TODO: Fix test timeout issue
+
     public conduct(...args) {
         this.testTimeout = setTimeout(_ => {
-            print.warning(`Test suite timeout (initiated by test object '${this.caption}')`);
+            print.warning(`Test suite timeout (initiated by test object '${this.caption}')\n`);
             //print.usageInfo("");  // TODO: Info on how to change timeout limit
 
             process.exit(1);

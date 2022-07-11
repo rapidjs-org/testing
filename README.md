@@ -5,7 +5,7 @@ No-brainer TDD of Java- and TypeScript applications. Simple and straightforward.
 ``` js
 const util = require("../src/utilities");
 
-const vcTest = new UnitTest("Value comparisons", util.compare);
+const vcTest = new UnitTest(util.compare, "Value comparisons");
 
 vcTest
 .conduct(1, 1)

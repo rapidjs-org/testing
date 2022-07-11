@@ -1,7 +1,6 @@
 import https from "https";
 
 import { isString } from "./util";
-import * as print from "./print";
 import { Test } from "./Test";
 
 
@@ -28,12 +27,12 @@ export class NetworkTest extends Test {
         NetworkTest.commonHost = hostname;
     }
 
-    constructor(caption: string, location) {
+    constructor(location: string, caption: string) {
         if(!isString(location)) {
             throw new TypeError("Network test requires destination location argument (URL or pathname)");
         }
         
-        super(caption, location);
+        super(location, caption);
 
         super.badgeColor = NetworkTest.badgeColor;
     }
@@ -104,6 +103,8 @@ export class NetworkTest extends Test {
             req.end();
         });
     }
+
+    // TODO: Retrieve dynamic name method? No explicit naming requirement...
 
     protected compareEqual(expectedResult: IResponseData, actualResult: IResponseData): boolean {  
         let isSuccessful: boolean = true;
