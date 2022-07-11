@@ -37,7 +37,7 @@ process.on("exit", () => {
     }
 
     const testResults: number[] = Test.evalResults();
-    const testResultsDepiction: string = `(${testResults[0]}/${testResults[0] + testResults[1]})`;
+    const testResultsDepiction: string = `(${testResults[0]}/${testResults[0] + testResults[1]} successful)`;
 
     // Error has occurred throughout test suite execution
     if(!Test.suiteSuccessful()) {

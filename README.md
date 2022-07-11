@@ -1,6 +1,6 @@
 # no-fuss
 
-Test your Java- and TypeScript applications without much effort. TDD needs to be a no-brainer.
+No-brainer TDD of Java- and TypeScript applications. Simple and straightforward.
 
 ``` js
 const util = require("../src/utilities");
@@ -21,11 +21,6 @@ vcTest
 .conduct(1, 2)
 .for(false,
     "Compare value different, but type identical objects");
-
-vcTest
-.conduct(1, "2")
-.for(false,
-    "Compare value and type different objects");
 ```
 
 ## Installation

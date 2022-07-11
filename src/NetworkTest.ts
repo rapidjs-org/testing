@@ -1,7 +1,11 @@
 import https from "https";
 
+import { isString } from "./util";
 import * as print from "./print";
 import { Test } from "./Test";
+
+
+type THeaders = Record<string, string|number|(string|number)[]>;
 
 
 interface IRequestOptions {
@@ -9,7 +13,9 @@ interface IRequestOptions {
 }
 
 interface IResponseData {
-
+    status: number,
+    headers: THeaders,
+    message: string
 }
 
 
@@ -26,10 +32,41 @@ export class NetworkTest extends Test {
         NetworkTest.commonHost = hostname;
     }
 
-    constructor(caption: string, location: string) {
+    constructor(caption: string, location) {
+        if(!isString(location)) {
+            throw new TypeError("Network test requires destination location argument (URL or pathname)");
+        }
+        
         super(caption, location);
 
         super.badgeColor = NetworkTest.badgeColor;
+    }
+
+    protected filterActualResult(expectedResult: IResponseData, actualResult: IResponseData): IResponseData {
+        if(!expectedResult.status && actualResult.status) {
+            delete actualResult.status;
+        }
+
+        const updatedHeaders: THeaders = {};
+
+        const expectedHeaders: THeaders = expectedResult.headers || {};  // TODO: Header name case sensitivity?
+        for(const header in expectedHeaders) {
+            if(expectedHeaders[header] && actualResult.headers[header]) {
+                updatedHeaders[header] = actualResult.headers[header];
+            }
+        }
+
+        if(Object.keys(updatedHeaders).length === 0) {
+            delete actualResult.headers;
+        } else {
+            actualResult.headers = updatedHeaders;
+        }
+
+        if(!expectedResult.message && actualResult.message) {
+            delete actualResult.message;
+        }
+        
+        return actualResult;
     }
 
     protected invokeInterfaceProperty(options: IRequestOptions = {}, body?: Object): Promise<IResponseData> {
@@ -60,8 +97,8 @@ export class NetworkTest extends Test {
                 res.on("data", data => {
                     resolve({
                         status: res.statusCode,
-                        headers: res.headers,
-                        data: String(data)
+                        headers: res.headers as THeaders,
+                        message: String(data)
                     }); // TODO: What to return?
                 });
             });
@@ -77,26 +114,49 @@ export class NetworkTest extends Test {
         });
     }
 
-    protected compareEqual(expectedResult: Object, actualResult: Promise<IResponseData>): Promise<boolean|Error> {  
-        return new Promise(resolve => {
-            actualResult
-            .then((actualResult: IResponseData) => {
-                console.log(actualResult)
-                // TODO: Implement
-                // actualResult ==~ expectedResult
+    protected compareEqual(expectedResult: IResponseData, actualResult: IResponseData): boolean {  
+        let isSuccessful: boolean = true;
+        
+        // Only test for provided expected response properties
 
-                resolve(true);
-            })
-            .catch((err: Error) => {
-                resolve(err);
+        if(expectedResult.status
+        && expectedResult.status !== actualResult.status) {
+            this.pushWarning("Mismatching status codes");
+            
+            isSuccessful = false;
+        }
 
-                this.pushWarning(`Could not perform request to '${this.interfaceProperty}'`);
-                this.pushWarning(`Skipping more instructions of test object`);
-            })
-            .finally(() => {
-                clearTimeout(this.testTimeout);
-            });
-        });
+        const expectedHeaders: THeaders = expectedResult.headers || {};  // TODO: Header name case sensitivity?
+        for(const header in expectedHeaders) {
+            if(actualResult.headers[header] != expectedHeaders[header]) {
+                this.pushWarning(`Mismatching values for header '${header}'`);
+                
+                isSuccessful = false;
+            }
+            if(!actualResult.headers[header]) {
+                this.pushWarning(`Missing response header '${header}'`);
+                
+                isSuccessful = false;
+            }
+        }
+
+        try {
+            actualResult.message = JSON.parse(actualResult.message);
+        } catch {}
+
+        if(!super.compareEqual(actualResult.message, expectedResult.message)) {
+                this.pushWarning(`Mismatching message data`);
+
+                isSuccessful = false;
+        }
+        
+        clearTimeout(this.testTimeout);
+
+        return isSuccessful;
     }
 
-}
+    protected handleInvocationError(err: Error) {
+        this.pushWarning(`Could not perform request to '${this.interfaceProperty}'`);
+    }
+
+}   // TODO: Only show expected properties in failure log

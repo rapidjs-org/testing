@@ -4,7 +4,20 @@
  */
 
 
-import { isObject } from "./util";
+const config = {
+    valueCropTolerance: 100,
+    escapeSubstitutionIndicator: "@",
+    escapeSubstitutionMap: {
+        ",": "COMMA",
+        "\"": "DOUBLE_QUOTE",
+        "'": "SINGLE_QUOTE",
+        "{": "OPENING_BRACE",
+        "}": "CLOSING_BRACE"
+    }
+};
+
+
+import { isString, isObject } from "./util";
 
 
 // TODO: Intercept app log
@@ -48,17 +61,71 @@ export function success(message: string) {
 
 export function failure(message: string, expectedResult?, actualResult?) {
     const formatResult = result => {
-        if(isObject(result)) {
-            return result;
+        // TODO: No value crop option
+        const cropValue = (value) => {
+            return (isString(value) && (value.length > config.valueCropTolerance))
+            ? `${value.slice(0, config.valueCropTolerance)}...`
+            : value;
+        };
+
+        if(!isObject(result)) {
+            return cropValue(result);
         }
 
-        result = `\{${
-            JSON.stringify(result)
-            .slice(1, -1).trim()
-            .replace(/("[^"]+"):/g, `${styleWrapStr("$1", colorFrom(Layer.FG, 45, 225, 230))}:`)
-            .replace(/:\s*([^,]+)(,|$)\s*/g, `: ${styleWrapStr("$1", colorFrom(Layer.FG, 245, 125, 30))}$2`)
-            .replace(/(^|,)/g, "$1\n    ")
-        }\n\}`  // TODO: Improve
+        // TODO: Obj flattening?
+        const formatObjProps = (obj: Object) => {
+            for(const prop in obj) {
+                if(isObject(obj[prop])) {
+                    obj[prop] = formatObjProps(obj[prop]);
+                } else if(isString(obj[prop])) {
+                    obj[prop] = cropValue(obj[prop]);
+
+                    for(const escape in config.escapeSubstitutionMap) {
+                        obj[prop] = obj[prop].replace(
+                            new RegExp(escape.replace(/(.)/g, "\\$1"), "g"),
+                            `${config.escapeSubstitutionIndicator}${config.escapeSubstitutionMap[escape]}`);
+                    }
+                }
+            }
+            
+            return obj;
+        };
+
+        formatObjProps(result);
+
+        result = JSON.stringify(result)
+        .replace(/(("|')[^"']+\2):/g, `${styleWrapStr("$1", colorFrom(Layer.FG, 45, 225, 230))}:`)
+        .replace(/:\s*(([0-9]+(\.[0-9])?)|(("|')[^"']*\5))\s*([,}])/g, `:${styleWrapStr("$1", colorFrom(Layer.FG, 245, 125, 30))}$6`)
+        .replace(/:\s*/g, `: `);
+        
+        const indentation: string = "  ";
+        let openBraces: number = 0;
+        const retrieveIndentation = () => {
+            return `\n${Array.from({ length: openBraces }, () => indentation).join("")}`;
+        };
+        
+        result = result.replace(/(\{)|(\})|(,)/g, (match: string) => {
+            switch(match) {
+            case "{":
+                openBraces++;
+
+                return `${match}${retrieveIndentation()}`;
+            case "}":
+                openBraces--;
+                
+                return `${retrieveIndentation()}${match}`;
+            case ",":
+                return `${match}${retrieveIndentation()}`;
+            }
+
+            return match;
+        });
+
+        for(const escape in config.escapeSubstitutionMap) {
+            result = result.replace(
+                new RegExp(`${config.escapeSubstitutionIndicator}${config.escapeSubstitutionMap[escape]}`.replace(/(.)/g, "$1"), "g"),
+                /^["']$/.test(escape) ? `\\${escape}` : escape);
+        }
 
         return result;
     };
@@ -73,7 +140,10 @@ export function failure(message: string, expectedResult?, actualResult?) {
     if(actualResult) {
         log(styleWrapStr("\nActual result:", colorFrom(Layer.FG, 215, 215, 225)));
         log(formatResult(actualResult));
-    }
+    } else {
+        log("", true);
+    }   // TODO: Highlight diffs?
+
     console.groupEnd();
     
     logLine(message.length);
