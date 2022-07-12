@@ -20,7 +20,7 @@ if(args.length === 0) {
 	throw new ReferenceError("Missing test directory argument (index 0)");
 }
 
-const testDirPath: string = !isAbsolute(args[0]) ? join(require.main.path, args[0]) : args[0];
+const testDirPath: string = !isAbsolute(args[0]) ? join(process.cwd(), args[0]) : args[0];
 
 if(!existsSync(testDirPath)) {
 	throw new ReferenceError(`Given test file directory '${testDirPath}' does not exist`);

@@ -1,7 +1,7 @@
 import { isObject } from "./util";
 import * as print from "./print";
 
-
+let x = 0;
 const config = {
 	testTimeoutDuration: 5000  // TODO: How provide custom value?
 };
@@ -35,8 +35,7 @@ export abstract class Test {
     
     protected readonly id: number;
     protected readonly interfaceProperty;
-
-    private testTimeout: number|NodeJS.Timeout;
+	
     private activations = 0;
     private cases = 0;
 
@@ -122,10 +121,9 @@ export abstract class Test {
     	this.pushedWarnings.push(message);
     }
 
-    // TODO: Fix test timeout issue
-
     public case(...args) {
-    	this.testTimeout = setTimeout(_ => {
+		console.log(x++)
+    	const testTimeout: number|NodeJS.Timeout = setTimeout(_ => {
     		print.warning(`Test suite timeout (initiated by test object '${this.caption}')\n`);
     		//print.usageInfo("");  // TODO: Info on how to change timeout limit
 
@@ -140,7 +138,8 @@ export abstract class Test {
     	try {
     		actualResult = this.invokeInterfaceProperty(...args);
     	} catch(err) {
-    		clearTimeout(this.testTimeout);
+		console.log(x--)
+			clearTimeout(testTimeout);
             
     		print.error("An error occurred upon interface invocation", err);
 
@@ -160,8 +159,8 @@ export abstract class Test {
     		for: async (expectedResult, caption?: string) => {
     			// TODO: Only allow for use once?
     			const resolve = () => {
-    				clearTimeout(this.testTimeout);
-                    
+					clearTimeout(testTimeout);
+					
     				caption = retrieveCaption(caption);
 
     				!(actualResult instanceof Error)
