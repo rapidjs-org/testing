@@ -9,6 +9,9 @@
     "lint": "./node_modules/.bin/eslint --ext .ts --fix ./src",
     "test": "node ./dist/app ../test"
   },
+  "bin": {
+    "no-fuss": "./dist/cli.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/t-ski/no-fuss.git"

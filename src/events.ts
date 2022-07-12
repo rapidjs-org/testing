@@ -14,7 +14,7 @@ export default emitter.on;
 
 
 export function emit(event: Event) {
-    emitter.emit(event);
+	emitter.emit(event);
 }
 
 // TODO: Default handlers (file instructions?)

@@ -1,7 +1,7 @@
 export function isObject(value): boolean {
-    return (!!value) && (value.constructor === Object);
-};
+	return (!!value) && (value.constructor === Object);
+}
 
 export function isString(value): boolean {
-    return (value instanceof String || typeof(value) === "string");
+	return (value instanceof String || typeof(value) === "string");
 }

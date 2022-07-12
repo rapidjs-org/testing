@@ -8,17 +8,17 @@ const util = require("../src/utilities");
 const vcTest = new UnitTest(util.compare, "Value comparisons");
 
 vcTest
-.conduct(1, 1)
+.case(1, 1)
 .for(true,
     "Compare value and type identical objects");
 
 vcTest
-.conduct(1, "1")
+.case(1, "1")
 .for(false,
     "Compare value identical, but type different objects");
 
 vcTest
-.conduct(1, 2)
+.case(1, 2)
 .for(false,
     "Compare value different, but type identical objects");
 ```
@@ -37,7 +37,7 @@ no-fuss <path-to-test-directory> [(--timeout-length|-T)=3000]
 
 | Parameter | Description |
 | --------- | ----------- |
-| --timeout | Test conduct timeout in ms |
+| --timeout | Test case timeout in ms |
 
 ## Test files
 
