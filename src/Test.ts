@@ -3,6 +3,11 @@ import { isObject } from "./util";
 import { readOption } from "./options";
 
 
+/**
+ * Abstract class representing a test context to be approached
+ * for indivdual parameter test cases.
+ * Utilize for concrete test field class derivation.
+ */
 export abstract class Test {
 
     private static idCounter = 0;
@@ -15,13 +20,22 @@ export abstract class Test {
     };
     private static lastActiveId: number;
 
+	/**
+	 * Retrieve total test results.
+	 * @returns {number[]} Test results: [0] succeeded, [1] failed
+	 */
     public static evalResults(): number[] {
     	return [
     		Test.counter.succeeded,
     		Test.counter.failed
     	];
     }
-    
+
+	/**
+	 * Check whether the test suite has been successful.
+	 * (Whether all test cases passed SO FAR; approach upon process termination).
+	 * @returns {Boolean} Whether the suite has been successful
+	 */
     public static suiteSuccessful(): boolean {
     	return (Test.counter.failed === 0);
     }
@@ -37,6 +51,12 @@ export abstract class Test {
 
     protected badgeColor: number[];
     
+	/**
+	 * Create a test object representing a specific test entity context.
+	 * @param {*} interfaceProperty Test interface property to approach accroding to concrete implementation
+	 * @param {string} [caption] Optional test caption (generic caption otherwise)
+	 * @param {string} [defaultName] Optional default test caption prefix (for specification)
+	 */
     constructor(interfaceProperty, caption?: string, defaultName?: string) {
     	this.id = ++Test.idCounter;
 
@@ -48,6 +68,9 @@ export abstract class Test {
 
     protected abstract handleInvocationError(err: Error);
 
+	/**
+	 * Print all raised warning logs from concrete case application.
+	 */
     private printWarningLog() {
     	if(this.pushedWarnings.length === 0) {
     		return;
@@ -61,6 +84,13 @@ export abstract class Test {
     	print.warning("");
     }
 
+	/**
+	 * Check whether two arrays are equal.
+	 * Strict comparison per same index elements each (===).
+	 * @param {*[]} arr1 Reference array
+	 * @param {*[]} arr2 Compared array
+	 * @returns {Boolean} Whether the arrays are fully equal
+	 */
     private arraysEqual(arr1, arr2): boolean {
     	if(!Array.isArray(arr2)) {
     		return false;
@@ -69,6 +99,15 @@ export abstract class Test {
     	return (JSON.stringify(arr1.sort()) === JSON.stringify(arr2.sort()));
     }
 
+	/**
+	 * Check whether two objects are equal.
+	 * Key set comparison.
+	 * Strict comparison per same key elements each (===).
+	 * Recursive test behavior for sub-objects.
+	 * @param {Object} obj1 Reference object
+	 * @param {Object} obj2 Compared object
+	 * @returns {Boolean} Whether the objects are fully equal
+	 */
     private objectsDeepEqual(obj1, obj2): boolean {
     	if(!isObject(obj2)) {
     		return false;
@@ -89,10 +128,24 @@ export abstract class Test {
     	return true;
     }
 
+	/**
+	 * Filter an actually invoked test result for relevant properties.
+	 * To be optionally utilized from concrete class implementations.
+	 * @param {*} _ [~ expectedResult] Expected result for reference (if needed)
+	 * @param {*} actualResult Actual result to filter
+	 * @returns {*} Filtered results passed to futher processes
+	 */
     protected filterActualResult(_, actualResult) {
     	return actualResult;
     }
     
+	/**
+	 * Compare whether two values are stricitly equal.
+	 * Implements the comparison helper methods (s.a.).
+	 * @param {*} expectedResult Expected result for reference
+	 * @param {*} actualResult Actual result to compare
+	 * @returns {Boolean} Whether the results are fully equal
+	 */
     protected compareEqual(expectedResult, actualResult): boolean {
     	if(isObject(expectedResult)) {
     		return this.objectsDeepEqual(expectedResult, actualResult);
@@ -113,10 +166,20 @@ export abstract class Test {
     	return true;
     }
 
+	/**
+	 * Push a warning to the warning log queue.
+	 * Prevents warning log before related test badges.
+	 * @param message 
+	 */
     protected pushWarning(message: string) {
     	this.pushedWarnings.push(message);
     }
 
+	/**
+	 * Perform an individual test case.
+	 * @param {*[]} args Test invocation arguments
+	 * @returns { for() } Test results resolution interface (s.b.)
+	 */
     public case(...args) {
     	const testTimeout: number|NodeJS.Timeout = setTimeout(_ => {
     		print.warning(`Test suite timeout (initiated by test object '${this.caption}')\n`);
@@ -150,6 +213,11 @@ export abstract class Test {
 
     	return {
 
+			/**
+			 * Check for an expected result of the issuing test case.
+			 * @param {*} expectedResult Expected result
+			 * @param {string} [caption] Optional test case caption for associable result logs
+			 */
     		for: async (expectedResult, caption?: string) => {
     			const resolve = () => {
 					clearTimeout(testTimeout);

@@ -8,12 +8,21 @@ import { Test } from "./Test";
 type THeaders = Record<string, string|number|(string|number)[]>;
 
 
+/*
+ * Request object interface.
+ * Network tests to provide case individual information using the stated pattern:
+ */
 interface IRequestOptions {
     method?: string;
     headers?: THeaders;
 	searchParams?: Record<string, string|number|boolean>;
 }
 
+/*
+ * Response object interface.
+ * Network tests to resolve with and check for case individual information using
+ * the stated pattern:
+ */
 interface IResponseData {
     status: number,
     headers: THeaders,
@@ -21,15 +30,30 @@ interface IResponseData {
 }
 
 
+/**
+ * Class representing a network test context for independent endpoint
+ * request interfaces.
+ * Implicit HTTP(S) communication behavior.
+ */
 export class NetworkTest extends Test {
     
     private static badgeColor: number[] = [ 170, 131, 226 ];
     private static commonHost: string;
 
+	/**
+	 * Set a common hostname for all subsequent test objects
+	 * (concatenated href URL components).
+	 * @param {string} hostname Common hostname
+	 */
     public static setCommonHost(hostname: string) {
     	NetworkTest.commonHost = hostname;
     }
 
+    /**
+	 * Create a network test object.
+     * @param {string} location Endpoint URL to approach (a pathname is either prepended with the common host or 'localhost' (default))
+	 * @param {string} [caption] Optional test caption (generic caption otherwise)
+     */
     constructor(location: string, caption?: string) {
     	if(!isString(location)) {
     		throw new TypeError("Network test requires destination location argument (URL or pathname)");
@@ -40,6 +64,13 @@ export class NetworkTest extends Test {
     	super.badgeColor = NetworkTest.badgeColor;
     }
 
+	/**
+	 * Filter a response object for case individual properties.
+	 * Prevents exhaustive comparisons / expected result provision.
+	 * @param {IResponseData|Object} expectedResult Expected response object (All-optional-properties interface of IResponseObject)
+	 * @param {IResponseData} actualResult Actual response object
+	 * @returns {IResponseData|Object} Filtered response object (that is to be passed to further processing)
+	 */
     protected filterActualResult(expectedResult: IResponseData, actualResult: IResponseData): IResponseData {
     	if(!expectedResult.status && actualResult.status) {
     		delete actualResult.status;
@@ -67,6 +98,13 @@ export class NetworkTest extends Test {
     	return actualResult;
     }
 
+	/**
+     * Perform an request to the interface location with the given parameters.
+	 * @async
+     * @param {IRequestOptions} [options={}] Request options / parameters
+     * @param {Object} [body] Optional request body to provide
+     * @returns {Promise<IResponseData>} Promise resolving to a response object
+     */
     protected invokeInterfaceProperty(options: IRequestOptions = {}, body?: Record<string, unknown>): Promise<IResponseData> {
     	const location: string = this.interfaceProperty;
         
@@ -121,6 +159,12 @@ export class NetworkTest extends Test {
     	});
     }
 
+	/**
+	 * Compare two re
+	 * @param {IResponseData|Object} expectedResult Expected response object only stating relevant properties (filter basis)
+	 * @param {IResponseData} actualResult Actual response object
+	 * @returns {Boolean} Whether the relevant response properties are present in the actual response object
+	 */
     protected compareEqual(expectedResult: IResponseData, actualResult: IResponseData): boolean {  
     	let isSuccessful = true;
         
@@ -161,6 +205,10 @@ export class NetworkTest extends Test {
     	return isSuccessful;
     }
 
+    /**
+     * Define a class sepcific invocation error warning push.
+     * @param {Error} err Invocation error
+     */
     protected handleInvocationError(err: Error) {
     	this.pushWarning(`Could not perform request to '${this.interfaceProperty}': "${err.message}"`);
     }

@@ -60,18 +60,39 @@ function styleWrapStr(str: string, styles: string|string[]): string {
 	return `${styles.map((style: string) => `\x1b[${style}m`).join("")}${str}\x1b[0m`;
 }
 
+/**
+ * Log a file name in an according style.
+ * @param {string} message File name
+ */
 export function fileName(message: string) {
 	log(styleWrapStr(`• ${message}`, [ colorFrom(Layer.FG, 136, 151, 170) ]));
 }
 
+/**
+ * Log a badge in an according style.
+ * @param {string} message Badge message
+ * @param {number} r Red value (for RGB)
+ * @param {number} g Red value (for RGB)
+ * @param {number} b Red value (for RGB)
+ */
 export function badge(message: string, r: number, g: number, b: number) {
 	log(styleWrapStr(` ${message} `, [ "1", colorFrom(Layer.BG, r, g, b) ].concat(((r + g + b) < 550) ? [ "97" ] : [])));
 }
 
+/**
+ * Log a success message in an according style.
+ * @param {string} message Success message
+ */
 export function success(message: string) {
 	log(styleWrapStr(`✔ ${message} `, colorFrom(Layer.FG, 25, 225, 125)));
 }
 
+/**
+ * Log a failure message in an according style.
+ * @param {string} message Failure message
+ * @param {*} expectedResult Expected test result to display (type-accordingly formatted)
+ * @param {*} actualResult Actual test result to display (type-accordingly formatted)
+ */
 export function failure(message: string, expectedResult?, actualResult?) {
 	const formatResult = result => {
 		const cropValue = (value) => {
@@ -163,10 +184,19 @@ export function failure(message: string, expectedResult?, actualResult?) {
 	logLine(message.length);
 }
 
+/**
+ * Log a warning message in an according style.
+ * @param {string} message Warning message
+ */
 export function warning(message: string) {
 	log(styleWrapStr(message, [ "2", "3", colorFrom(Layer.FG, 136, 151, 170) ]), true);
 }
 
+/**
+ * Log an error (message) in an according style.
+ * @param {string} caption Error caption
+ * @param {Error} err Respective error object
+ */
 export function error(caption: string, err: Error) {
 	log(`${styleWrapStr(`${caption}:`, colorFrom(Layer.FG, 225, 25, 120))} ${err.message}`);
 	err.stack && log(err.stack);
@@ -174,6 +204,11 @@ export function error(caption: string, err: Error) {
 	process.exit(1);
 }
 
+/**
+ * Log an application termination / closing message in an according style.
+ * @param {string} message Close message
+ * @param {boolean} succeeded Whether the test suite was successful
+ */
 export function close(message: string, succeeded = true) {
 	message = `➜ ${message}`;
 
@@ -182,4 +217,4 @@ export function close(message: string, succeeded = true) {
 }   // TODO: Recurring colors mapping
 
 
-log("", true);    // Initial padding
+log("", true);    // Initial app log padding

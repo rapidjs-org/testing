@@ -1,7 +1,7 @@
 # no-fuss
 
-Simple and straightforward **TDD** framework for Java- and TypeScript applications.
-Favoring language native **OO* concepts and a uniform approach for both synchronous and asynchronous test interfaces.
+Simple and straightforward **TDD** framework for Java- and TypeScript applications.  
+Favoring language native concepts and a uniform testing approach for both synchronous and asynchronous test interfaces.
 
 ``` js
 // Test for a value comparison utility
@@ -33,9 +33,9 @@ no-fuss <path-to-test-directory> [(--timeout|-T)=5000] [--no-crop]
 ```
 
 | Parameter | Shorthand | Description |
-| --------- | --------- | ----------- |
+| --------- | --------- | ----------- |
 | **--timeout** | **-T** | *Test case timeout in ms* |
-| **--no-crop** | - | *Do not crop exhaustive test info results* |
+| **--no-crop** | *ε* | *Do not crop exhaustive test info results* |
 
 ## Test files
 

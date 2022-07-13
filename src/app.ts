@@ -1,5 +1,5 @@
 /**
- * Interface module performing the test run by test file evaluation.
+ * Main module initiating the test suite run with a test directory traversal.
  */
 
 
@@ -47,6 +47,10 @@ process.on("exit", () => {
 });
 
 
+/**
+ * Recursively traverse a given directory for test file evaluation.
+ * @param {string} path Path to directory to traverse
+ */
 function traverseTestDir(path: string) {
 	readdir(path, {
 		withFileTypes: true

@@ -1,3 +1,8 @@
+/**
+ * Module containing a CLI option parsing and resolution interface.
+ */
+
+
 import { isAbsolute, join } from "path";
 
 
@@ -22,6 +27,11 @@ const readStorage: Map<string, IResolveInterface> = new Map();
 // TODO: Config files?
 
 
+/**
+ * Create an option / argument type resolve interface.
+ * @param {*} value Value
+ * @returns {IResolveInterface} Resolve interface
+ */
 function createResolveInterface(value: unknown): IResolveInterface {
 	return {
 		string: () => value ? value.toString() : null,
@@ -31,9 +41,21 @@ function createResolveInterface(value: unknown): IResolveInterface {
 }
 
 
+/**
+ * Statically provided test directory path (first CLI argument).
+ * Translated to absolute local path representation.
+ * @constant {string}
+ */
 export const TEST_DIR_PATH: string = !isAbsolute(testDirPathArg) ? join(process.cwd(), testDirPathArg) : testDirPathArg;
 
 
+/**
+ * Read a CLI option.
+ * @param {string} name Option name (--<shorthand>)
+ * @param {string} [shorthand] Optional option name shorthand (-<shorthand>)
+ * @param {*} [defaultValue] Optional default value to use if no associated value given
+ * @returns {IResolveInterface} Value resolve interface (for type accordance)
+ */
 export function readOption(name: string, shorthand?: string, defaultValue?: unknown) {
 	if(readStorage.has(name)) {
 		return readStorage.get(name);
