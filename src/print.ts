@@ -91,7 +91,7 @@ export function failure(message: string, expectedResult?, actualResult?) {
 					obj[prop] = formatObjProps(obj[prop] as Record<string, unknown>);
 				} else if(isString(obj[prop])) {
 					obj[prop] = cropValue(obj[prop]);
-
+					
 					for(const escape in config.escapeSubstitutionMap) {
 						obj[prop] = (obj[prop] as string).replace(
 							new RegExp(escape.replace(/(.)/g, "\\$1"), "g"),

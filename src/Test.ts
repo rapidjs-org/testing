@@ -1,10 +1,6 @@
-import { isObject } from "./util";
 import * as print from "./print";
-
-
-const config = {
-	testTimeoutDuration: 5000  // TODO: How provide custom value?
-};
+import { isObject } from "./util";
+import { readOption } from "./options";
 
 
 export abstract class Test {
@@ -127,7 +123,7 @@ export abstract class Test {
     		//print.usageInfo("");  // TODO: Info on how to change timeout limit
 
     		process.exit(1);
-    	}, config.testTimeoutDuration);
+    	}, readOption(5000, "timeout", "T").number());
 
     	const retrieveCaption = (caption: string) => {
     		return caption || `${this.caption}, Case ${++this.cases}`;

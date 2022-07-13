@@ -197,7 +197,7 @@ itemTest
         colors: [ 3, 4, 6 ]
     }
 },
-    "Create an item");
+    "Retrieve an item");
 
 itemTest
 .case({
