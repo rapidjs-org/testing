@@ -37,7 +37,7 @@ export abstract class Test {
 
     protected badgeColor: number[];
     
-    constructor(interfaceProperty, caption?: string, defaultName?: string) {    	// TODO: Type name arg for more specific generic captions and legend    
+    constructor(interfaceProperty, caption?: string, defaultName?: string) {
     	this.id = ++Test.idCounter;
 
     	this.interfaceProperty = interfaceProperty;
@@ -120,10 +120,10 @@ export abstract class Test {
     public case(...args) {
     	const testTimeout: number|NodeJS.Timeout = setTimeout(_ => {
     		print.warning(`Test suite timeout (initiated by test object '${this.caption}')\n`);
-    		//print.usageInfo("");  // TODO: Info on how to change timeout limit
+    		// TODO: Info on how to change timeout limit?
 
     		process.exit(1);
-    	}, readOption(5000, "timeout", "T").number());
+    	}, readOption("timeout", "T", 5000).number());
 
     	const retrieveCaption = (caption: string) => {
     		return caption || `${this.caption}, Case ${++this.cases}`;
@@ -144,14 +144,13 @@ export abstract class Test {
     		return {
     			for: (_, caption?: string) => {
     				print.failure(retrieveCaption(caption));
-    			}  // TODO: Count failure? print failure?
+    			}
     		};
     	}
 
     	return {
 
     		for: async (expectedResult, caption?: string) => {
-    			// TODO: Only allow for use once?
     			const resolve = () => {
 					clearTimeout(testTimeout);
 					

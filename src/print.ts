@@ -18,6 +18,7 @@ const config = {
 
 
 import { isString, isObject } from "./util";
+import { readOption } from "./options";
 
 
 const _console = {
@@ -73,9 +74,10 @@ export function success(message: string) {
 
 export function failure(message: string, expectedResult?, actualResult?) {
 	const formatResult = result => {
-		// TODO: No value crop option
 		const cropValue = (value) => {
-			return (isString(value) && (value.length > config.valueCropTolerance))
+			return (isString(value)
+			&& readOption("no-crop").boolean()
+			&& (value.length > config.valueCropTolerance))
 				? `${value.slice(0, config.valueCropTolerance)}...`
 				: value;
 		};

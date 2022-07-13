@@ -1,7 +1,7 @@
 # no-fuss
 
-No-brainer **TDD** framework for Java- and TypeScript applications.  
-Simple and straightforward; implements language native, object-oriented concepts.
+Simple and straightforward **TDD** framework for Java- and TypeScript applications.
+Favoring language native **OO* concepts and a uniform approach for both synchronous and asynchronous test interfaces.
 
 ``` js
 // Test for a value comparison utility
@@ -29,12 +29,13 @@ npm i -G @t-ski/no-fuss
 ## CLI usage
 
 ``` cli
-no-fuss <path-to-test-directory> [(--timeout-length|-T)=5000]
+no-fuss <path-to-test-directory> [(--timeout|-T)=5000] [--no-crop]
 ```
 
-| Parameter | Description |
-| --------- | ----------- |
-| **--timeout** | *Test case timeout in ms* |
+| Parameter | Shorthand | Description |
+| --------- | --------- | ----------- |
+| **--timeout** | **-T** | *Test case timeout in ms* |
+| **--no-crop** | - | *Do not crop exhaustive test info results* |
 
 ## Test files
 

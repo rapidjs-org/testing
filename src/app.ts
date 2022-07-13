@@ -74,7 +74,6 @@ function traverseTestDir(path: string) {
 		});
 	});
 }
-// TODO: Scan for setup files in order require them once needed
 
 
 // RUN TEST SUITE

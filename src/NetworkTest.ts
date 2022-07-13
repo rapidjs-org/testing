@@ -8,8 +8,6 @@ import { Test } from "./Test";
 type THeaders = Record<string, string|number|(string|number)[]>;
 
 
-// TODO: Way to store network responses for further tests use
-
 interface IRequestOptions {
     method?: string;
     headers?: THeaders;
@@ -108,7 +106,7 @@ export class NetworkTest extends Test {
     						status: res.statusCode,
     						headers: res.headers as THeaders,
     						message: String(data)
-    					}); // TODO: What to return?
+    					});
     				});
     			});
             
@@ -123,8 +121,6 @@ export class NetworkTest extends Test {
     	});
     }
 
-    // TODO: Retrieve dynamic name method? No explicit naming requirement...
-
     protected compareEqual(expectedResult: IResponseData, actualResult: IResponseData): boolean {  
     	let isSuccessful = true;
         
@@ -137,7 +133,7 @@ export class NetworkTest extends Test {
     		isSuccessful = false;
     	}
 
-    	const expectedHeaders: THeaders = expectedResult.headers || {};  // TODO: Header name case sensitivity?
+    	const expectedHeaders: THeaders = expectedResult.headers || {};
     	for(const header in expectedHeaders) {
     		if(actualResult.headers[header] != expectedHeaders[header]) {
     			this.pushWarning(`Mismatching values for header '${header}'`);
@@ -169,4 +165,4 @@ export class NetworkTest extends Test {
     	this.pushWarning(`Could not perform request to '${this.interfaceProperty}': "${err.message}"`);
     }
 
-}   // TODO: Display location in generic test name
+}

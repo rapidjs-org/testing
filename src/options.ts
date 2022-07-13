@@ -34,16 +34,16 @@ function createResolveInterface(value: unknown): IResolveInterface {
 export const TEST_DIR_PATH: string = !isAbsolute(testDirPathArg) ? join(process.cwd(), testDirPathArg) : testDirPathArg;
 
 
-export function readOption(defaultValue: unknown, name: string, shorthand?: string) {
+export function readOption(name: string, shorthand?: string, defaultValue?: unknown) {
 	if(readStorage.has(name)) {
 		return readStorage.get(name);
 	}
 
-	const topArgIndex = Math.max(args.lastIndexOf(`-${name}`), shorthand ? args.lastIndexOf(`--${shorthand}`) : -1);
+	const topArgIndex = Math.max(args.lastIndexOf(`--${name}`), shorthand ? args.lastIndexOf(`-${shorthand}`) : -1);
 
 	const result: IResolveInterface = createResolveInterface((topArgIndex > -1)
 	? args[topArgIndex + 1] || defaultValue
-	: defaultValue);
+	: defaultValue || true);
 	
 	readStorage.set(name, result);
 
