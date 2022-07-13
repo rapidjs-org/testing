@@ -1,26 +1,21 @@
 # no-fuss
 
-No-brainer TDD of Java- and TypeScript applications. Simple and straightforward.
+No-brainer **TDD** framework for Java- and TypeScript applications.  
+*Simple* and *straightforward*, implementing language native, object-oriented concepts.
 
 ``` js
-const util = require("../src/utilities");
+// Test for a value comparison utility
+const valueCompareTest = new UnitTest(util.compare, "Value comparison");
 
-const vcTest = new UnitTest(util.compare, "Value comparisons");
-
-vcTest
+valueCompareTest
 .case(1, 1)
 .for(true,
-    "Compare value and type identical objects");
+    "Compare identical objects");
 
-vcTest
-.case(1, "1")
-.for(false,
-    "Compare value identical, but type different objects");
-
-vcTest
+valueCompareTest
 .case(1, 2)
 .for(false,
-    "Compare value different, but type identical objects");
+    "Compare different objects");
 ```
 
 ## Installation
@@ -28,6 +23,8 @@ vcTest
 ``` cli
 npm i -G @t-ski/no-fuss
 ```
+
+> Install **no-fuss** as a global in order to work with the presented CLI interface. Project local installations must prepend provided commands with `npx`.
 
 ## Usage
 
@@ -37,26 +34,165 @@ no-fuss <path-to-test-directory> [(--timeout-length|-T)=3000]
 
 | Parameter | Description |
 | --------- | ----------- |
-| --timeout | Test case timeout in ms |
+| **--timeout** | *Test case timeout in ms* |
 
 ## Test files
 
-// TODO: Dir, files
+### Test directory
+
+All test suite related test files live in a s
+
+### Individual test files
 
 ## Generic test anatomy
 
+A test does look – no matter what concrete type of test class – as follows:
+
+```
+new <test-type>Test(<test-interface>, <optional-test-caption>)
+.case(<test-parameter>)
+.for(<expected-test-result>, <optional-case-caption>);
+```
+
+#### `new` Constructor
+
+Create a new test object representing a certain application interface test binding.
+
+#### `case()`
+
+Perform a test case on the test object providing specific parameter.
+
+#### `for()`
+
+Evaluate the test case results against an expected result object.
+
 ## Unit tests
 
-// TODO
+Unit tests describe tests on independent modular parts of an application. Usually performed on the most atomic units, they can actually be used on any level of abstraction as long as they are not relying on side-affected module interdependencies.
+
+### Syntax
+
+``` js
+new UnitTest(func, testCaption?)
+.case(...args)
+.for(expectedResult, caseCaption?);
+```
+
+#### `new` Constructor
+
+| Parameter | Type | Description |
+| --------- | ---- | ----------- |
+| `func` | **Function** | *Unit access function to test* |
+| `testCaption` | **Function** optional | *Test caption for associable output* |
+
+#### `case()`
+
+| Parameter | Type | Description |
+| --------- | ---- | ----------- |
+| `...args` | **any[]** | *Arguments to pass to the unit access function as would be provided application internally* |
+
+#### `for()`
+
+| Parameter | Type | Description |
+| --------- | ---- | ----------- |
+| `expectedResult` | **any** | *Expected unit test result* |
+
+> Unit tests work with both synchronous and asynchronous results. In the latter case a result resolution is performed all implicitly.
+
+### Example
+
+``` js
+const util = require("../src/utilities");
+
+// Test for a string length calculation utility
+const strLengthTest = new UnitTest(require("../src/utilities").strLength, "Valu");
+
+strLengthTest
+.case("Hello world")
+.for(11,
+    "Calculate correct string length");
+
+strLengthTest
+.case("Hello world")
+.for(100,
+    "Calculate incorrect string length");
+```
 
 ## Network tests
 
+Network tests describe tests on network endpoints of an application. Technically representing a special type of unit tests, they provide a purpose driven usage class.
+
+### Syntax
+
+``` js
+new NetworkTest(endpoint, testCaption?)
+.case(requestOptions)
+.for(expectedResponse, caseCaption?);
+```
+
+#### `new` Constructor
+
+| Parameter | Type | Description |
+| --------- | ---- | ----------- |
+| `endpoint` | **String** | *Test endpoint* |
+| `testCaption` | **Function** optional | *Test caption for associable output* |
+
+#### `case()`
+
+| Parameter | Type | Description |
+| --------- | ---- | ----------- |
+| `requestOptions` | **Object** | *Request options in Request Object format (s.b.)* |
+| `requestBody` | **Object** optional | *Request body to provide the endpoint with* |
+
+#### `for()`
+
+| Parameter | Type | Description |
+| --------- | ---- | ----------- |
+| `expectedResponse` | **Object** | *Expected endpoint response in Response Object format (s.b.)* |
+
+> Actual network test results are only compared to provided expected result properties in order to prevent exhaustive expected results.
+
+> Since network tests have an asynchronous character, test results may not log in order of appearance, but always given a context tag.
+
+### Request / Response Objects
+
 // TODO
 
-## Setup
+### Example
 
-// TODO
+``` js
+// Test for an item endpoint
+const itemTest = new NetworkTest("https://localhost/api/item".strLength, "Item endpoint");
 
-## Events
+itemTest
+.case({
+    method: "POST"
+}, {
+    a: 1
+})
+.for({
+    status: 201
+},
+    "Create an item");
+
+strLengthTest
+.case({
+    method: "PATCH"
+})
+.for(403,
+    "Try toperform forbidden manipulation an item");
+```
+
+### Common endpoint hostname
+
+To use a common endpoint hostname without requiring an according provision to the endpoint argument of a network test object constructor, a common host name may globally be set:
+
+``` js
+NetworkTest.setCommonHost("https://example.com");
+```
+
+> If neither a common host has been defined, nor a host has been providied to the endpoint argument, `localhost` is used as such.
+
+## Environmental setup
 
 // TODO

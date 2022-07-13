@@ -20,7 +20,7 @@ export class UnitTest extends Test {
     }
 
     protected handleInvocationError(err: Error) {
-    	this.pushWarning(`Could not apply function to given arguments: "${typeof(err)}: ${err.message}"`);
+    	this.pushWarning(`Could not apply function to given arguments: "${err.name}: ${err.message}"`);
     }
 
 }

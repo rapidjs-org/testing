@@ -1,7 +1,7 @@
 import { isObject } from "./util";
 import * as print from "./print";
 
-let x = 0;
+
 const config = {
 	testTimeoutDuration: 5000  // TODO: How provide custom value?
 };
@@ -122,7 +122,6 @@ export abstract class Test {
     }
 
     public case(...args) {
-		console.log(x++)
     	const testTimeout: number|NodeJS.Timeout = setTimeout(_ => {
     		print.warning(`Test suite timeout (initiated by test object '${this.caption}')\n`);
     		//print.usageInfo("");  // TODO: Info on how to change timeout limit
@@ -138,7 +137,6 @@ export abstract class Test {
     	try {
     		actualResult = this.invokeInterfaceProperty(...args);
     	} catch(err) {
-		console.log(x--)
 			clearTimeout(testTimeout);
             
     		print.error("An error occurred upon interface invocation", err);
@@ -161,28 +159,29 @@ export abstract class Test {
     			const resolve = () => {
 					clearTimeout(testTimeout);
 					
-    				caption = retrieveCaption(caption);
-
-    				!(actualResult instanceof Error)
-                    && this.filterActualResult(expectedResult, actualResult);
-
-    				const isEqual: boolean|Promise<boolean|Error>|Error = this.compareEqual(expectedResult, actualResult);
-                    
     				(this.id !== Test.lastActiveId)
                     && print.badge(`${this.caption}${(this.activations++ > 0) ? ` (${this.activations})` : ""}`, this.badgeColor[0], this.badgeColor[1], this.badgeColor[2]);
                     
-    				Test.lastActiveId = this.id;
-                    
-    				this.printWarningLog();
+    				caption = retrieveCaption(caption);
+					
+					this.printWarningLog();
 
-    				if(isEqual === true) {
-    					// Success
-    					Test.counter.succeeded++;
-                        
-    					print.success(caption);
+					if(!(actualResult instanceof Error)) {
+                    	this.filterActualResult(expectedResult, actualResult);
 
-    					return;
-    				}
+						const isEqual: boolean|Promise<boolean|Error>|Error = this.compareEqual(expectedResult, actualResult);
+						
+						Test.lastActiveId = this.id;
+
+						if(isEqual === true) {
+							// Success
+							Test.counter.succeeded++;
+							
+							print.success(caption);
+
+							return;
+						}
+					}
 
     				Test.counter.failed++;
 

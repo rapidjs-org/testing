@@ -14,6 +14,12 @@ import { UnitTest } from "./UnitTest";
 import { NetworkTest } from "./NetworkTest";
 
 
+enum Event {
+    INIT = "init",
+    CLEANUP = "cleanup"
+}
+
+
 const args = process.argv.slice(2);
 
 if(args.length === 0) {

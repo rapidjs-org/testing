@@ -11,6 +11,7 @@ type THeaders = Record<string, string|number|(string|number)[]>;
 interface IRequestOptions {
     method?: string;
     headers?: THeaders;
+	// TODO: Search params as object
 }
 
 interface IResponseData {
@@ -154,7 +155,7 @@ export class NetworkTest extends Test {
     }
 
     protected handleInvocationError(err: Error) {
-    	this.pushWarning(`Could not perform request to '${this.interfaceProperty}': "${typeof(err)}: ${err.message}"`);
+    	this.pushWarning(`Could not perform request to '${this.interfaceProperty}': "${err.name}: ${err.message}"`);
     }
 
-}   // TODO: Only show expected properties in failure log
+}   // TODO: Display location in generic test name
