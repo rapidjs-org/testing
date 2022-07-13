@@ -3,33 +3,18 @@
  */
 
 
-import { isAbsolute, join } from "path";
+import { join } from "path";
 import { existsSync, readdir } from "fs";
 
-
 import * as print from "./print";
-
+import { TEST_DIR_PATH } from "./options";
 import { Test } from "./Test";
 import { UnitTest } from "./UnitTest";
 import { NetworkTest } from "./NetworkTest";
 
 
-enum Event {
-    INIT = "init",
-    CLEANUP = "cleanup"
-}
-
-
-const args = process.argv.slice(2);
-
-if(args.length === 0) {
-	throw new ReferenceError("Missing test directory argument (index 0)");
-}
-
-const testDirPath: string = !isAbsolute(args[0]) ? join(process.cwd(), args[0]) : args[0];
-
-if(!existsSync(testDirPath)) {
-	throw new ReferenceError(`Given test file directory '${testDirPath}' does not exist`);
+if(!existsSync(TEST_DIR_PATH)) {
+	throw new ReferenceError(`Given test file directory '${TEST_DIR_PATH}' does not exist`);
 }
 
 
@@ -94,6 +79,6 @@ function traverseTestDir(path: string) {
 
 // RUN TEST SUITE
 // Evaluate each *.test.js file in the test directory in order of scan
-traverseTestDir(testDirPath);
+traverseTestDir(TEST_DIR_PATH);
 
 print.badge("TEST SUITE", 251, 234, 157);

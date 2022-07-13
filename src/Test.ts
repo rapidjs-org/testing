@@ -41,11 +41,11 @@ export abstract class Test {
 
     protected badgeColor: number[];
     
-    constructor(interfaceProperty, caption?: string) {    	// TODO: Type name arg for more specific generic captions and legend    
+    constructor(interfaceProperty, caption?: string, defaultName?: string) {    	// TODO: Type name arg for more specific generic captions and legend    
     	this.id = ++Test.idCounter;
 
     	this.interfaceProperty = interfaceProperty;
-    	this.caption = caption || `Test ${this.id}`;
+    	this.caption = caption || `${defaultName || "Test"} ${this.id}`;
     }
 
     protected abstract invokeInterfaceProperty(...args);

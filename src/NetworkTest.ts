@@ -8,10 +8,12 @@ import { Test } from "./Test";
 type THeaders = Record<string, string|number|(string|number)[]>;
 
 
+// TODO: Way to store network responses for further tests use
+
 interface IRequestOptions {
     method?: string;
     headers?: THeaders;
-	// TODO: Search params as object
+	searchParams?: Record<string, string|number|boolean>;
 }
 
 interface IResponseData {
@@ -35,7 +37,7 @@ export class NetworkTest extends Test {
     		throw new TypeError("Network test requires destination location argument (URL or pathname)");
     	}
         
-    	super(location, caption);
+    	super(location, caption, `Network Test (➞ '${location}')`);
         
     	super.badgeColor = NetworkTest.badgeColor;
     }
@@ -76,10 +78,19 @@ export class NetworkTest extends Test {
     		? NetworkTest.commonHost || "localhost"
     		: location.split("/", 2)[0];
 
-    	const path: string = hasExplicitHost
-    		? location.split("/", 2)[1] || ""
+    	let path: string = hasExplicitHost
+    		? `/${location.split("/", 2)[1] || ""}`
     		: location;
 
+		if(options.searchParams) {
+			const searchQueryStr: string = Object.keys(options.searchParams)
+			.map((key: string) => {
+				return `${key}=${encodeURIComponent(options.searchParams[key].toString())}`;
+			}).join("&");
+			
+			path += `?${searchQueryStr}`;
+		}
+		
     	return new Promise((resolve, reject) => {
     		const req = https
     			.request({
@@ -155,7 +166,7 @@ export class NetworkTest extends Test {
     }
 
     protected handleInvocationError(err: Error) {
-    	this.pushWarning(`Could not perform request to '${this.interfaceProperty}': "${err.name}: ${err.message}"`);
+    	this.pushWarning(`Could not perform request to '${this.interfaceProperty}': "${err.message}"`);
     }
 
 }   // TODO: Display location in generic test name

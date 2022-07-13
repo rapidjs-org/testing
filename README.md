@@ -152,13 +152,31 @@ new NetworkTest(endpoint, testCaption?)
 | --------- | ---- | ----------- |
 | `expectedResponse` | **Object** | *Expected endpoint response in Response Object format (s.b.)* |
 
-> Actual network test results are only compared to provided expected result properties in order to prevent exhaustive expected results.
-
 > Since network tests have an asynchronous character, test results may not log in order of appearance, but always given a context tag.
 
 ### Request / Response Objects
 
-// TODO
+#### Request object
+
+To define specific parameters for a specific endpoint request test, an according object may be provided to each respective test case:
+
+| Property | Type | Description |
+| --------- | ---- | ----------- |
+| `method` | **String** optional | *Request method (POST by default iff given a body, GET otherwise)* |
+| `headers` | **Object** optional | *A dictionary of request headers in object representation* |
+| `searchParams` | **Object** optional | *A dictionary of search parameters in object representation (implicit URL injection)* |
+
+#### Response object
+
+To compare for an expected response, the following properties may be checked on and thus provided:
+
+| Property | Type | Description |
+| --------- | ---- | ----------- |
+| `status` | **Number** optional | *Response status code* |
+| `headers` | **Object** optional | *A dictionary of response headers in object representation* |
+| `message` | **String, Object** optional | *Response message as a string or object iff JSON parsable* |
+
+> Actual network test results are only compared to provided expected result properties in order to prevent exhaustive expected results.
 
 ### Example
 
@@ -167,22 +185,31 @@ new NetworkTest(endpoint, testCaption?)
 const itemTest = new NetworkTest("https://localhost/api/item".strLength, "Item endpoint");
 
 itemTest
+.case({ // GET by default
+    searchParams; {
+        id: 31
+    }
+})
+.for({
+    status: 200,
+    message: {
+        productName: "Mens Loafer \"Malibu\"",
+        colors: [ 3, 4, 6 ]
+    }
+},
+    "Create an item");
+
+itemTest
 .case({
     method: "POST"
 }, {
-    a: 1
+    productName: "Womens Sneaker \"Tokyo\"",
+    colors: [ 1, 2, 4, 6 ]
 })
 .for({
     status: 201
 },
     "Create an item");
-
-strLengthTest
-.case({
-    method: "PATCH"
-})
-.for(403,
-    "Try toperform forbidden manipulation an item");
 ```
 
 ### Common endpoint hostname

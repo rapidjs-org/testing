@@ -10,7 +10,7 @@ export class UnitTest extends Test {
     		throw new TypeError("Unit test requires function argument");
     	}
 
-    	super(func, caption);
+    	super(func, caption, "Unit Test");
 
     	super.badgeColor = UnitTest.badgeColor;
     }
@@ -20,7 +20,7 @@ export class UnitTest extends Test {
     }
 
     protected handleInvocationError(err: Error) {
-    	this.pushWarning(`Could not apply function to given arguments: "${err.name}: ${err.message}"`);
+    	this.pushWarning(`Could not apply function to given arguments: "${err.message}"`);
     }
 
 }
