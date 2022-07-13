@@ -60,7 +60,7 @@ function styleWrapStr(str: string, styles: string|string[]): string {
 }
 
 export function fileName(message: string) {
-	log(styleWrapStr(`• ${message}`, [ colorFrom(Layer.FG, 225, 225, 235) ]));
+	log(styleWrapStr(`• ${message}`, [ colorFrom(Layer.FG, 136, 151, 170) ]));
 }
 
 export function badge(message: string, r: number, g: number, b: number) {
@@ -106,8 +106,8 @@ export function failure(message: string, expectedResult?, actualResult?) {
 		formatObjProps(result);
 
 		result = JSON.stringify(result)
-			.replace(/(("|')[^"']+\2):/g, `${styleWrapStr("$1", colorFrom(Layer.FG, 45, 225, 230))}:`)
-			.replace(/:\s*(([0-9]+(\.[0-9])?)|(("|')[^"']*\5))\s*([,}])/g, `:${styleWrapStr("$1", colorFrom(Layer.FG, 245, 125, 30))}$6`)
+			.replace(/(("|')[^"']+\2):/g, `${styleWrapStr("$1", colorFrom(Layer.FG, 136, 151, 170))}:`)
+			.replace(/:\s*(([0-9]+(\.[0-9])?)|(("|')[^"']*\5))\s*([,}])/g, `:${styleWrapStr("$1", colorFrom(Layer.FG, 255, 199, 28))}$6`)
 			.replace(/:\s*/g, ": ");
         
 		const indentation = "  ";
@@ -144,13 +144,13 @@ export function failure(message: string, expectedResult?, actualResult?) {
 
 	message = `✘ ${message}`;
 
-	_console.group(styleWrapStr(message, colorFrom(Layer.FG, 225, 25, 125)));
+	_console.group(styleWrapStr(message, colorFrom(Layer.FG, 225, 25, 120)));
 	if(expectedResult) {
-		log(styleWrapStr("\nExpected result:", colorFrom(Layer.FG, 215, 215, 225)));
+		log(styleWrapStr("\nExpected result:", [ "2", colorFrom(Layer.FG, 136, 151, 170) ]));
 		log(formatResult(expectedResult), true);
 	}
 	if(actualResult) {
-		log(styleWrapStr("\nActual result:", colorFrom(Layer.FG, 215, 215, 225)));
+		log(styleWrapStr("\nActual result:", [ "2", colorFrom(Layer.FG, 136, 151, 170) ]));
 		log(formatResult(actualResult));
 	} else {
 		log("", true);
@@ -162,11 +162,11 @@ export function failure(message: string, expectedResult?, actualResult?) {
 }
 
 export function warning(message: string) {
-	log(styleWrapStr(message, [ "2", "3", colorFrom(Layer.FG, 235, 235, 245) ]), true);
+	log(styleWrapStr(message, [ "2", "3", colorFrom(Layer.FG, 136, 151, 170) ]), true);
 }
 
 export function error(caption: string, err: Error) {
-	log(`${styleWrapStr(`${caption}:`, colorFrom(Layer.FG, 225, 25, 125))} ${err.message}`);
+	log(`${styleWrapStr(`${caption}:`, colorFrom(Layer.FG, 225, 25, 120))} ${err.message}`);
 	err.stack && log(err.stack);
 
 	process.exit(1);
@@ -176,7 +176,7 @@ export function close(message: string, succeeded = true) {
 	message = `➜ ${message}`;
 
 	logLine(message.length);
-	log(styleWrapStr(message, succeeded ? colorFrom(Layer.FG, 25, 225, 125) : colorFrom(Layer.FG, 225, 25, 125)));
+	log(styleWrapStr(message, succeeded ? colorFrom(Layer.FG, 25, 225, 125) : colorFrom(Layer.FG, 225, 25, 120)));
 }   // TODO: Recurring colors mapping
 
 

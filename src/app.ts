@@ -96,4 +96,4 @@ function traverseTestDir(path: string) {
 // Evaluate each *.test.js file in the test directory in order of scan
 traverseTestDir(testDirPath);
 
-print.badge("TEST SUITE", 245, 235, 155);
+print.badge("TEST SUITE", 251, 234, 157);

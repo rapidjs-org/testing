@@ -1,7 +1,7 @@
 # no-fuss
 
 No-brainer **TDD** framework for Java- and TypeScript applications.  
-*Simple* and *straightforward*, implementing language native, object-oriented concepts.
+Simple and straightforward; implements language native, object-oriented concepts.
 
 ``` js
 // Test for a value comparison utility
@@ -24,9 +24,9 @@ valueCompareTest
 npm i -G @t-ski/no-fuss
 ```
 
-> Install **no-fuss** as a global in order to work with the presented CLI interface. Project local installations must prepend provided commands with `npx`.
+> Install **no-fuss** globally in order to work with the presented CLI interface. Project local installations must prepend subsequently stated commands with `npx`.
 
-## Usage
+## CLI usage
 
 ``` cli
 no-fuss <path-to-test-directory> [(--timeout-length|-T)=3000]
@@ -40,21 +40,23 @@ no-fuss <path-to-test-directory> [(--timeout-length|-T)=3000]
 
 ### Test directory
 
-All test suite related test files live in a s
+All test suite related test files have to be located in a dedicated test file directory that is to be provided to a **no-fuss** execution command as the first CLI argument. Both absolute and CWD relative paths are legitimite. A test directory is recursively traversed for test file evaluation in alphabetical order.
 
 ### Individual test files
+
+An individual test file stating an arbitrary amount of tests and related test cases is to be named in the format `*.test.js`. Test files are implicitly granted global access to the below outlined test classes.
 
 ## Generic test anatomy
 
 A test does look – no matter what concrete type of test class – as follows:
 
-```
+``` js
 new <test-type>Test(<test-interface>, <optional-test-caption>)
 .case(<test-parameter>)
 .for(<expected-test-result>, <optional-case-caption>);
 ```
 
-#### `new` Constructor
+#### `new()` via Constructor
 
 Create a new test object representing a certain application interface test binding.
 
@@ -78,7 +80,7 @@ new UnitTest(func, testCaption?)
 .for(expectedResult, caseCaption?);
 ```
 
-#### `new` Constructor
+#### `new()` via Constructor
 
 | Parameter | Type | Description |
 | --------- | ---- | ----------- |
@@ -126,11 +128,11 @@ Network tests describe tests on network endpoints of an application. Technically
 
 ``` js
 new NetworkTest(endpoint, testCaption?)
-.case(requestOptions)
+.case(requestOptions, requestBody?)
 .for(expectedResponse, caseCaption?);
 ```
 
-#### `new` Constructor
+#### `new()` via Constructor
 
 | Parameter | Type | Description |
 | --------- | ---- | ----------- |

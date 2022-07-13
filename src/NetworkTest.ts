@@ -23,7 +23,7 @@ interface IResponseData {
 
 export class NetworkTest extends Test {
     
-    private static badgeColor: number[] = [125, 155, 255];
+    private static badgeColor: number[] = [ 170, 131, 226 ];
     private static commonHost: string;
 
     public static setCommonHost(hostname: string) {

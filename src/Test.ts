@@ -41,7 +41,7 @@ export abstract class Test {
 
     protected badgeColor: number[];
     
-    constructor(interfaceProperty, caption?: string) {        
+    constructor(interfaceProperty, caption?: string) {    	// TODO: Type name arg for more specific generic captions and legend    
     	this.id = ++Test.idCounter;
 
     	this.interfaceProperty = interfaceProperty;
@@ -163,7 +163,7 @@ export abstract class Test {
                     && print.badge(`${this.caption}${(this.activations++ > 0) ? ` (${this.activations})` : ""}`, this.badgeColor[0], this.badgeColor[1], this.badgeColor[2]);
                     
     				caption = retrieveCaption(caption);
-					
+
 					this.printWarningLog();
 
 					if(!(actualResult instanceof Error)) {
