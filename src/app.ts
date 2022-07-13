@@ -80,6 +80,9 @@ function traverseTestDir(path: string) {
 }
 
 
+// TODO: Setup / Clearup
+
+
 // RUN TEST SUITE
 // Evaluate each *.test.js file in the test directory in order of scan
 traverseTestDir(TEST_DIR_PATH);

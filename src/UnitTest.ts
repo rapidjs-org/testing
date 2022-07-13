@@ -5,7 +5,7 @@ import { Test } from "./Test";
  * Class representing a unit test context for independent functional
  * test interfaces.
  */
-export class UnitTest extends Test {
+export class UnitTest extends Test<((...args) => unknown)> {
 
     private static badgeColor: number[] = [ 118, 230, 255 ];
     

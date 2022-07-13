@@ -2,6 +2,7 @@ import https from "https";
 import { OutgoingHttpHeaders } from "http2";
 
 import { isString } from "./util";
+import { readOption } from "./options";
 import { Test } from "./Test";
 
 
@@ -16,6 +17,7 @@ interface IRequestOptions {
     method?: string;
     headers?: THeaders;
 	searchParams?: Record<string, string|number|boolean>;
+	body?: unknown;
 }
 
 /*
@@ -24,9 +26,9 @@ interface IRequestOptions {
  * the stated pattern:
  */
 interface IResponseData {
-    status: number,
-    headers: THeaders,
-    message: string
+    status?: number;
+    headers?: THeaders;
+    message?: string;
 }
 
 
@@ -35,12 +37,12 @@ interface IResponseData {
  * request interfaces.
  * Implicit HTTP(S) communication behavior.
  */
-export class NetworkTest extends Test {
+export class NetworkTest extends Test<string> {
     
     private static badgeColor: number[] = [ 170, 131, 226 ];
     private static commonHost: string;
 
-	/**
+    /**
 	 * Set a common hostname for all subsequent test objects
 	 * (concatenated href URL components).
 	 * @param {string} hostname Common hostname
@@ -64,7 +66,7 @@ export class NetworkTest extends Test {
     	super.badgeColor = NetworkTest.badgeColor;
     }
 
-	/**
+    /**
 	 * Filter a response object for case individual properties.
 	 * Prevents exhaustive comparisons / expected result provision.
 	 * @param {IResponseData|Object} expectedResult Expected response object (All-optional-properties interface of IResponseObject)
@@ -98,14 +100,14 @@ export class NetworkTest extends Test {
     	return actualResult;
     }
 
-	/**
+    /**
      * Perform an request to the interface location with the given parameters.
 	 * @async
      * @param {IRequestOptions} [options={}] Request options / parameters
      * @param {Object} [body] Optional request body to provide
      * @returns {Promise<IResponseData>} Promise resolving to a response object
      */
-    protected invokeInterfaceProperty(options: IRequestOptions = {}, body?: Record<string, unknown>): Promise<IResponseData> {
+    protected invokeInterfaceProperty(options: IRequestOptions = {}): Promise<IResponseData> {
     	const location: string = this.interfaceProperty;
         
     	const hasExplicitHost: boolean = (location.charAt(0) != "/");
@@ -113,19 +115,19 @@ export class NetworkTest extends Test {
     	const hostname: string = !hasExplicitHost
     		? NetworkTest.commonHost || "localhost"
     		: location.split("/", 2)[0];
-
+		
     	let path: string = hasExplicitHost
     		? `/${location.split("/", 2)[1] || ""}`
     		: location;
 
-		if(options.searchParams) {
-			const searchQueryStr: string = Object.keys(options.searchParams)
-			.map((key: string) => {
-				return `${key}=${encodeURIComponent(options.searchParams[key].toString())}`;
-			}).join("&");
+    	if(options.searchParams) {
+    		const searchQueryStr: string = Object.keys(options.searchParams)
+    			.map((key: string) => {
+    				return `${key}=${encodeURIComponent(options.searchParams[key].toString())}`;
+    			}).join("&");
 			
-			path += `?${searchQueryStr}`;
-		}
+    		path += `?${searchQueryStr}`;
+    	}
 		
     	return new Promise((resolve, reject) => {
     		const req = https
@@ -133,11 +135,12 @@ export class NetworkTest extends Test {
     				hostname: hostname,
     				path: path,
     				method: !options.method
-    					? (body
+    					? (options.body
     						? "POST"
     						: "GET")
     					: options.method,
-    				headers: options.headers as OutgoingHttpHeaders
+    				headers: options.headers as OutgoingHttpHeaders,
+    				timeout: readOption("timeout", "T", 5000).number()
     			}, res => {
     				res.on("data", data => {
     					resolve({
@@ -152,14 +155,14 @@ export class NetworkTest extends Test {
     			reject(err);
     		});
             
-    		body
-            && req.write(JSON.stringify(body));
+    		options.body
+            && req.write(JSON.stringify(options.body));
 
     		req.end();
     	});
     }
 
-	/**
+    /**
 	 * Compare two re
 	 * @param {IResponseData|Object} expectedResult Expected response object only stating relevant properties (filter basis)
 	 * @param {IResponseData} actualResult Actual response object

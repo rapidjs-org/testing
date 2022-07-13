@@ -8,7 +8,7 @@ import { readOption } from "./options";
  * for indivdual parameter test cases.
  * Utilize for concrete test field class derivation.
  */
-export abstract class Test {
+export abstract class Test<T> {
 
     private static idCounter = 0;
     private static counter: {
@@ -20,7 +20,7 @@ export abstract class Test {
     };
     private static lastActiveId: number;
 
-	/**
+    /**
 	 * Retrieve total test results.
 	 * @returns {number[]} Test results: [0] succeeded, [1] failed
 	 */
@@ -31,7 +31,7 @@ export abstract class Test {
     	];
     }
 
-	/**
+    /**
 	 * Check whether the test suite has been successful.
 	 * (Whether all test cases passed SO FAR; approach upon process termination).
 	 * @returns {Boolean} Whether the suite has been successful
@@ -44,20 +44,20 @@ export abstract class Test {
     private readonly pushedWarnings: string[] = [];
     
     protected readonly id: number;
-    protected readonly interfaceProperty;
+    protected readonly interfaceProperty: T;
 	
     private activations = 0;
     private cases = 0;
 
     protected badgeColor: number[];
     
-	/**
+    /**
 	 * Create a test object representing a specific test entity context.
 	 * @param {*} interfaceProperty Test interface property to approach accroding to concrete implementation
 	 * @param {string} [caption] Optional test caption (generic caption otherwise)
 	 * @param {string} [defaultName] Optional default test caption prefix (for specification)
 	 */
-    constructor(interfaceProperty, caption?: string, defaultName?: string) {
+    constructor(interfaceProperty: T, caption?: string, defaultName?: string) {
     	this.id = ++Test.idCounter;
 
     	this.interfaceProperty = interfaceProperty;
@@ -68,7 +68,7 @@ export abstract class Test {
 
     protected abstract handleInvocationError(err: Error);
 
-	/**
+    /**
 	 * Print all raised warning logs from concrete case application.
 	 */
     private printWarningLog() {
@@ -84,14 +84,14 @@ export abstract class Test {
     	print.warning("");
     }
 
-	/**
+    /**
 	 * Check whether two arrays are equal.
 	 * Strict comparison per same index elements each (===).
 	 * @param {*[]} arr1 Reference array
 	 * @param {*[]} arr2 Compared array
 	 * @returns {Boolean} Whether the arrays are fully equal
 	 */
-    private arraysEqual(arr1, arr2): boolean {
+    private arraysEqual(arr1: unknown[], arr2: unknown[]): boolean {
     	if(!Array.isArray(arr2)) {
     		return false;
     	}
@@ -99,7 +99,7 @@ export abstract class Test {
     	return (JSON.stringify(arr1.sort()) === JSON.stringify(arr2.sort()));
     }
 
-	/**
+    /**
 	 * Check whether two objects are equal.
 	 * Key set comparison.
 	 * Strict comparison per same key elements each (===).
@@ -128,7 +128,7 @@ export abstract class Test {
     	return true;
     }
 
-	/**
+    /**
 	 * Filter an actually invoked test result for relevant properties.
 	 * To be optionally utilized from concrete class implementations.
 	 * @param {*} _ [~ expectedResult] Expected result for reference (if needed)
@@ -139,7 +139,7 @@ export abstract class Test {
     	return actualResult;
     }
     
-	/**
+    /**
 	 * Compare whether two values are stricitly equal.
 	 * Implements the comparison helper methods (s.a.).
 	 * @param {*} expectedResult Expected result for reference
@@ -166,7 +166,7 @@ export abstract class Test {
     	return true;
     }
 
-	/**
+    /**
 	 * Push a warning to the warning log queue.
 	 * Prevents warning log before related test badges.
 	 * @param message 
@@ -175,7 +175,7 @@ export abstract class Test {
     	this.pushedWarnings.push(message);
     }
 
-	/**
+    /**
 	 * Perform an individual test case.
 	 * @param {*[]} args Test invocation arguments
 	 * @returns { for() } Test results resolution interface (s.b.)
@@ -196,7 +196,7 @@ export abstract class Test {
     	try {
     		actualResult = this.invokeInterfaceProperty(...args);
     	} catch(err) {
-			clearTimeout(testTimeout);
+    		clearTimeout(testTimeout);
             
     		print.error("An error occurred upon interface invocation", err);
 
@@ -213,44 +213,54 @@ export abstract class Test {
 
     	return {
 
-			/**
+    		/**
 			 * Check for an expected result of the issuing test case.
 			 * @param {*} expectedResult Expected result
 			 * @param {string} [caption] Optional test case caption for associable result logs
 			 */
-    		for: async (expectedResult, caption?: string) => {
+    		for: (expectedResult, caption?: string) => {
+    			let chainedContext: (result: unknown) => void;
+
     			const resolve = () => {
-					clearTimeout(testTimeout);
+    				clearTimeout(testTimeout);
 					
     				(this.id !== Test.lastActiveId)
                     && print.badge(`${this.caption}${(this.activations++ > 0) ? ` (${this.activations})` : ""}`, this.badgeColor[0], this.badgeColor[1], this.badgeColor[2]);
                     
     				caption = retrieveCaption(caption);
 
-					this.printWarningLog();
+    				this.printWarningLog();
 
-					if(!(actualResult instanceof Error)) {
-                    	this.filterActualResult(expectedResult, actualResult);
+    				Test.lastActiveId = this.id;
+					
+    				if(actualResult instanceof Error) {
+    					// Error => Failure
+    					Test.counter.failed++;
 
-						const isEqual: boolean|Promise<boolean|Error>|Error = this.compareEqual(expectedResult, actualResult);
+    					print.failure(caption);
+
+    					return;
+    				}
+
+    				this.filterActualResult(expectedResult, actualResult);
+					
+    				const isEqual: boolean = this.compareEqual(expectedResult, actualResult);
+					
+    				if(isEqual) {
+    					// Success
+    					Test.counter.succeeded++;
 						
-						Test.lastActiveId = this.id;
+    					print.success(caption);
+    				} else {
+    					// Failure
+    					Test.counter.failed++;
+						
+    					print.failure(caption, expectedResult, actualResult);
 
-						if(isEqual === true) {
-							// Success
-							Test.counter.succeeded++;
-							
-							print.success(caption);
+    				}
 
-							return;
-						}
-					}
-
-    				Test.counter.failed++;
-
-    				!(actualResult instanceof Error)
-    					? print.failure(caption, expectedResult, actualResult)
-    					: print.failure(caption);
+    				chainedContext
+					&& chainedContext(actualResult);
     			};
 
     			(actualResult instanceof Promise)
@@ -264,7 +274,20 @@ export abstract class Test {
     						actualResult = err;
     					})
     					.finally(resolve))
-    				: resolve();
+    				: setImmediate(resolve);	// Have .chain() evaluated first
+
+    			return {
+					
+    				/**
+					 * Chain an evaluation context to the resolution of the issuing a
+					 * test case, given the actual result value to perform on.
+					 * @param {Function} resultHandler Result handler being invoked immediately given the (filtered) actual result
+					 */
+    				chain: (chainedContextCallback: (result: unknown) => void) => {
+    					chainedContext = chainedContextCallback;
+    				}
+
+    			};
     		}
 
     	};

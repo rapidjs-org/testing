@@ -64,8 +64,8 @@ export function readOption(name: string, shorthand?: string, defaultValue?: unkn
 	const topArgIndex = Math.max(args.lastIndexOf(`--${name}`), shorthand ? args.lastIndexOf(`-${shorthand}`) : -1);
 
 	const result: IResolveInterface = createResolveInterface((topArgIndex > -1)
-	? args[topArgIndex + 1] || defaultValue
-	: defaultValue || true);
+		? args[topArgIndex + 1] || defaultValue
+		: defaultValue || true);
 	
 	readStorage.set(name, result);
 
