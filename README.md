@@ -29,7 +29,7 @@ npm i -G @t-ski/no-fuss
 ## CLI usage
 
 ``` cli
-no-fuss <path-to-test-directory> [(--timeout-length|-T)=3000]
+no-fuss <path-to-test-directory> [(--timeout-length|-T)=5000]
 ```
 
 | Parameter | Description |
