@@ -29,13 +29,14 @@ npm i -G @t-ski/no-fuss
 ## CLI usage
 
 ``` cli
-no-fuss <path-to-test-directory> [(--timeout|-T)=5000] [--no-crop]
+no-fuss <path-to-test-directory> [(--timeout|-T)=5000] [--no-crop] [--no-individual-log]
 ```
 
 | Parameter | Shorthand | Description |
 | --------- | --------- | ----------- |
 | **--timeout** | **-T** | *Test case timeout in ms* |
 | **--no-crop** | *ε* | *Do not crop exhaustive test info results* |
+| **--no-individual-log** | *ε* | *Do not log application individual messages to the console (only valid for console log)* |
 
 ## Test files
 

@@ -74,6 +74,8 @@ export class NetworkTest extends Test<string> {
 	 * @returns {IResponseData|Object} Filtered response object (that is to be passed to further processing)
 	 */
     protected filterActualResult(expectedResult: IResponseData, actualResult: IResponseData): IResponseData {
+		actualResult = { ...actualResult };
+		
     	if(!expectedResult.status && actualResult.status) {
     		delete actualResult.status;
     	}

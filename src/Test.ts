@@ -242,9 +242,9 @@ export abstract class Test<T> {
     					return;
     				}
 
-    				this.filterActualResult(expectedResult, actualResult);
+					const filteredActualResult = this.filterActualResult(expectedResult, actualResult);
 					
-    				const isEqual: boolean = this.compareEqual(expectedResult, actualResult);
+    				const isEqual: boolean = this.compareEqual(expectedResult, filteredActualResult);
 					
     				if(isEqual) {
     					// Success
@@ -255,7 +255,7 @@ export abstract class Test<T> {
     					// Failure
     					Test.counter.failed++;
 						
-    					print.failure(caption, expectedResult, actualResult);
+    					print.failure(caption, expectedResult, filteredActualResult);
 
     				}
 
