@@ -21,21 +21,24 @@ import { isString, isObject } from "./util";
 import { readOption } from "./options";
 
 
-const _console = {
-	log: console.log,
-	error: console.error,
-	group: console.group,
-	groupEnd: console.groupEnd
-};
+// Individual log interception (make subtle)
+let lastLogWasIndividual: boolean = false;
 
-// TODO: App print interception
+console.log = (...message: string[]) => {
+    // TODO: Object log?
+	if(readOption("no-individual-log").boolean()) {
+		return;
+	}
 
-/* console.log = (...data: any[]) => {
-    _console.log(styleWrapStr(data.join(), [ "2", colorFrom(Layer.FG, 240, 240, 240) ]));
-};
-console.error = (...data: any[]) => {
-    _console.log(styleWrapStr(data.map(d => d.toString()).join(), [ "2", colorFrom(Layer.FG, 240, 190, 190) ]));
-}; */
+    process.stdout.write(styleWrapStr(`${
+		!lastLogWasIndividual ? "─── INDIVIDUAL LOG ───\n" : ""
+	}${message.join(" ")}\n`, ["2", colorFrom(Layer.FG, 222, 231, 244) ] ));
+    
+    lastLogWasIndividual = true;
+}
+console.info = console.log;
+console.warn = console.log;
+console.error = console.log;
 
 
 enum Layer {
@@ -45,7 +48,11 @@ enum Layer {
 
 
 function log(message: string, noPad = false) {
-	_console.log(`${message}${!noPad ? "\n" : ""}`, );
+	process.stdout.write(`${
+		styleWrapStr(lastLogWasIndividual ? "───\n\n" : "", ["2", colorFrom(Layer.FG, 222, 231, 244) ])
+	}${message}${!noPad ? "\n" : ""}\n`, );
+
+	lastLogWasIndividual = false;
 }
 
 function logLine(length) {
@@ -169,7 +176,8 @@ export function failure(message: string, expectedResult?, actualResult?) {
 
 	message = `✘ ${message}`;
 
-	_console.group(styleWrapStr(message, colorFrom(Layer.FG, 225, 25, 120)));
+	log(styleWrapStr(message, colorFrom(Layer.FG, 225, 25, 120)));
+	console.group();
 	if(expectedResult) {
 		log(styleWrapStr("\nExpected result:", [ "2", colorFrom(Layer.FG, 136, 151, 170) ]));
 		log(formatResult(expectedResult), true);
@@ -181,9 +189,10 @@ export function failure(message: string, expectedResult?, actualResult?) {
 		log("", true);
 	}   // TODO: Highlight diffs?
 
-	_console.groupEnd();
+	console.groupEnd();
     
-	logLine(message.length);
+	(expectedResult || actualResult)
+	&& logLine(message.length);
 }
 
 /**

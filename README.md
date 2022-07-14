@@ -254,11 +254,6 @@ NetworkTest.setCommonHost("https://example.com");
 
 **no-fuss** emits internal events throughout the course of a test suite run. Upon each event a file named in the format `<event-ame>.event.js` located on the top level of the test directory is evaluated.
 
-
-
-once before ("setup") and once after ("cleanup") the test suite has run.  
-Upon the emit of each event, an according event module file named in the format `<event-ame>.event.js` is evaluated.
-
 | Event | Description |
 | ----- | ----------- |
 | `setup` | *Fires before test suite is run* |
