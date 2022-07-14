@@ -7,7 +7,7 @@ import { Test } from "./Test";
  */
 export class UnitTest extends Test<((...args) => unknown)> {
 
-    private static badgeColor: number[] = [ 118, 230, 255 ];
+    private static badgeColor: number[] = [ 255, 225, 194 ];
     
     /**
 	 * Create a unit test object.

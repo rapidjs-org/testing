@@ -106,7 +106,7 @@ export function failure(message: string, expectedResult?, actualResult?) {
 	const formatResult = result => {
 		const cropValue = (value) => {
 			return (isString(value)
-			&& readOption("no-crop").boolean()
+			&& !readOption("no-crop").boolean()
 			&& (value.length > config.valueCropTolerance))
 				? `${value.slice(0, config.valueCropTolerance)}...`
 				: value;

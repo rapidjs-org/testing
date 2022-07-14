@@ -3,7 +3,7 @@
  */
 
 
-import { join } from "path";
+import { join, dirname } from "path";
 import { existsSync, readdir } from "fs";
 
 import * as print from "./print";
@@ -79,7 +79,12 @@ function traverseTestDir(path: string) {
 }
 
 
-print.badge("TEST SUITE", 251, 234, 157);
+const packageFilePath: string = join(dirname(TEST_DIR_PATH), "package.json");
+const packageName: string = existsSync(packageFilePath)
+? require(packageFilePath).name
+: null;
+
+print.badge(`TEST SUITE${packageName ? ` [${packageName}]`: ""}`, 201, 241, 248);
 
 
 // SETUP EVENT
