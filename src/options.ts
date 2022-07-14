@@ -24,9 +24,6 @@ const testDirPathArg = args.shift();
 const readStorage: Map<string, IResolveInterface> = new Map();
 
 
-// TODO: Config files?
-
-
 /**
  * Create an option / argument type resolve interface.
  * @param {*} value Value

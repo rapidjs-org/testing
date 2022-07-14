@@ -28,6 +28,8 @@ const _console = {
 	groupEnd: console.groupEnd
 };
 
+// TODO: App print interception
+
 /* console.log = (...data: any[]) => {
     _console.log(styleWrapStr(data.join(), [ "2", colorFrom(Layer.FG, 240, 240, 240) ]));
 };
@@ -202,6 +204,14 @@ export function error(caption: string, err: Error) {
 	err.stack && log(err.stack);
 
 	process.exit(1);
+}
+
+/**
+ * Log an event occurrence message in an according style.
+ * @param {string} name Event name
+ */
+export function event(name: string) {
+	log(styleWrapStr(`↺ ${name}`, [ "2", "3", colorFrom(Layer.FG, 136, 151, 170) ]));
 }
 
 /**

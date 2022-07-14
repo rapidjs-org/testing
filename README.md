@@ -235,7 +235,7 @@ itemTest
     .for({
         status: 204
     },
-        "Delete an item")
+        "Delete an item");
 
 });
 ```
