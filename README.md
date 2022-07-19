@@ -1,7 +1,7 @@
 # OTES
 
-Simple and straightforward **TDD** framework for Java- and TypeScript applications.  
-Favoring language native concepts and a uniform interface for both synchronous and asynchronous testing.
+**O**bjectified **T**esting of **E**CMA **S**cript applications. Simple and straightforward.  
+Favoring language native TDD with a uniform interface for both synchronous and asynchronous testing.
 
 ``` js
 // Test for a value comparison utility
