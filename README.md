@@ -1,7 +1,7 @@
-# no-fuss
+# OTES
 
 Simple and straightforward **TDD** framework for Java- and TypeScript applications.  
-Favoring language native concepts and a uniform approach for both synchronous and asynchronous test interfaces.
+Favoring language native concepts and a uniform interface for both synchronous and asynchronous testing.
 
 ``` js
 // Test for a value comparison utility
@@ -21,34 +21,34 @@ valueCompareTest
 ## Installation
 
 ``` cli
-npm i -G @t-ski/no-fuss
+npm i -G t-ski/otes
 ```
 
-> Install **no-fuss** globally in order to work with the presented CLI interface. Project local installations must prepend subsequently stated commands with `npx`.
+> Install **OTES** globally in order to work with the presented CLI interface. Project local installations must prepend subsequently stated commands with `npx`.
 
-## CLI usage
+## CLI Usage
 
 ``` cli
-no-fuss <path-to-test-directory> [(--timeout|-T)=5000] [--no-crop] [--no-individual-log]
+otes <path-to-test-directory> [(--timeout|-T)=5000] [--no-crop] [--no-individual-log]
 ```
 
 | Parameter | Shorthand | Description |
 | --------- | --------- | ----------- |
 | **--timeout** | **-T** | *Test case timeout in ms* |
-| **--no-crop** | *ε* | *Do not crop exhaustive test info results* |
-| **--no-individual-log** | *ε* | *Do not log application individual messages to the console (only valid for console log)* |
+| **--no-crop** | | *Do not crop exhaustive test info results* |
+| **--no-individual-log** | | *Do not log application individual messages to the console (only valid for console log)* |
 
-## Test files
+## Test Files
 
-### Test directory
+### Test Directory
 
-All test suite related test files have to be located in a dedicated test file directory that is to be provided to a **no-fuss** execution command as the first CLI argument. Both absolute and CWD relative paths are legitimite. A test directory is recursively traversed for test file evaluation in alphabetical order.
+All test suite related test files have to be located in a dedicated test file directory that is to be provided to a **OTES** execution command as the first CLI argument. Both absolute and CWD relative paths are legitimite. A test directory is recursively traversed for test file evaluation in alphabetical order.
 
-### Individual test files
+### Individual Test Files
 
 An individual test file stating an arbitrary amount of tests and related test cases is to be named in the format `*.test.js`. Test files are implicitly granted global access to the below outlined test classes.
 
-## Generic test anatomy
+## Generic Test Anatomy
 
 A test does look – no matter what concrete type of test class – as follows:
 
@@ -81,7 +81,7 @@ Chain a test context to the resolved test evaluation being able to act upon the 
 
 > Each of the provided methods bound to a specific test object `{ case(), for(), chain() }` are optional for being called, but bound to the respective predecessor context.
 
-## Unit tests
+## Unit Tests
 
 Unit tests describe tests on independent modular parts of an application. Usually performed on the most atomic units, they can actually be used on any level of abstraction as long as they are not relying on side-affected module interdependencies.
 
@@ -134,7 +134,7 @@ strLengthTest
     "Calculate incorrect string length");
 ```
 
-## Network tests
+## Network Tests
 
 Network tests describe tests on network endpoints of an application. Technically representing a special type of unit tests, they provide a purpose driven usage class.
 
@@ -167,7 +167,7 @@ new NetworkTest(endpoint, testCaption?)
 
 > Since network tests have an asynchronous character, test results may not log in order of appearance, but always given a context tag.
 
-### Request object
+### Request Object
 
 To define specific parameters for a specific endpoint request test, an according object may be provided to each respective test case:
 
@@ -178,7 +178,7 @@ To define specific parameters for a specific endpoint request test, an according
 | `searchParams` | **Object** optional | *A dictionary of search parameters in object representation (implicit URL injection)* |
 | `body` | **\*** optional | *Request body to provide the endpoint with* |
 
-### Response object
+### Response Object
 
 To compare for an expected response, the following properties may be checked on and thus provided:
 
@@ -241,7 +241,7 @@ itemTest
 });
 ```
 
-### Common endpoint hostname
+### Common Endpoint hostname
 
 To use a common endpoint hostname without requiring an according provision to the endpoint argument of a network test object constructor, a common host name may globally be set:
 
@@ -251,9 +251,9 @@ NetworkTest.setCommonHost("https://example.com");
 
 > If neither a common host has been defined, nor a host has been providied to the endpoint argument, `localhost` is used as such.
 
-## Environmental setup
+## Environment
 
-**no-fuss** emits internal events throughout the course of a test suite run. Upon each event a file named in the format `<event-ame>.event.js` located on the top level of the test directory is evaluated.
+**OTES** emits internal events throughout the course of a test suite run. Upon each event a file named in the format `<event-name>.event.js` located on the top level of the test directory is evaluated.
 
 | Event | Description |
 | ----- | ----------- |
@@ -261,3 +261,7 @@ NetworkTest.setCommonHost("https://example.com");
 | `cleanup` | *Fires after test suite has run* |
 
 > Event modules can be used to maintain an essential test environment (e.g. a web server for network testing).
+
+## 
+
+<sub>© Thassilo Martin Schiepanski</sub>

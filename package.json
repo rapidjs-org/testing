@@ -1,5 +1,5 @@
 {
-  "name": "no-fuss",
+  "name": "otes",
   "version": "0.1.0",
   "description": "Simple and straightforward test framerwork for Java- and TypeScript applications.",
   "main": "src/app.js",
@@ -10,18 +10,18 @@
     "test": "node ./dist/app ../test"
   },
   "bin": {
-    "no-fuss": "./dist/cli.js"
+    "otes": "./dist/cli.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/t-ski/no-fuss.git"
+    "url": "git+https://github.com/t-ski/otes.git"
   },
   "author": "Thassilo Martin Schiepanski",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/t-ski/no-fuss/issues"
+    "url": "https://github.com/t-ski/otes/issues"
   },
-  "homepage": "https://github.com/t-ski/no-fuss#readme",
+  "homepage": "https://github.com/t-ski/otes#readme",
   "devDependencies": {
     "@types/node": "^16.11.39",
     "@typescript-eslint/eslint-plugin": "^5.4.0",

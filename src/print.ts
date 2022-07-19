@@ -69,6 +69,7 @@ function styleWrapStr(str: string, styles: string|string[]): string {
 	return `${styles.map((style: string) => `\x1b[${style}m`).join("")}${str}\x1b[0m`;
 }
 
+
 /**
  * Log a file name in an according style.
  * @param {string} message File name
