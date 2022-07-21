@@ -18,6 +18,7 @@ export abstract class Test<T> {
     	succeeded: 0,
     	failed: 0
     };
+    private static openCases: number = 0;
     private static lastActiveId: number;
 
     /**
@@ -181,6 +182,8 @@ export abstract class Test<T> {
 	 * @returns { for() } Test results resolution interface (s.b.)
 	 */
     public case(...args) {
+		Test.openCases++;
+
     	const testTimeout: number|NodeJS.Timeout = setTimeout(_ => {
     		print.warning(`Test suite timeout (initiated by test object '${this.caption}')\n`);
     		// TODO: Info on how to change timeout limit?
@@ -238,6 +241,10 @@ export abstract class Test<T> {
     					Test.counter.failed++;
 
     					print.failure(caption);
+						
+						if(--Test.openCases === 0) {
+							process.exit(0);
+						}
 
     					return;
     				}
@@ -256,11 +263,14 @@ export abstract class Test<T> {
     					Test.counter.failed++;
 						
     					print.failure(caption, expectedResult, filteredActualResult);
-
     				}
 
     				chainedContext
 					&& chainedContext(actualResult);
+
+					if(--Test.openCases === 0) {
+						process.exit(0);
+					}
     			};
 
     			(actualResult instanceof Promise)

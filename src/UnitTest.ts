@@ -1,6 +1,8 @@
 import { Test } from "./Test";
 
 
+// TODO: Resolve options (strict/unstrict equal, assert differing, ...)?
+
 /**
  * Class representing a unit test context for independent functional
  * test interfaces.

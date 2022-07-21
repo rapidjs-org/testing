@@ -1,1 +1,3 @@
-console.log("Executed setup file");
+globalThis.ENV_TEST = 123;
+
+console.log("SETUP FILE HAS RUN");
