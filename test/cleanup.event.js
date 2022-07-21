@@ -1,0 +1,1 @@
+console.log("CLEANUP: " + globalThis.ENV_TEST);

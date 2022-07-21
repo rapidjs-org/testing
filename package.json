@@ -2,12 +2,12 @@
   "name": "otes",
   "version": "0.1.0",
   "description": "Simple and straightforward test framerwork for Java- and TypeScript applications.",
-  "main": "src/app.js",
+  "main": "dist/app.js",
   "scripts": {
     "compile:once": "tsc --outDir ./dist",
     "compile:watch": "tsc -w --outDir ./dist",
     "lint": "./node_modules/.bin/eslint --ext .ts --fix ./src",
-    "test": "node ./dist/app ../test"
+    "test": "node ./dist/app ./test"
   },
   "bin": {
     "otes": "./dist/cli.js"

@@ -1,14 +1,15 @@
-const testOne = new UnitTest(x => x + 1, "Test 1");
+const anonymousIncrementTest = new UnitTest(x => x + 1, "Test 1");
 
-testOne
+anonymousIncrementTest
 .case(5)
-.for("6");
+.for("6",
+    "Type mismatch number increment");
 
-const testTwo = new UnitTest(x => x);
+const anonymousIdentityTest = new UnitTest(x => x);
 
-testTwo
+anonymousIdentityTest
 .case("abc")
-.for("abc", "String equality")
+.for("abc", "Retrieve identical string")
 .chain(r => {
     console.log("Unit Test 2 result: " + r);
 });
