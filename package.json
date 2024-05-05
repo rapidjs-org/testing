@@ -1,23 +1,23 @@
 {
   "name": "otes",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Simple and straightforward test framerwork for Java- and TypeScript applications.",
-  "main": "dist/app.js",
-  "scripts": {
-    "compile:once": "tsc --outDir ./dist",
-    "compile:watch": "tsc -w --outDir ./dist",
-    "lint": "./node_modules/.bin/eslint --ext .ts --fix ./src",
-    "test": "node ./dist/app ./test"
-  },
+  "main": "build/api.js",
   "bin": {
-    "otes": "./dist/cli.js"
+    "otes": "./build/cli.js"
+  },
+  "scripts": {
+    "compile": "tsc",
+    "compile:watch": "tsc -w",
+    "lint": "npx eslint --ext .ts --fix ./src",
+    "metatest": "node ./build/cli.js unit ./examples/",
+    "test": "npm run metatest"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/t-ski/otes.git"
   },
   "author": "Thassilo Martin Schiepanski",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/t-ski/otes/issues"
   },

@@ -20,7 +20,8 @@
     "rules": {
         "indent": [
             2,
-            "tab"
+            "tab",
+            { "MemberExpression": 0 }
         ],
         "linebreak-style": [
             2,

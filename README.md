@@ -1,6 +1,6 @@
 # OTES
 
-**O**bjectified **T**esting of **E**CMA **S**cript applications. Simple and straightforward.  
+**O**ptimistic **T**esting of **E**CMA **S**cript. Simple and straightforward.  
 Favoring language native TDD with a uniform interface for both synchronous and asynchronous testing.
 
 ``` js
