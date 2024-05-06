@@ -4,27 +4,27 @@ RequestTest.configure({
 });
 
 
-new RequestTest("Get dogs")
-.do("/dogs", {
+/* new RequestTest("Get dogs")
+.actual("/dogs", {
     headers: {
         "Accept-Language": "en;q=1.0, de;q=0.75, *;q=0.5"
     }
 })
-.expect("Only body");
+.expected("Only body"); */
 
 new RequestTest("Create dog")
-.do("/dogs", {
+.actual("/dogs", {
     method: "POST",
     body: {
         name: "Husky"
     }
 })
-.expect({
+.expected({
     status: 200
 });
 
-new RequestTest("Create dog")
+/* new RequestTest("Create dog")
 .post("/dogs", {
     name: "Husky"
 })
-.expect(200);   // only status
+.expected(200);   // only status */

@@ -31,11 +31,8 @@ async function runSuite(): Promise<TResults> {
 	
 	if(!Args.parsePositional(1)) throw new ReferenceError(`Missing test directory path (pos 1)`);
 
-	setImmediate(async () => {
-		const TestClass = Object.values(await import(resolvePath(classModulePath)))[0] as { suiteTitle: string; suiteColor: TColor; };
-
-		Printer.printBadge((TestClass.suiteTitle || "").replace(/( ?test(s)?)?$/i, " tests"), TestClass.suiteColor ?? [ 225, 225, 225 ]);
-	});
+	const TestClass = Object.values(await import(resolvePath(classModulePath)))[0] as { suiteTitle: string; suiteColor: TColor; };
+	Printer.printBadge((TestClass.suiteTitle || "").replace(/( ?test(s)?)?$/i, " tests"), TestClass.suiteColor ?? [ 225, 225, 225 ]);
 		
 	return await init(resolvePath(classModulePath), Args.parsePositional(1));
 }
@@ -104,25 +101,11 @@ runSuite()
 	process.exit(counter.failure ? 1 : 0);
 })
 .catch((err: Error) => {
-	console.error(err);
+	console.error(`\x1b[31m${err.stack ?? `${err.name}: ${err.message}`}\x1b[0m`);
 
 	process.exit(1);
 });
 
 
-process.on("exit", async code => {
-	// ...
-});
-
-process.on("SIGTERM", () => process.exit(2));
-process.on("SIGINT", () => process.exit(2));
-
-const handleBubblingError = async (err) => {
-	/* console.error(`\n\x1b[31m${err.stack ?? `${err.name}: ${err.message}`}${
-		lastErrorTestFilePosition ? `\n    \x1b[1mat ${lastErrorTestFilePosition}\x1b[22m` : ""
-	}\x1b[0m\n`);
-     */
-	process.exit(2);
-};
-/* process.on("uncaughtException", handleBubblingError);
-process.on("unhandledRejection", handleBubblingError); */
+/* process.on("SIGTERM", () => process.exit(1));
+process.on("SIGINT", () => process.exit(1)); */

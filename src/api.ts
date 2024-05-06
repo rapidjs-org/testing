@@ -4,6 +4,9 @@ import { join, basename, resolve as resolvePath } from "path";
 import { Test } from "./Test";
 import { AsyncMutex } from "./AsyncMutex";
 
+import _config from "./config.json";
+import { Promisification } from "./Promisification";
+
 
 type TRecord = { [ key: string ]: Test[]; };
 
@@ -71,16 +74,44 @@ export async function init(apiArg: unknown, testDirPath: string): Promise<TResul
 	if(!existsSync(testDirPath)) throw new ReferenceError(`Test directory not found '${testDirPath}'`);
 	
 	global[TestClass[0]] = TestClass[1];
+	
+	const envAPI: {
+		BEFORE?: (() => void);
+		AFTER?: (() => void);
+	} = await new Promisification(async () => {
+		try {
+			return await import(resolvePath(testDirPath, _config.envModuleFilename));
+		} catch(err: unknown) {
+			if((err as { code: string; }).code === "MODULE_NOT_FOUND") return {};
+			throw err;
+		}
+	});
 
-	return new Promise<TResults>((resolve) => {
+	return new Promise<TResults>(async (resolve, reject) => {
+		const captureError = async (err: Error) => {
+			envAPI.AFTER && await new Promisification(envAPI.AFTER);
+			
+			reject(err);
+
+			return;
+		};
+		process.on("uncaughtException", captureError);
+		process.on("unhandledRejection", captureError);
+
+		envAPI.BEFORE && await new Promisification(envAPI.BEFORE);
+		
 		const startTime = Date.now();
 		
-		/* evalIntermediateScript(BEFORE_SCRIPT_FILENAME) */
+		Test.event.on("complete", async () => {
+			const time = Date.now() - startTime;
 
-		Test.event.on("complete", () => resolve({
-			time: Date.now() - startTime,
-			record: RECORD
-		}));
+			envAPI.AFTER && await new Promisification(envAPI.AFTER);
+
+			resolve({
+				time,
+				record: RECORD
+			});
+		});
 		
 		let activeFilepath: string;
 		Test.event.on("create", (test: Test) => {

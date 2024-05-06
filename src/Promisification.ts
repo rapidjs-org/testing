@@ -1,6 +1,7 @@
-export class Promisification<T> {
-    private static unwrapTimeout = 5000;
+import _config from "./config.json";
 
+
+export class Promisification<T> {
     private readonly expression: unknown;
 
     constructor(expression: unknown) {
@@ -12,7 +13,7 @@ export class Promisification<T> {
     }
 
     public async then(resolveCallback: (resolveValue: T) => void) {
-        const unwrapTimeout = setTimeout(() => this.timeout(), Promisification.unwrapTimeout);
+        const promisificationTimeout = setTimeout(() => this.timeout(), _config.promisificationTimeout);
 
         let resolveValue: unknown = this.expression;
 
@@ -33,7 +34,7 @@ export class Promisification<T> {
             break;
         }
 
-        clearTimeout(unwrapTimeout);
+        clearTimeout(promisificationTimeout);
         
         resolveCallback(resolveValue as T);
     }

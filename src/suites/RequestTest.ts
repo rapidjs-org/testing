@@ -63,8 +63,6 @@ export class RequestTest extends Test<IARequest, IEResponse> {
     				body.push(chunk);
     			});
     			res.on("end", () => {
-    				clearTimeout(requestTimeout);
-                    
     				let parsedBody = Buffer.concat(body).toString();
     				try { parsedBody = JSON.parse(parsedBody); } catch {}
                     
@@ -76,13 +74,7 @@ export class RequestTest extends Test<IARequest, IEResponse> {
     			});
     			res.on("error", err => reject(err));
     		})
-    			.on("error", err => reject(err));
-
-    		const requestTimeout = setTimeout(() => {
-    			req.destroy();
-                
-    			reject(new RangeError(`Request timeout on \x1b[2m'${JSON.stringify(reqOptions, null, 2)}'\x1b[22m`));
-    		}, 5000);
+    		.on("error", err => reject(err));
 
     		body && req.write(body);
     		req.end();
@@ -90,7 +82,7 @@ export class RequestTest extends Test<IARequest, IEResponse> {
 	}
 
     protected isEqual(actual: IARequest, expected: IEResponse): boolean {
-		return !Object.keys(this.getDisplayValues(actual, expected)).length;
+		return !Object.keys(this.getDisplayValues(actual, expected).actual).length;
 	}
 
 	protected getDisplayValues(actual: IARequest, expected: IEResponse) {

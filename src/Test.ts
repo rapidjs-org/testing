@@ -4,8 +4,13 @@ import { deepEqual } from "assert";
 import { TColor } from "./types";
 import { Promisification } from "./Promisification";
 
+import _config from "./config.json";
+
 
 export abstract class Test<A = unknown, E = unknown> {
+	private static runningTests = 0;
+	private static completeTimeout: NodeJS.Timeout;
+
 	public static readonly suiteTitle: string;
 	public static readonly suiteColor: TColor;
 	
@@ -33,6 +38,9 @@ export abstract class Test<A = unknown, E = unknown> {
 				.slice(0, -1);
     		} catch {}
     	}
+
+		clearTimeout(Test.completeTimeout);
+		Test.runningTests++;
 		
 		Test.event.emit("create", this);
     }
@@ -83,6 +91,10 @@ export abstract class Test<A = unknown, E = unknown> {
 				const displayValues = this.getDisplayValues(actual, expected);
 				this.displayActual = displayValues.actual;
 				this.displayExpected = displayValues.expected;
+
+				if(--Test.runningTests === 0) {
+					Test.completeTimeout = setTimeout(() => Test.event.emit("complete"), _config.testDelayTimeout);
+				}
     		}
     	};
     }
