@@ -4,13 +4,13 @@
   "description": "Simple and straightforward test framerwork for Java- and TypeScript applications.",
   "main": "build/api.js",
   "bin": {
-    "otes": "./build/cli.js"
+    "otes": "./build/cli/cli.js"
   },
   "scripts": {
     "compile": "tsc",
     "compile:watch": "tsc -w",
     "lint": "npx eslint --ext .ts --fix ./src",
-    "metatest": "node ./build/cli.js unit ./examples/",
+    "metatest": "node ./build/cli/cli.js unit ./metatest/",
     "test": "npm run metatest"
   },
   "repository": {
