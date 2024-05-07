@@ -22,21 +22,24 @@ interface IEResponse {
 
 export class RequestTest extends Test<IARequest, IEResponse> {
 	public static readonly suiteTitle: string = "Request";
-	public static readonly suiteColor: TColor = [ 0, 255, 0];
+	public static readonly suiteColor: TColor = [ 177, 66, 179 ];
 
     private static configuration = {
     	hostname: "localhost",
     	port: 80
     };
 
-    public static configure(configuration) {
+    public static configure(configuration: {
+    	hostname: string;
+    	port: number;
+    }) {
     	RequestTest.configuration = {
     		...RequestTest.configuration,
     		...configuration
     	};
     }
 
-    constructor(title) {
+    constructor(title: string) {
     	super(title);
     }
 	
@@ -67,7 +70,7 @@ export class RequestTest extends Test<IARequest, IEResponse> {
     				try { parsedBody = JSON.parse(parsedBody); } catch {}
                     
     				resolve({
-						status: res.statusCode,
+						status: res.statusCode ?? -1,
 						headers: res.headers as THeaders,
     					body: parsedBody
     				});
@@ -89,17 +92,23 @@ export class RequestTest extends Test<IARequest, IEResponse> {
 		// Match messages, unless expected object is a response parameters object (containing a response key)
     	// Weak equality, i.e. only compare provided fields (selective)
 
-		const filteredActual: Partial<IARequest> = {};
-		const filteredExpected: IEResponse = {};
+		type TIndexedValue = { [ key: string ]: unknown; };
+
+		const filteredActual: TIndexedValue = {};
+		const filteredExpected: TIndexedValue = {};
 		
     	[ "status", "message" ]
     	.forEach(simpleKey => {
-			if(!expected[simpleKey]) return;
+			const indexedActual = actual as unknown as TIndexedValue;
+			const indexedExpected = actual as unknown as TIndexedValue;
+
+			if(!indexedExpected[simpleKey]) return;
+
 			try {
-				deepStrictEqual(actual[simpleKey], expected[simpleKey]);
+				deepStrictEqual(indexedActual[simpleKey], indexedExpected[simpleKey]);
 			} catch {
-				filteredActual[simpleKey] = actual[simpleKey];
-				filteredExpected[simpleKey] = expected[simpleKey];
+				filteredActual[simpleKey] = indexedActual[simpleKey];
+				filteredExpected[simpleKey] = indexedExpected[simpleKey];
 			}
 		});
 
@@ -110,9 +119,9 @@ export class RequestTest extends Test<IARequest, IEResponse> {
     		if(actualHeader === expectedHeader) continue;
             
     		filteredActual.headers = filteredActual.headers || {};
-    		filteredActual.headers[name] = actualHeader;
+    		(filteredActual.headers as TIndexedValue)[name] = actualHeader;
     		filteredExpected.headers = filteredExpected.headers || {};
-    		filteredExpected.headers[name] = expectedHeader;
+    		(filteredActual.headers as TIndexedValue)[name] = expectedHeader;
     	}
 
 		return {

@@ -3,9 +3,9 @@ import { join, basename, resolve as resolvePath } from "path";
 
 import { Test } from "./Test";
 import { AsyncMutex } from "./AsyncMutex";
+import { Env } from "./Env";
 
 import _config from "./config.json";
-import { Promisification } from "./Promisification";
 
 
 type TRecord = { [ key: string ]: Test[]; };
@@ -58,7 +58,7 @@ function traversePath(path: string, fileCallback: ((filepath: string) => void) =
 export const ESuite = {
 	UNIT: join(__dirname, "./suites/UnitTest"),
 	REQUEST: join(__dirname, "./suites/RequestTest"),
-	BROWSER: join(__dirname, "./suites/BrowserTest")
+	DOM: join(__dirname, "./suites/DomTest")
 }
 
 export async function init(testSuiteModulePath: string, testDirPath: string): Promise<TResults>;
@@ -69,27 +69,20 @@ export async function init(apiArg: unknown, testDirPath: string): Promise<TResul
 	: apiArg;
 
 	const TestClass = Object.entries(testSuiteAPI)[0];
-	if(!TestClass) throw new ReferenceError("Test suite module must provide a single named concrete Test class export");
+	if(TestClass[0] === "default" || (Object.getPrototypeOf(TestClass[1]).name !== "Test")) {
+		throw new SyntaxError("Test suite module must provide a single named concrete Test class export");
+	}
 	
 	if(!existsSync(testDirPath)) throw new ReferenceError(`Test directory not found '${testDirPath}'`);
 	
+	// @ts-ignore
 	global[TestClass[0]] = TestClass[1];
 	
-	const envAPI: {
-		BEFORE?: (() => void);
-		AFTER?: (() => void);
-	} = await new Promisification(async () => {
-		try {
-			return await import(resolvePath(testDirPath, _config.envModuleFilename));
-		} catch(err: unknown) {
-			if((err as { code: string; }).code === "MODULE_NOT_FOUND") return {};
-			throw err;
-		}
-	});
+	const testEnv = new Env(testDirPath);
 
-	return new Promise<TResults>(async (resolve, reject) => {
+	return new Promise<TResults>(async (resolve, reject) => {		
 		const captureError = async (err: Error) => {
-			envAPI.AFTER && await new Promisification(envAPI.AFTER);
+			await testEnv.call("AFTER");
 			
 			reject(err);
 
@@ -97,15 +90,15 @@ export async function init(apiArg: unknown, testDirPath: string): Promise<TResul
 		};
 		process.on("uncaughtException", captureError);
 		process.on("unhandledRejection", captureError);
-
-		envAPI.BEFORE && await new Promisification(envAPI.BEFORE);
+		
+		await testEnv.call("BEFORE");
 		
 		const startTime = Date.now();
 		
 		Test.event.on("complete", async () => {
 			const time = Date.now() - startTime;
 
-			envAPI.AFTER && await new Promisification(envAPI.AFTER);
+			testEnv.call("AFTER");
 
 			resolve({
 				time,

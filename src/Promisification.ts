@@ -8,34 +8,42 @@ export class Promisification<T> {
         this.expression = expression;
     }
 
-    private timeout() {
-        throw new RangeError("Unwrapping of promise value timed out");
+    private abort(message: string) {
+        throw new RangeError(message);
     }
 
-    public async then(resolveCallback: (resolveValue: T) => void) {
-        const promisificationTimeout = setTimeout(() => this.timeout(), _config.promisificationTimeout);
+    public resolve(): Promise<T> {
+        return new Promise(async (resolveInner, rejectInner) => {
+            const promisificationTimeout = setTimeout(() => this.abort("Processing timeout"), _config.promisificationTimeout);
 
-        let resolveValue: unknown = this.expression;
+            let resolveValue: unknown = this.expression;
 
-        let i = 0;
-        while(resolveValue instanceof Function || resolveValue instanceof Promise) {
-            resolveValue = (resolveValue instanceof Function)
-            ? resolveValue()
-            : resolveValue;
+            let i = 0;
+            while(resolveValue instanceof Function || resolveValue instanceof Promise) {
+                try {
+                    resolveValue = (resolveValue instanceof Function)
+                    ? resolveValue()
+                    : resolveValue;
 
-            resolveValue = (resolveValue instanceof Promise)
-            ? await resolveValue
-            : resolveValue;
+                    resolveValue = (resolveValue instanceof Promise)
+                    ? await resolveValue
+                    : resolveValue;
+                } catch(err: unknown) {
+                    rejectInner(err);
 
-            if(i++ < 100) continue;
+                    return;
+                }
+
+                if(i++ < 100) continue;
+                
+                this.abort("Excessive iteration");
+
+                break;
+            }
+
+            clearTimeout(promisificationTimeout);
             
-            this.timeout();
-
-            break;
-        }
-
-        clearTimeout(promisificationTimeout);
-        
-        resolveCallback(resolveValue as T);
+            resolveInner(resolveValue as T);
+        });
     }
 }

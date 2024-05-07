@@ -25,7 +25,7 @@ export abstract class Test<A = unknown, E = unknown> {
 	public displayActual: unknown;
 	public displayExpected: unknown;
 
-    constructor(title) {
+    constructor(title: string) {
     	this.title = title;
 		
     	try {
@@ -69,33 +69,52 @@ export abstract class Test<A = unknown, E = unknown> {
 		if(this.wasConsumed) throw new SyntaxError("Test case was already consumed");
 		this.wasConsumed = true;
 
+		const evalActual = async (): Promise<A> => {
+			return await new Promisification<A>(this.evalActualExpression(
+				...expressions
+				.map(async (expression: unknown) => await new Promisification(expression).resolve())
+			)).resolve();
+		};
+		const complete = () => {
+			if(--Test.runningTests > 0) return;
+
+			Test.completeTimeout = setTimeout(() => Test.event.emit("complete"), _config.completeTimeout);
+		};
+
     	return {
+
     		expected: async (expression: unknown) => {
-				/* clearTimeout(Test.endTimeout);
-				Test.endTimeout = setTimeout(async () => {
-					if(Test.openTestCases) return;
-					
-					await evalIntermediateScript(AFTER_SCRIPT_FILENAME);
-					
-					process.exit(+Test.suiteFailed);
-				}, this.endTimeoutDuration); */
-				
-				const actual: A = await new Promisification<A>(this.evalActualExpression(
-					...expressions
-					.map(async (expression: unknown) => await new Promisification(expression))
-				));
-				const expected: E = await new Promisification<E>(expression);
+				const actual: A =  await  evalActual();
+				const expected: E = await new Promisification<E>(expression).resolve();
 				
 				this.wasSuccessful = this.isEqual(actual, expected);
-
+				
 				const displayValues = this.getDisplayValues(actual, expected);
 				this.displayActual = displayValues.actual;
 				this.displayExpected = displayValues.expected;
 
-				if(--Test.runningTests === 0) {
-					Test.completeTimeout = setTimeout(() => Test.event.emit("complete"), _config.testDelayTimeout);
-				}
-    		}
+				complete();
+    		},
+
+			error: async (message: string, ErrorPrototype?: ErrorConstructor) => {
+				this.displayExpected = `${ErrorPrototype?.name ? `${ErrorPrototype.name}: ` : ""}${message}`;
+
+				evalActual()
+				.then(() => {
+					this.wasSuccessful = false;
+					
+					this.displayActual = "No error";
+				})
+				.catch((err: Object) => {
+					this.wasSuccessful
+					=  (ErrorPrototype ? (err.constructor === ErrorPrototype) : true)
+					&& (message === (((err instanceof Error)) ? err.message : err));
+					
+					this.displayActual = err.toString();
+				})
+				.finally(complete);
+			}
+
     	};
     }
 }

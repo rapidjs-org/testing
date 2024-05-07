@@ -6,7 +6,7 @@ export class AsyncMutex {
 
     private isLocked = false;
 
-    lock<T = void>(expression: T|(() => T)): Promise<T> {
+    public lock<T = void>(expression: T|(() => T)): Promise<T> {
         return new Promise<T>(resolveOuter => {
             new Promise<void>(resolveInner => {
                 if(this.isLocked) {
@@ -19,15 +19,14 @@ export class AsyncMutex {
 
                 resolveInner();
             })
-            .then(() => {
-                new Promisification(expression)
-                .then((value: T) => {
-                    this.isLocked = !!this.acquireQueue.length;
+            .then(async () => {
+                const value: T = await new Promisification<T>(expression).resolve();
 
-                    (this.acquireQueue.shift() ?? (() => {}))();
+                this.isLocked = !!this.acquireQueue.length;
 
-                    resolveOuter(value);
-                });
+                (this.acquireQueue.shift() ?? (() => {}))();
+
+                resolveOuter(value);
             });
         });
     }

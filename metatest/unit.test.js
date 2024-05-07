@@ -28,8 +28,8 @@ new UnitTest("Timeout + 4 (2)")
 })
 .expected(14);
 
-/* new UnitTest("Error")
+new UnitTest("Error")
 .actual(() => {
     throw new SyntaxError("Test error");
 })
-.error("Test error", SyntaxError); */
+.error("Test error", SyntaxError);

@@ -1,4 +1,7 @@
-import { readFileSync } from "fs";
+#!/usr/bin/env node
+
+
+import { existsSync, readFileSync } from "fs";
 import { join, resolve as resolvePath } from "path";
 
 import { TColor } from "../types";
@@ -12,7 +15,7 @@ async function runSuite(): Promise<TResults> {
 	if(!Args.parsePositional(0)) throw new ReferenceError(`Missing test suite name (pos 0)`);
 
 	let classModulePath: string;
-	switch(Args.parsePositional(0)) {
+	switch(Args.parsePositional(0).toLowerCase()) {
 		case "help":
 			console.log(readFileSync(join(__dirname, "../../help.txt")).toString());
 			process.exit(0);
@@ -22,11 +25,13 @@ async function runSuite(): Promise<TResults> {
 		case "request":
 			classModulePath = ESuite.REQUEST;
 			break;
-		case "browser":
-			classModulePath = ESuite.BROWSER;
+		case "dom":
+			classModulePath = ESuite.DOM;
 			break;
-		default: 
-			// TODO: Custom option
+		default:
+			classModulePath = resolvePath(Args.parsePositional(0));
+
+			if(!existsSync(classModulePath)) throw new ReferenceError(`Custom test suite module not found '${classModulePath}'`);
 	}
 	
 	if(!Args.parsePositional(1)) throw new ReferenceError(`Missing test directory path (pos 1)`);
@@ -58,14 +63,14 @@ runSuite()
 				continue;
 			}
 			
-			const printObj = (obj) => {
+			const printObj = (obj: unknown) => {
 				if([ "string", "number", "boolean" ].includes(typeof(obj))){
 					return `\x1b[34m${obj}\x1b[0m`;
 				}
 				if([ undefined, null ].includes(obj)){
 					return `\x1b[2m\x1b[31m${obj}\x1b[0m`;
 				}
-				const color = (code, str) => `\x1b[0m\x1b[${code}m${str}\x1b[0m\x1b[2m`;
+				const color = (code: number, str: string) => `\x1b[0m\x1b[${code}m${str}\x1b[0m\x1b[2m`;
 				return `\x1b[2m${
 					JSON.stringify(obj, null, 2)
 						.replace(/:( *("|').*\2 *)(,?\n)/g, `:${color(34, "$1")}$3`)
@@ -101,10 +106,13 @@ runSuite()
 	process.exit(counter.failure ? 1 : 0);
 })
 .catch((err: Error) => {
-	console.error(`\x1b[31m${err.stack ?? `${err.name}: ${err.message}`}\x1b[0m`);
+	console.error(`\n\x1b[31m${err.stack ?? `${err.name}: ${err.message}`}\x1b[0m`);
 
 	process.exit(1);
 });
+
+
+process.on("exit", () => console.log(""));
 
 
 /* process.on("SIGTERM", () => process.exit(1));

@@ -7,10 +7,11 @@
     "otes": "./build/cli/cli.js"
   },
   "scripts": {
-    "compile": "tsc",
-    "compile:watch": "tsc -w",
+    "compile": "npx tsc --project ./tsconfig.debug.json",
+    "compile:watch": "npm run compile -- --watch",
+    "build": "rm -rf ./build/ && npx tsc --project ./tsconfig.build.json && chmod 755 ./build/cli/cli.js",
     "lint": "npx eslint --ext .ts --fix ./src",
-    "metatest": "node ./build/cli/cli.js unit ./metatest/",
+    "metatest": "./scripts/metatest.sh",
     "test": "npm run metatest"
   },
   "repository": {

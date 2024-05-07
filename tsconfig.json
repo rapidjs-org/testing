@@ -1,13 +1,19 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
+        "module": "CommonJS",
+        "target": "es2017",        
         "moduleResolution": "node",
-        "target": "ES2017",
-        "outDir": "./build/",
         "esModuleInterop": true,
-        "resolveJsonModule": true
+        "noImplicitAny": true,
+        "resolveJsonModule": true,
+        "noEmitOnError": true,
+        "allowJs": true,
+        "declaration": true,
+        "declarationDir": "./types/",
+        "rootDir": "./src/"
     },
     "include": [
-        "src"
+        "./src/**/*.ts",
+        "./src/**/*.json"
     ]
 }
