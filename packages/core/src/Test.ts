@@ -33,9 +33,9 @@ export abstract class Test<A = unknown, E = unknown> {
     	} catch(err) {
     		try {
     			this.sourcePosition = err.stack
-				.split(/\n/g)[2]
-				.match(/(\/[^/ ]*)+/g)[0]
-				.slice(0, -1);
+				.split(/\n/g)
+				.filter((sourceLine: string) => /\.test\.js([^\w\d]|$)/.test(sourceLine.trim()))
+				.join("\n");
     		} catch {}
     	}
 
@@ -84,9 +84,37 @@ export abstract class Test<A = unknown, E = unknown> {
     	return {
 
     		expected: async (expression: unknown) => {
-				const actual: A =  await  evalActual();
-				const expected: E = await new Promisification<E>(expression).resolve();
-				
+				const createRelatedError = (sourceErr: unknown|Error, evalIdentifier: string = ""): Error => {
+					return sourceErr.constructor(
+						`Can not consume ${
+							evalIdentifier ? `${evalIdentifier
+						} ` : ""}value (${
+							(sourceErr as Error).message ?? sourceErr
+						})\n${
+							((sourceErr as Error).stack ?? "")
+							.trim()
+							.split(/\n/g)
+							.slice(1)
+							.join("\n")
+						}\n${
+							this.sourcePosition
+						}`
+					);
+				};
+
+				let actual: A;
+				try {
+					actual = await evalActual();
+				} catch(err: unknown) {
+					throw createRelatedError(err, "actual");
+				}
+				let expected: E;
+				try {
+					expected = await new Promisification<E>(expression).resolve();
+				} catch(err: unknown) {
+					throw createRelatedError(err, "expected");
+				}
+
 				this.wasSuccessful = this.isEqual(actual, expected);
 				
 				const displayValues = this.getDisplayValues(actual, expected);

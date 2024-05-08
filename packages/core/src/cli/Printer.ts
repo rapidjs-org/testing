@@ -16,7 +16,7 @@ import { TColor } from "../types";
 
 export class Printer {
 	public static printBadge(message: string, color: TColor) {
-        console.log(`\x1b[1m\x1b[48;2;${color.join(";")}m${
+        console.log(`\n\x1b[1m\x1b[48;2;${color.join(";")}m${
 			(color.reduce((acc: number, c: number) => acc + c, 0) < (255 * 2)) ? "\x1b[37m" : ""
 		} ${message.toUpperCase().trim()} \x1b[0m`);
 	}

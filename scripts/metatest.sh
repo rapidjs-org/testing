@@ -1,8 +1,8 @@
 #!/bin/bash
 
 
-echo -e "Test of test framework)\n"
+echo "• $(tput bold)TEST OF TEST FRAMEWORK$(tput sgr0) (METATEST)"
 
-./bin.sh unit ./metatest/uni.test.js
-./bin.sh request ./metatest/request/
-./bin.sh browser ./metatest/browser.test.js
+./bin.sh unit ./metatest/unit.test.js       \
+&& ./bin.sh request ./metatest/request/     \
+&& ./bin.sh dom ./metatest/dom.test.js      \

@@ -41,9 +41,13 @@ export class Env {
                     return;
                 }
 
-                console.log(`\n\x1b[2m––– ENV: ${identifier} –––\x1b[0m`);
+                const heading: string = `––– ENV: ${identifier} –––`;
+                
+                console.log(`\n\x1b[2m${heading}\x1b[0m`);
                 
                 await new Promisification((this.api as TIndexedValue)[identifier]).resolve();
+                
+                console.log(`\n\x1b[2m${"–".repeat(heading.length)}\x1b[0m`);
 
                 resolve();
             });
