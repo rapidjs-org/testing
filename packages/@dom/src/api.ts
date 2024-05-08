@@ -1,0 +1,1 @@
+export { DOMTest } from "./DOMTest";

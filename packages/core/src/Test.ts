@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
 import { deepEqual } from "assert";
 
-import { TColor } from "./types";
+import { TColor } from "../../common.types";
 import { Promisification } from "./Promisification";
 
 import _config from "./config.json";

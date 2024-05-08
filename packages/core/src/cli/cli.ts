@@ -1,45 +1,37 @@
 #!/usr/bin/env node
 
 
-import { existsSync, readFileSync } from "fs";
-import { join, resolve as resolvePath } from "path";
+import { resolve as resolvePath } from "path";
 
 import { TColor } from "../types";
-import { TResults, ESuite, init } from "../api";
+import { TResults, init } from "../api";
 
 import { Args } from "./Args";
 import { Printer } from "./Printer";
 
+import OFFICIAL_SUITES from "./suites.json";
+
 
 async function runSuite(): Promise<TResults> {
-	if(!Args.parsePositional(0)) throw new ReferenceError(`Missing test suite name (pos 0)`);
+	const testSuiteModuleReference: string = Args.parsePositional(0);
 
-	let classModulePath: string;
-	switch(Args.parsePositional(0).toLowerCase()) {
-		case "help":
-			console.log(readFileSync(join(__dirname, "../../help.txt")).toString());
-			process.exit(0);
-		case "unit":
-			classModulePath = ESuite.UNIT;
-			break;
-		case "request":
-			classModulePath = ESuite.REQUEST;
-			break;
-		case "dom":
-			classModulePath = ESuite.DOM;
-			break;
-		default:
-			classModulePath = resolvePath(Args.parsePositional(0));
-
-			if(!existsSync(classModulePath)) throw new ReferenceError(`Custom test suite module not found '${classModulePath}'`);
-	}
-	
+	if(!testSuiteModuleReference) throw new ReferenceError(`Missing test suite name (pos 0)`);
 	if(!Args.parsePositional(1)) throw new ReferenceError(`Missing test directory path (pos 1)`);
 
-	const TestClass = Object.values(await import(resolvePath(classModulePath)))[0] as { suiteTitle: string; suiteColor: TColor; };
-	Printer.printBadge((TestClass.suiteTitle || "").replace(/( ?test(s)?)?$/i, " tests"), TestClass.suiteColor ?? [ 225, 225, 225 ]);
-		
-	return await init(resolvePath(classModulePath), Args.parsePositional(1));
+	let testSuiteModulePath: string;
+	try {
+		testSuiteModulePath = require
+		.resolve((OFFICIAL_SUITES as { [ key: string ]: string; })[testSuiteModuleReference] ?? testSuiteModuleReference);
+	} catch {
+		testSuiteModulePath = resolvePath(testSuiteModuleReference);
+	}
+	
+	try {
+		const TestClass = Object.values(await import(testSuiteModulePath))[0] as { suiteTitle: string; suiteColor: TColor; };
+		Printer.printBadge((TestClass.suiteTitle || "").replace(/( ?test(s)?)?$/i, " tests"), TestClass.suiteColor ?? [ 225, 225, 225 ]);
+	} catch {}
+
+	return await init(testSuiteModulePath, Args.parsePositional(1));
 }
 
 

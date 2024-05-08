@@ -1,0 +1,5 @@
+{
+    "unit": "@t-ski/otes--unit",
+    "request": "@t-ski/otes--request",
+    "dom": "@t-ski/otes--dom"
+}

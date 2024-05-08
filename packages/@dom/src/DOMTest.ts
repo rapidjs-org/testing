@@ -1,5 +1,6 @@
-import { TColor } from "../types";
-import { Test } from "../Test";
+import { Test } from "@t-ski/otes";
+
+import { TColor } from "../../common.types";
 
 
 export class DOMTest extends Test {

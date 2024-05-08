@@ -1,4 +1,6 @@
 #!/bin/bash
 
 
-node ./debug/cli/cli.js $@
+[ ! -d ./packages/core/build ] && npm run compile
+
+node ./packages/core/build/cli/cli.js $@

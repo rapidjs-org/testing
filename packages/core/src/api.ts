@@ -55,18 +55,19 @@ function traversePath(path: string, fileCallback: ((filepath: string) => void) =
 }
 
 
-export const ESuite = {
-	UNIT: join(__dirname, "./suites/UnitTest"),
-	REQUEST: join(__dirname, "./suites/RequestTest"),
-	DOM: join(__dirname, "./suites/DomTest")
-}
+export { Test } from "./Test";
 
 export async function init(testSuiteModulePath: string, testDirPath: string): Promise<TResults>;
 export async function init(testSuiteAPI: { [ key: string]: Test }, testDirPath: string): Promise<TResults>;
 export async function init(apiArg: unknown, testDirPath: string): Promise<TResults> {
-	const testSuiteAPI: { [ key: string]: Test } = (typeof(apiArg) === "string")
-	? await import(resolvePath(apiArg))
-	: apiArg;
+	const testSuiteAPI = (typeof(apiArg) === "string")
+	? await new Promise<{ [ key: string]: Test }>(async (resolve, reject) => {
+		const testSuiteModulePath: string = resolvePath(apiArg);
+		!existsSync(testSuiteModulePath)
+		? reject(new ReferenceError(`Test suite module not found '${testSuiteModulePath}'`))
+		: resolve(await import(testSuiteModulePath));
+	})
+	: apiArg as { [ key: string]: Test };
 
 	const TestClass = Object.entries(testSuiteAPI)[0];
 	if(TestClass[0] === "default" || (Object.getPrototypeOf(TestClass[1]).name !== "Test")) {

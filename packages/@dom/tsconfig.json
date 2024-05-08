@@ -10,7 +10,8 @@
         "allowJs": true,
         "declaration": true,
         "declarationDir": "./types/",
-        "rootDir": "./src/"
+        "rootDir": "./src/",
+        "outDir": "./build/"
     },
     "include": [
         "./src/**/*.ts",
