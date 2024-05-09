@@ -8,7 +8,7 @@ import { FormatError } from "./FormatError";
 import _config from "./config.json";
 
 
-export abstract class Test<A = unknown, E = unknown> {
+export abstract class Test<T = unknown> {
 	private static runningTests = 0;
 	private static completeTimeout: NodeJS.Timeout;
 
@@ -23,8 +23,8 @@ export abstract class Test<A = unknown, E = unknown> {
 	public readonly sourcePosition?: string;
 
 	public wasSuccessful: boolean;
-	public displayActual: unknown;
-	public displayExpected: unknown;
+	public displayActual: Partial<T>|string;
+	public displayExpected: Partial<T>|string;
 
     constructor(title: string) {
     	this.title = title;
@@ -45,38 +45,49 @@ export abstract class Test<A = unknown, E = unknown> {
 		
 		Test.event.emit("create", this);
     }
-	
-    protected evalActualExpression(...expressions: unknown[]): A|Promise<A> {
-		return expressions[0] as unknown as A;
+
+	private async promisifyExpression(...expression: unknown[]): Promise<T[]> {
+		const resolvedExpression: T[] = [];
+
+		for(let expr of expression) {
+			resolvedExpression.push(await new Promisification<T>(expr).resolve());
+		}
+		
+		return resolvedExpression;
 	}
 
-    protected isEqual(actual: A, expected: E): boolean {
+    protected evalActualExpression(...expression: unknown[]): T|Promise<T> {
+		return expression[0] as unknown as T;
+	}
+	
+    protected evalExpectedExpression(...expression: unknown[]): T|Promise<T> {
+		return expression[0] as unknown as T;
+	}
+
+    protected getDifference(actual: T, expected: T): {
+		actual: Partial<T>;
+		expected: Partial<T>;
+	} {
 		try {
 			deepEqual(actual, expected);
+
+			return {
+				actual: null,
+				expected: null
+			};
 		} catch {
-			return false;
+			return {
+				actual, expected
+			};
 		}
-		return true;
 	}
 
-	protected getDisplayValues(actual: A, expected: E): {
-		actual: unknown;
-		expected: unknown;
-	} {
-		return { actual, expected };
-	}
-
-    public actual(...expressions: unknown[]) {
+    public actual(...expression: unknown[]) {
+		const actualExpression: unknown[] = expression;
+		
 		if(this.wasConsumed) throw new SyntaxError("Test case was already consumed");
 		this.wasConsumed = true;
 
-		const evalActual = async (): Promise<A> => {
-			const resolvedExpressions: A[] = [];
-			for(let expression of expressions) {
-				resolvedExpressions.push(await new Promisification<A>(expression).resolve());
-			}
-			return await new Promisification<A>(this.evalActualExpression(...resolvedExpressions)).resolve();
-		};
 		const complete = () => {
 			if(--Test.runningTests > 0) return;
 
@@ -85,33 +96,36 @@ export abstract class Test<A = unknown, E = unknown> {
 
     	return {
 
-    		expected: async (expression: unknown) => {
-				const createRelatedError = (err: Error|unknown, evalIdentifier: string = ""): FormatError => {
-					return new FormatError(
-						err,
-						`Cannot consume ${evalIdentifier ? `${evalIdentifier} ` : ""}value`,
-						this.sourcePosition
-					);
-				};
-
-				let actual: A;
-				try {
-					actual = await evalActual();
-				} catch(err: unknown) {
-					throw createRelatedError(err, "actual");
-				}
-				let expected: E;
-				try {
-					expected = await new Promisification<E>(expression).resolve();
-				} catch(err: unknown) {
-					throw createRelatedError(err, "expected");
-				}
-
-				this.wasSuccessful = this.isEqual(actual, expected);
+    		expected: async (...expression: unknown[]) => {
+				const expectedExpression: unknown[] = expression;
 				
-				const displayValues = this.getDisplayValues(actual, expected);
-				this.displayActual = displayValues.actual;
-				this.displayExpected = displayValues.expected;
+				let actual: T;
+				try {
+					actual = await new Promisification<T>(
+						this.evalActualExpression(...await this.promisifyExpression(...actualExpression))
+					).resolve();
+				} catch(err: unknown) {
+					throw new FormatError(err, "Cannot consume actual value", this.sourcePosition);
+				}
+
+				let expected: T;
+				try {
+					expected = await new Promisification<T>(
+						this.evalExpectedExpression.apply(null, await this.promisifyExpression(...expectedExpression))
+					).resolve();
+				} catch(err: unknown) {
+					throw new FormatError(err, "Cannot consume expected value", this.sourcePosition);
+				}
+
+				const difference: {
+					actual: Partial<T>;
+					expected: Partial<T>;
+				} = this.getDifference(actual, expected);
+
+				this.wasSuccessful = [ undefined, null, {} ].includes(difference.actual);
+
+				this.displayActual = difference.actual;
+				this.displayExpected = difference.expected;
 
 				complete();
     		},
@@ -119,22 +133,27 @@ export abstract class Test<A = unknown, E = unknown> {
 			error: async (message: string, ErrorPrototype?: ErrorConstructor) => {
 				this.displayExpected = `${ErrorPrototype?.name ? `${ErrorPrototype.name}: ` : ""}${message}`;
 
-				evalActual()
-				.then(() => {
+				try {
+					const actual:T = await new Promisification<T>(
+						this.evalActualExpression(...await this.promisifyExpression(...actualExpression))
+					).resolve();
+					
 					this.wasSuccessful = false;
 					
-					this.displayActual = "No error";
-				})
-				.catch((err: Object) => {
+					this.displayActual = actual;
+				} catch(err: unknown) {
 					this.wasSuccessful
 					=  (ErrorPrototype ? (err.constructor === ErrorPrototype) : true)
 					&& (message === (((err instanceof Error)) ? err.message : err));
 					
 					this.displayActual = err.toString();
-				})
-				.finally(complete);
+				} finally {
+					complete();
+				}
 			}
 
     	};
     }
 }
+
+// TODO: Difference helpers?

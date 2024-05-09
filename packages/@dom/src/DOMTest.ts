@@ -10,4 +10,4 @@ export class DOMTest extends Test {
 	constructor(title: string) {
 		super(title);
 	}
-};
+}

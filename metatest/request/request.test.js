@@ -4,14 +4,6 @@ RequestTest.configure({
 });
 
 
-/* new RequestTest("Get dogs")
-.actual("/dogs", {
-    headers: {
-        "Accept-Language": "en;q=1.0, de;q=0.75, *;q=0.5"
-    }
-})
-.expected("Only body"); */
-
 new RequestTest("Create dog")
 .actual("/dogs", {
     method: "POST",
@@ -20,8 +12,19 @@ new RequestTest("Create dog")
     }
 })
 .expected({
-    status: 200
+    status: 203,
+    headers: {
+        "Content-Length": 16
+    }
 });
+
+/* new RequestTest("Get dogs")
+.actual("/dogs", {
+    headers: {
+        "Accept-Language": "en;q=1.0, de;q=0.75, *;q=0.5"
+    }
+})
+.expected("Only body"); */
 
 /* new RequestTest("Create dog")
 .post("/dogs", {

@@ -10,4 +10,4 @@ export class UnitTest extends Test {
 	constructor(title: string) {
 		super(title);
 	}
-};
+}

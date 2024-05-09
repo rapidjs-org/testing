@@ -3,10 +3,7 @@
     "version": "0.1.0",
     "author": "Thassilo Martin Schiepanski",
 	"homepage": "https://github.com/t-ski/otes/tree/master/packages/@unit",
-    "keywords": [
-        "test",
-        "test-framework"
-    ],
+    "keywords": [ "otes-testsuite" ],
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/t-ski/otes.git"

@@ -1,6 +1,6 @@
 import { ClientRequest, RequestOptions, request as httpRequest } from "http";
 import { join } from "path";
-import { deepStrictEqual } from "assert";
+import { deepEqual } from "assert";
 
 import { Test } from "@t-ski/otes";
 
@@ -13,20 +13,14 @@ type TConfiguration = RequestOptions & {
 	pathRoot?: string;
 };
 
-interface IARequest {
-	status: number;
-	headers: THeaders;
-	body: unknown;
-}
-
-interface IEResponse {
+interface IResponse {
 	status?: number;
 	headers?: THeaders;
 	body?: unknown;
 }
 
 
-export class RequestTest extends Test<IARequest, IEResponse> {
+export class RequestTest extends Test<IResponse> {
 	public static readonly suiteTitle: string = "Request";
 	public static readonly suiteColor: TColor = [ 177, 66, 179 ];
 
@@ -50,7 +44,7 @@ export class RequestTest extends Test<IARequest, IEResponse> {
 	
     protected evalActualExpression(path: string, options: TConfiguration & {
 		body?: unknown
-	} = {}): Promise<IARequest> {	// TODO: Overloads
+	} = {}): Promise<IResponse> {	// TODO: Overloads
     	return new Promise((resolve, reject) => {
     		const reqOptions: RequestOptions = {
     			...RequestTest.configuration,
@@ -79,7 +73,7 @@ export class RequestTest extends Test<IARequest, IEResponse> {
     			res.on("error", err => reject(err));
     		})
     		.on("error", err => reject(err));
-			
+
     		options.body
 			&& req.write(
 				!((typeof(options.body) === "string") || (options.body instanceof Buffer) || (options.body instanceof Uint8Array))
@@ -91,49 +85,47 @@ export class RequestTest extends Test<IARequest, IEResponse> {
     	});
 	}
 
-    protected isEqual(actual: IARequest, expected: IEResponse): boolean {
-		return !Object.keys(this.getDisplayValues(actual, expected).actual).length;
-	}
+	protected getDifference(actual: IResponse, expected: IResponse) {
+    	// Weak equality, i.e. only compare provided fields
 
-	protected getDisplayValues(actual: IARequest, expected: IEResponse) {
-		// Match messages, unless expected object is a response parameters object (containing a response key)
-    	// Weak equality, i.e. only compare provided fields (selective)
+		type TIndexedObject = { [ key: string ]: unknown; };
 
-		type TIndexedValue = { [ key: string ]: unknown; };
+		const displayExpected: TIndexedObject = Object.assign({}, (expected as TIndexedObject));
+		const displayActual: TIndexedObject = Object.assign({}, (actual as TIndexedObject));
 
-		const filteredActual: TIndexedValue = {};
-		const filteredExpected: TIndexedValue = {};
+		displayExpected["headers"] = Object.fromEntries(
+			Object.entries(displayExpected["headers"])
+			.map((entry: string[]) => [ entry[0].toLowerCase(), entry[1] ])
+		);
 		
-    	[ "status", "message" ]
-    	.forEach(simpleKey => {
-			const indexedActual = actual as unknown as TIndexedValue;
-			const indexedExpected = actual as unknown as TIndexedValue;
+		const filterObj = (sourceObj: TIndexedObject, targetObj: TIndexedObject) => {
+			for(let key in targetObj) {
+				if(sourceObj[key]) continue;
 
-			if(!indexedExpected[simpleKey]) return;
-
-			try {
-				deepStrictEqual(indexedActual[simpleKey], indexedExpected[simpleKey]);
-			} catch {
-				filteredActual[simpleKey] = indexedActual[simpleKey];
-				filteredExpected[simpleKey] = indexedExpected[simpleKey];
+				delete targetObj[key];
 			}
-		});
 
-    	for(const name in (expected.headers || {})) {
-    		const actualHeader = actual.headers[name.toLowerCase()];
-    		const expectedHeader = expected.headers[name];
-
-    		if(actualHeader === expectedHeader) continue;
-            
-    		filteredActual.headers = filteredActual.headers || {};
-    		(filteredActual.headers as TIndexedValue)[name] = actualHeader;
-    		filteredExpected.headers = filteredExpected.headers || {};
-    		(filteredActual.headers as TIndexedValue)[name] = expectedHeader;
-    	}
-
-		return {
-			actual: filteredActual,
-			expected: filteredExpected
+			for(let key in sourceObj) {
+				try {
+					deepEqual(sourceObj[key], targetObj[key]);
+					
+					delete sourceObj[key];
+					delete targetObj[key];
+				} catch {}
+			}
 		};
+
+		filterObj(displayExpected["headers"] as TIndexedObject, displayActual["headers"] as TIndexedObject);
+		if(!Object.entries(displayActual["headers"] ?? {}).length) {
+			delete displayExpected["headers"];
+			delete displayActual["headers"];
+		}
+		
+		filterObj(displayExpected, displayActual);
+		
+		return {
+			actual: displayActual,
+			expected: displayExpected
+		}
 	}
-};
+}
