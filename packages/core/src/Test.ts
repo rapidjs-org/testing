@@ -3,6 +3,7 @@ import { deepEqual } from "assert";
 
 import { TColor } from "../../common.types";
 import { Promisification } from "./Promisification";
+import { FormatError } from "./FormatError";
 
 import _config from "./config.json";
 
@@ -70,10 +71,11 @@ export abstract class Test<A = unknown, E = unknown> {
 		this.wasConsumed = true;
 
 		const evalActual = async (): Promise<A> => {
-			return await new Promisification<A>(this.evalActualExpression(
-				...expressions
-				.map(async (expression: unknown) => await new Promisification(expression).resolve())
-			)).resolve();
+			const resolvedExpressions: A[] = [];
+			for(let expression of expressions) {
+				resolvedExpressions.push(await new Promisification<A>(expression).resolve());
+			}
+			return await new Promisification<A>(this.evalActualExpression(...resolvedExpressions)).resolve();
 		};
 		const complete = () => {
 			if(--Test.runningTests > 0) return;
@@ -84,21 +86,11 @@ export abstract class Test<A = unknown, E = unknown> {
     	return {
 
     		expected: async (expression: unknown) => {
-				const createRelatedError = (sourceErr: unknown|Error, evalIdentifier: string = ""): Error => {
-					return sourceErr.constructor(
-						`Can not consume ${
-							evalIdentifier ? `${evalIdentifier
-						} ` : ""}value (${
-							(sourceErr as Error).message ?? sourceErr
-						})\n${
-							((sourceErr as Error).stack ?? "")
-							.trim()
-							.split(/\n/g)
-							.slice(1)
-							.join("\n")
-						}\n${
-							this.sourcePosition
-						}`
+				const createRelatedError = (err: Error|unknown, evalIdentifier: string = ""): FormatError => {
+					return new FormatError(
+						err,
+						`Cannot consume ${evalIdentifier ? `${evalIdentifier} ` : ""}value`,
+						this.sourcePosition
 					);
 				};
 

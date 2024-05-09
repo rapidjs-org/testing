@@ -1,4 +1,5 @@
-import { ClientRequest, request as httpRequest } from "http";
+import { ClientRequest, RequestOptions, request as httpRequest } from "http";
+import { join } from "path";
 import { deepStrictEqual } from "assert";
 
 import { Test } from "@t-ski/otes";
@@ -7,6 +8,10 @@ import { TColor } from "../../common.types";
 
 
 type THeaders = { [ key: string ]: string; };
+
+type TConfiguration = RequestOptions & {
+	pathRoot?: string;
+};
 
 interface IARequest {
 	status: number;
@@ -25,15 +30,14 @@ export class RequestTest extends Test<IARequest, IEResponse> {
 	public static readonly suiteTitle: string = "Request";
 	public static readonly suiteColor: TColor = [ 177, 66, 179 ];
 
-    private static configuration = {
+    private static configuration: TConfiguration = {
+		method: "GET",
+		protocol: "http:",
     	hostname: "localhost",
     	port: 80
     };
 
-    public static configure(configuration: {
-    	hostname: string;
-    	port: number;
-    }) {
+    public static configure(configuration: TConfiguration) {
     	RequestTest.configuration = {
     		...RequestTest.configuration,
     		...configuration
@@ -44,23 +48,18 @@ export class RequestTest extends Test<IARequest, IEResponse> {
     	super(title);
     }
 	
-    protected evalActualExpression(path: string, options: {
-		body?: unknown;
+    protected evalActualExpression(path: string, options: TConfiguration & {
+		body?: unknown
 	} = {}): Promise<IARequest> {	// TODO: Overloads
-    	const body = options.body;
-    	delete options.body;
-
     	return new Promise((resolve, reject) => {
-    		const reqOptions = {
+    		const reqOptions: RequestOptions = {
     			...RequestTest.configuration,
                 
-    			method: "GET",
-    			headers: {},
-    			path: path,
+    			path: encodeURI(join(RequestTest.configuration.pathRoot ?? "", path)),
                 
     			...options
     		};
-            
+
     		const req: ClientRequest = httpRequest(reqOptions, res => {
     			const body: Buffer[] = [];
     			res.on("data", (chunk: Buffer) => {
@@ -68,6 +67,7 @@ export class RequestTest extends Test<IARequest, IEResponse> {
     			});
     			res.on("end", () => {
     				let parsedBody = Buffer.concat(body).toString();
+
     				try { parsedBody = JSON.parse(parsedBody); } catch {}
                     
     				resolve({
@@ -79,8 +79,14 @@ export class RequestTest extends Test<IARequest, IEResponse> {
     			res.on("error", err => reject(err));
     		})
     		.on("error", err => reject(err));
+			
+    		options.body
+			&& req.write(
+				!((typeof(options.body) === "string") || (options.body instanceof Buffer) || (options.body instanceof Uint8Array))
+				? JSON.stringify(options.body)
+				: options.body
+			);
 
-    		body && req.write(body);
     		req.end();
     	});
 	}

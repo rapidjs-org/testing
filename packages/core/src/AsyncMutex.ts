@@ -7,7 +7,7 @@ export class AsyncMutex {
     private isLocked = false;
 
     public lock<T = void>(expression: T|(() => T)): Promise<T> {
-        return new Promise<T>(resolveOuter => {
+        return new Promise<T>((resolveOuter, rejectOuter) => {
             new Promise<void>(resolveInner => {
                 if(this.isLocked) {
                     this.acquireQueue.push(resolveInner);
@@ -27,7 +27,8 @@ export class AsyncMutex {
                 (this.acquireQueue.shift() ?? (() => {}))();
 
                 resolveOuter(value);
-            });
+            })
+            .catch((err: Error) => rejectOuter(err));
         });
     }
 }

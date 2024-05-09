@@ -1,11 +1,29 @@
-module.exports.BEFORE = function() {
-    console.log("Prepare test environment");
+let server;
 
-    return new Promise(resolve => setTimeout(resolve, 500));
+
+module.exports.BEFORE = function() {
+    return new Promise(resolve => {
+        server = require("http")
+        .createServer((req, res) => {
+            if(/^\/api\//.test(req.url)) {
+                res.statusCode = 500;
+                res.end();
+
+                return;
+            }
+
+            
+        })
+        .listen(7979, () => {
+            console.log("Test HTTP API server listening");
+
+            resolve();
+        });
+    });
 }
 
 module.exports.AFTER = function() {
-    console.log("Cleanup test environment");
+    server.close();
     
-    return new Promise(resolve => setTimeout(resolve, 500));
+    console.log("Test HTTP API server gracefully terminated");
 }

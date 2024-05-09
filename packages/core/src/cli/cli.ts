@@ -15,7 +15,7 @@ import OFFICIAL_SUITES from "./suites.json";
 
 async function runSuite(): Promise<TResults> {
 	if(Args.parsePositional(0) === "help" || Args.parseFlag("help", "H")) {
-		console.log(readFileSync(join(__dirname, "../../../../help.txt")).toString());
+		console.log(readFileSync(join(__dirname, "../../help.txt")).toString());
 		
 		process.exit(0);
 	}

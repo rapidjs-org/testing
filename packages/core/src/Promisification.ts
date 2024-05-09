@@ -30,7 +30,7 @@ export class Promisification<T> {
                     : resolveValue;
                 } catch(err: unknown) {
                     rejectInner(err);
-
+                    
                     return;
                 }
 

@@ -1,5 +1,5 @@
 RequestTest.configure({
-    hostname: "http://localhost:8080",
+    port: 7979,
     commonPathname: "/api"
 });
 

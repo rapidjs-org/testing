@@ -22,7 +22,8 @@
     "types": "./types/api.d.ts",
     "files": [
         "./build/",
-        "./types/"
+        "./types/",
+        "./help.txt"
     ],
     "scripts": {
         "compile": "npx tsc --project ./tsconfig.debug.json",

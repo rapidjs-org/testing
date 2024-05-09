@@ -96,8 +96,16 @@ export async function init(apiArg: unknown, testTargetPath: string, options?: IO
 	global[TestClass[0]] = TestClass[1];
 	
 	const testEnv = new Env(testTargetPath);
+	
+	return new Promise<TResults>(async (resolve, reject) => {
+		try {
+			await testEnv.call("BEFORE");
+		} catch(err: unknown) {
+			reject(err);
 
-	return new Promise<TResults>(async (resolve, reject) => {	
+			return;
+		}
+		
 		let wasAborted = false;	
 		const captureError = async (err: Error) => {
 			if(wasAborted) return;
@@ -112,14 +120,12 @@ export async function init(apiArg: unknown, testTargetPath: string, options?: IO
 		process.on("uncaughtException", captureError);
 		process.on("unhandledRejection", captureError);
 		
-		await testEnv.call("BEFORE");
-		
 		const startTime = Date.now();
 		
 		Test.event.on("complete", async () => {
 			const time = Date.now() - startTime;
 
-			testEnv.call("AFTER");
+			await testEnv.call("AFTER");
 
 			resolve({
 				time,
