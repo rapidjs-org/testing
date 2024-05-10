@@ -20,6 +20,7 @@ export class Args {
 	}
 
 	public static parseOption(key: string, shorthand?: string): string {
-    	return Args.raw[Args.retrieveKeyIndex(key, shorthand)];
+		const index: number = Args.retrieveKeyIndex(key, shorthand);
+    	return ~index ? Args.raw[index + 1] : null;
 	}
 }

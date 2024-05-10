@@ -1,0 +1,11 @@
+Usage: otes:gen <positional> [--<arg:key>|-<arg:shorthand>[ <arg-option>]?]*
+
+Positional (required):
+    Generator target:
+    • suite             Test suite package from template
+
+Options:
+--name, -N              Optional target name
+--path, -P              Optional target path
+
+Visit https://github.com/t-ski/OTES for more information.

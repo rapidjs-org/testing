@@ -1,0 +1,25 @@
+{
+    "private": true,
+    "version": "0.1.0",
+    "keywords": [
+        "otes-testsuite"
+    ],
+	"main": "./build/api.js",
+    "types": "./types/api.d.ts",
+    "files": [
+        "./build/",
+        "./types/"
+    ],
+    "scripts": {
+        "compile": "npx tsc --project ./tsconfig.debug.json",
+        "compile:watch": "npm run compile -- --watch",
+        "build": "rm -rf ./build/ && npx tsc --project ./tsconfig.build.json"
+    },
+    "devDependencies": {
+        "@types/node": "*",
+        "typescript": "5.x"
+    },
+    "dependencies": {
+        "@t-ski/otes": "0.x"
+    }
+}

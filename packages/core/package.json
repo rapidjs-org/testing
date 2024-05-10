@@ -17,12 +17,14 @@
 	},
 	"main": "./build/api.js",
 	"bin": {
-		"otes": "./build/cli/cli.js"
+		"otes": "./build/cli/cli.js",
+        "otes:gen": "./build/cli/cli.gen.js"
 	},
     "types": "./types/api.d.ts",
     "files": [
         "./build/",
         "./types/",
+        "./template/",
         "./help.txt"
     ],
     "scripts": {

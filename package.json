@@ -10,7 +10,8 @@
 		"lint": "npx eslint --ext .ts ./packages/*/src/*",
 		"lint:fix": "npx eslint --ext .ts --fix ./packages/*/src/*",
 		"metatest": "./scripts/metatest.sh",
-		"test": "npm run metatest"
+		"test": "npm run metatest",
+		"generate:suite": "node ./packages/core/build/cli/cli.gen.js suite --path ./packages/ --name @__generated"
 	},
 	"devDependencies": {
 		"@typescript-eslint/eslint-plugin": "^5.4.0",
