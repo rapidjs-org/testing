@@ -5,10 +5,13 @@
 		"./packages/*"
 	],
 	"scripts": {
+		"prepare": "npx husky install",
 		"compile": "npm run compile -w @t-ski/otes && npm run compile -ws",
 		"build": "npm run build -w @t-ski/otes && npm run build -ws",
 		"lint": "npx eslint --ext .ts ./packages/*/src/*",
 		"lint:fix": "npx eslint --ext .ts --fix ./packages/*/src/*",
+		"format": "npx prettier --check ./packages/*/src/**/*.ts",
+		"format:fix": "npx prettier --write ./packages/*/src/**/*.ts",
 		"metatest": "./scripts/metatest.sh",
 		"test": "npm run metatest",
 		"generate:suite": "node ./packages/core/build/cli/cli.gen.js suite --path ./packages/ --name @__generated"
@@ -17,6 +20,12 @@
 		"@typescript-eslint/eslint-plugin": "^5.4.0",
 		"@typescript-eslint/parser": "^5.4.0",
 		"eslint": "^7.26.0",
-		"eslint-plugin-typescript": "^0.14.0"
+		"eslint-plugin-typescript": "^0.14.0",
+		"husky": "^9.0.11",
+		"lint-staged": "^15.2.2",
+		"prettier": "^3.2.5"
+	},
+	"lint-staged": {
+		"./packages/*/src/**/*.ts": "npx prettier --write"
 	}
 }

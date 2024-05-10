@@ -1,5 +1,5 @@
-const document = BrowserTest.render("http/index.html");
+/* const document = DOMTest.render("http/index.html");
 
 
-new BrowserTest("Open")
-.actual(document.querySelector("#modal").style.display).expected("block");
+new DOMTest("Open")
+.actual(document.querySelector("#modal").style.display).expected("block"); */

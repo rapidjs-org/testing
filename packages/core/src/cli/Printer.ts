@@ -10,22 +10,24 @@ console.info = console.log;
 console.warn = console.log;
 console.error = console.log; */
 
-
 import { TColor } from "../types";
-
 
 export class Printer {
 	public static printBadge(message: string, color: TColor) {
-        console.log(`\n\x1b[1m\x1b[48;2;${color.join(";")}m${
-			(color.reduce((acc: number, c: number) => acc + c, 0) < (255 * 2)) ? "\x1b[37m" : ""
-		} ${message.toUpperCase().trim()} \x1b[0m`);
+		console.log(
+			`\n\x1b[1m\x1b[48;2;${color.join(";")}m${
+				color.reduce((acc: number, c: number) => acc + c, 0) < 255 * 2
+					? "\x1b[37m"
+					: ""
+			} ${message.toUpperCase().trim()} \x1b[0m`
+		);
 	}
 
 	public static printSuccess(message: string) {
-        console.log(`\x1b[32m✔\x1b[0m ${message}`);
+		console.log(`\x1b[32m✔\x1b[0m ${message}`);
 	}
-	
+
 	public static printFailure(message: string) {
-        console.log(`\x1b[31mx\x1b[0m ${message}`);
+		console.log(`\x1b[31mx\x1b[0m ${message}`);
 	}
 }
