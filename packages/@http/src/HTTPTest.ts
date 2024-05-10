@@ -18,7 +18,7 @@ interface IResponse {
 	body?: unknown;
 }
 
-export class RequestTest extends Test<IResponse> {
+export class HTTPTest extends Test<IResponse> {
 	public static readonly suiteTitle: string = "Request";
 	public static readonly suiteColor: TColor = [177, 66, 179];
 
@@ -30,8 +30,8 @@ export class RequestTest extends Test<IResponse> {
 	};
 
 	public static configure(configuration: TConfiguration) {
-		RequestTest.configuration = {
-			...RequestTest.configuration,
+		HTTPTest.configuration = {
+			...HTTPTest.configuration,
 			...configuration
 		};
 	}
@@ -49,10 +49,10 @@ export class RequestTest extends Test<IResponse> {
 		// TODO: Overloads
 		return new Promise((resolve, reject) => {
 			const reqOptions: RequestOptions = {
-				...RequestTest.configuration,
+				...HTTPTest.configuration,
 
 				path: encodeURI(
-					join(RequestTest.configuration.pathRoot ?? "", path)
+					join(HTTPTest.configuration.pathRoot ?? "", path)
 				),
 
 				...options

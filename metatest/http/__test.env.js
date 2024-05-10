@@ -4,7 +4,7 @@ const movieData = require("./__helper.env");
 let server;
 
 
-RequestTest.configure({
+HTTPTest.configure({
     port: 7979
 });
 
