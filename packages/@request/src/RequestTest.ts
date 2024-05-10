@@ -63,7 +63,7 @@ export class RequestTest extends Test<IResponse> {
     				let parsedBody = Buffer.concat(body).toString();
 
     				try { parsedBody = JSON.parse(parsedBody); } catch {}
-                    
+					
     				resolve({
 						status: res.statusCode ?? -1,
 						headers: res.headers as THeaders,
@@ -94,7 +94,7 @@ export class RequestTest extends Test<IResponse> {
 		const displayActual: TIndexedObject = Object.assign({}, (actual as TIndexedObject));
 
 		displayExpected["headers"] = Object.fromEntries(
-			Object.entries(displayExpected["headers"])
+			(Object.entries(displayExpected["headers"] ?? {}))
 			.map((entry: string[]) => [ entry[0].toLowerCase(), entry[1] ])
 		);
 		

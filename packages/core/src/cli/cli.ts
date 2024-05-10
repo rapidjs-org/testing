@@ -107,18 +107,20 @@ runSuite()
 .catch((err: Error) => {
 	const testFileMentionRegex = /([^/]+\.test\.js)([^\w\d]|$)/;
 
-	let errorStackLines: string[] = (err.stack ?? `${err.name}: ${err.message}`).split(/\n/g);
-	errorStackLines = errorStackLines
+	let errorStackLines: string[] = (err.stack ?? `${err.name}: ${err.message}`)
+	.split(/\n/g);
+	/* errorStackLines = errorStackLines
 	.slice(0, errorStackLines.length - errorStackLines.slice()
 		.reverse()
-		.findIndex((line: string) => testFileMentionRegex.test(line)));
+		.findIndex((line: string) => testFileMentionRegex.test(line))); */
 
 	console.error(`\n\x1b[31m${
 		[
 			errorStackLines.slice(0, -1),
 			errorStackLines.slice(-1)[0]
-			.replace(testFileMentionRegex, "\x1b[1m$1\x1b[22m$2")
-		].flat().join("\n")
+		].flat()
+		.join("\n")
+		.replace(testFileMentionRegex, "\x1b[1m$1\x1b[22m$2")
 	}\x1b[0m`);
 
 	process.exit(1);

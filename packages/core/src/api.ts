@@ -6,6 +6,7 @@ import { AsyncMutex } from "./AsyncMutex";
 import { Env } from "./Env";
 
 import _config from "./config.json";
+import { FormatError } from "./FormatError";
 
 
 type TRecord = { [ key: string ]: Test[]; };
@@ -35,7 +36,10 @@ function traversePath(path: string, fileCallback: ((filepath: string) => void) =
 		
 		fileCallback(filepath);
 		
-		importMutex.lock(() => import(filepath));
+		importMutex.lock(() => import(filepath))
+		.catch((err: Error) => {
+			throw new FormatError(err, "Cannot evaluate test file");
+		});
 	};
 
 	if(lstatSync(path).isFile()) {
@@ -112,7 +116,7 @@ export async function init(apiArg: unknown, testTargetPath: string, options?: IO
 			wasAborted = true;
 			
 			await testEnv.call("AFTER");
-			
+
 			reject(err);
 
 			return;

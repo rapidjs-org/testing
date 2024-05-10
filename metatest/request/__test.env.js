@@ -1,41 +1,49 @@
+const movieData = require("./__helper.env");
+
+
 let server;
 
 
-module.exports.BEFORE = function() {
-    const dogs = [];
+RequestTest.configure({
+    port: 7979
+});
 
+
+module.exports.BEFORE = function() {
     return new Promise(resolve => {
         server = require("http")
         .createServer((req, res) => {
             const end = (message, status = 200) => {
                 res.statusCode = status;
-                res.end(message);
+
+                res.end(JSON.stringify(message));
             };
 
             if(/^\/api\//.test(req.url)) {
                 end(null, 500);
+
                 return;
             }
             
             switch(req.method.toUpperCase()) {
                 case "GET": {
-                    if(req.url !== "/dogs") break;
+                    if(req.url !== movieData.MOVIES_PATH) break;
                     
-                    end(dogs);
+                    end(movieData.MOVIES);
 
                     return;
                 }
                 case "POST": {
-                    if(req.url !== "/dogs") break;
+                    if(req.url !== movieData.MOVIES_PATH) break;
 
                     const body = [];
                     req.on("data", chunk => body.push(chunk));
                     req.on("end", () => {
-                        const dog = body.join("");
+                        const movie = JSON.parse(Buffer.concat(body).toString());
 
-                        dogs.push(dog);
+                        movieData.MOVIES.push(movie);
                         
-                        end(dog);
+                        end(movie);
                     });
                     return;
                 }

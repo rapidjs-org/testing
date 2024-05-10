@@ -1,33 +1,40 @@
 RequestTest.configure({
-    port: 7979,
     commonPathname: "/api"
 });
 
 
-new RequestTest("Create dog")
-.actual("/dogs", {
+const movieData = require("./__helper.env");
+
+
+new RequestTest("Create movie")
+.actual(movieData.MOVIES_PATH, {
     method: "POST",
-    body: {
-        name: "Husky"
-    }
+    body: movieData.NEW_MOVIE
 })
 .expected({
-    status: 203,
-    headers: {
-        "Content-Length": 16
-    }
+    status: 200,
+    body: movieData.NEW_MOVIE
 });
 
-/* new RequestTest("Get dogs")
-.actual("/dogs", {
+new RequestTest("Get movies")
+.actual(movieData.MOVIES_PATH)
+.expected({
+    headers: {
+        "Content-Length": 78
+    },
+    body: movieData.MOVIES.concat(movieData.NEW_MOVIE)
+});
+
+/* new RequestTest("Create movie")
+.post(movieData.MOVIES_PATH, {
+    name: "Husky"
+})
+.expected(200);     */ // only status */
+
+/* new RequestTest("Get movies")
+.actual(movieData.MOVIES_PATH, {
     headers: {
         "Accept-Language": "en;q=1.0, de;q=0.75, *;q=0.5"
     }
 })
-.expected("Only body"); */
-
-/* new RequestTest("Create dog")
-.post("/dogs", {
-    name: "Husky"
-})
-.expected(200);   // only status */
+.expected("abc");   */ // only body */
