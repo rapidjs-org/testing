@@ -1,5 +1,5 @@
 {
-    "envModuleFilename": "__test.env",
-    "promisificationTimeout": 5000,
-    "completeTimeout": 250
+	"envModuleFilename": "__test.env",
+	"promisificationTimeout": 5000,
+	"completeTimeout": 250
 }

@@ -1,0 +1,5 @@
+npm run build -ws
+
+npm run test
+
+npx lint-staged

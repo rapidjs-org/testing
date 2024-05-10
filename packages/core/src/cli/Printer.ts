@@ -30,4 +30,31 @@ export class Printer {
 	public static printFailure(message: string) {
 		console.log(`\x1b[31mx\x1b[0m ${message}`);
 	}
+
+	public static value(value: unknown) {
+		if (["string", "number", "boolean"].includes(typeof value)) {
+			console.log(`\x1b[34m${value as string | number | boolean}\x1b[0m`);
+
+			return;
+		}
+		if ([undefined, null].includes(value)) {
+			console.log(`\x1b[2m\x1b[31m${value as undefined | null}\x1b[0m`);
+
+			return;
+		}
+
+		const color = (code: number, str: string) =>
+			`\x1b[0m\x1b[${code}m${str}\x1b[0m\x1b[2m`;
+
+		console.log(
+			`\x1b[2m${JSON.stringify(value, null, 2)
+				.replace(/:( *("|').*\2 *)(,?\n)/g, `:${color(34, "$1")}$3`)
+				.replace(
+					/:( *[0-9]+(\.[0-9]+)? *)(,?\n)/g,
+					`:${color(33, "$1")}$3`
+				)
+				.replace(/:( *(true|false) *)(,?\n)/g, `:${color(33, "$1")}$3`)
+				.replace(/(\n *("|')*.*\2):/g, `${color(35, "$1")}:`)}\x1b[0m`
+		);
+	}
 }

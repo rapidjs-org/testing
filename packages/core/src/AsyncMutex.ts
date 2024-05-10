@@ -1,34 +1,35 @@
 import { Promisification } from "./Promisification";
 
-
 export class AsyncMutex {
-    private readonly acquireQueue: (() => void)[] = [];
+	private readonly acquireQueue: (() => void)[] = [];
 
-    private isLocked = false;
+	private isLocked = false;
 
-    public lock<T = void>(expression: T|(() => T)): Promise<T> {
-        return new Promise<T>((resolveOuter, rejectOuter) => {
-            new Promise<void>(resolveInner => {
-                if(this.isLocked) {
-                    this.acquireQueue.push(resolveInner);
+	public lock<T = void>(expression: T | (() => T)): Promise<T> {
+		return new Promise<T>((resolveOuter, rejectOuter) => {
+			new Promise<void>((resolveInner) => {
+				if (this.isLocked) {
+					this.acquireQueue.push(resolveInner);
 
-                    return;
-                }
+					return;
+				}
 
-                this.isLocked = true;
+				this.isLocked = true;
 
-                resolveInner();
-            })
-            .then(async () => {
-                const value: T = await new Promisification<T>(expression).resolve();
+				resolveInner();
+			})
+				.then(async () => {
+					const value: T = await new Promisification<T>(
+						expression
+					).resolve();
 
-                this.isLocked = !!this.acquireQueue.length;
+					this.isLocked = !!this.acquireQueue.length;
 
-                (this.acquireQueue.shift() ?? (() => {}))();
+					(this.acquireQueue.shift() ?? (() => {}))();
 
-                resolveOuter(value);
-            })
-            .catch((err: Error) => rejectOuter(err));
-        });
-    }
+					resolveOuter(value);
+				})
+				.catch((err: Error) => rejectOuter(err));
+		});
+	}
 }
