@@ -8,6 +8,11 @@ import { FormatError } from "./FormatError";
 
 import _config from "./config.json";
 
+interface IDifference<T> {
+	actual: Partial<T> | string;
+	expected: Partial<T> | string;
+}
+
 export abstract class Test<T = unknown> {
 	private static runningTests = 0;
 	private static completeTimeout: NodeJS.Timeout;
@@ -18,14 +23,23 @@ export abstract class Test<T = unknown> {
 
 	public static readonly event = new EventEmitter();
 
-	private wasConsumed = false;
+	#hasConsumedActual = false;
+	#hasConsumedExpected = false;
 
 	public readonly title: string;
 	public readonly sourcePosition?: string;
 
 	public wasSuccessful: boolean;
-	public displayActual: Partial<T> | string;
-	public displayExpected: Partial<T> | string;
+	public difference: IDifference<T>;
+
+	private static tryComplete() {
+		if (--Test.runningTests > 0) return;
+
+		Test.completeTimeout = setTimeout(
+			() => Test.event.emit("complete"),
+			_config.completeTimeout
+		);
+	}
 
 	constructor(title: string) {
 		this.title = title;
@@ -36,9 +50,10 @@ export abstract class Test<T = unknown> {
 			try {
 				this.sourcePosition = (err as Error).stack
 					.split(/\n/g)
-					.filter((sourceLine: string) =>
-						/\.test\.js([^\w\d]|$)/.test(sourceLine.trim())
+					.filter((line: string) =>
+						/\.test\.js([^\w\d]|$)/.test(line.trim())
 					)
+					.map((line: string) => line.trim())
 					.join("\n");
 			} catch {}
 		}
@@ -69,13 +84,7 @@ export abstract class Test<T = unknown> {
 		return expression[0] as T;
 	}
 
-	protected getDifference(
-		actual: T,
-		expected: T
-	): {
-		actual: Partial<T>;
-		expected: Partial<T>;
-	} {
+	protected getDifference(actual: T, expected: T): IDifference<T> {
 		try {
 			deepEqual(actual, expected);
 
@@ -97,78 +106,80 @@ export abstract class Test<T = unknown> {
 	public actual(...expression: unknown[]) {
 		const actualExpression: unknown[] = expression;
 
-		if (this.wasConsumed)
+		if (this.#hasConsumedActual)
 			throw new SyntaxError("Test case was already consumed");
-		this.wasConsumed = true;
+		this.#hasConsumedActual = true;
 
-		const complete = () => {
-			if (--Test.runningTests > 0) return;
+		const expected = (...expression: unknown[]) => {
+			if (this.#hasConsumedExpected)
+				throw new SyntaxError("Test case was already consumed");
+			this.#hasConsumedExpected = true;
 
-			Test.completeTimeout = setTimeout(
-				() => Test.event.emit("complete"),
-				_config.completeTimeout
-			);
+			Test.mutex.lock(async () => {
+				const expectedExpression: unknown[] = expression;
+
+				let actual: T;
+				try {
+					actual = await new Promisification<T>(
+						this.evalActualExpression(
+							...(await this.promisifyExpression(
+								...actualExpression
+							))
+						)
+					).resolve();
+				} catch (err: unknown) {
+					throw new FormatError(
+						err,
+						"Cannot consume actual value",
+						this.sourcePosition
+					);
+				}
+
+				let expected: T;
+				try {
+					expected = await new Promisification<T>(
+						this.evalExpectedExpression.apply(
+							null,
+							await this.promisifyExpression(
+								...expectedExpression
+							)
+						)
+					).resolve();
+				} catch (err: unknown) {
+					throw new FormatError(
+						err,
+						"Cannot consume expected value",
+						this.sourcePosition
+					);
+				}
+
+				this.difference = this.getDifference(actual, expected);
+
+				this.wasSuccessful =
+					[undefined, null].includes(this.difference.actual) ||
+					(!["string", "number", "boolean"].includes(
+						typeof this.difference.actual
+					) &&
+						!Object.keys(this.difference.actual).length);
+
+				Test.tryComplete();
+			});
 		};
 
 		return {
-			expected: (...expression: unknown[]) => {
-				Test.mutex.lock(async () => {
-					const expectedExpression: unknown[] = expression;
-
-					let actual: T;
-					try {
-						actual = await new Promisification<T>(
-							this.evalActualExpression(
-								...(await this.promisifyExpression(
-									...actualExpression
-								))
-							)
-						).resolve();
-					} catch (err: unknown) {
-						throw new FormatError(
-							err,
-							"Cannot consume actual value",
-							this.sourcePosition
-						);
-					}
-
-					let expected: T;
-					try {
-						expected = await new Promisification<T>(
-							this.evalExpectedExpression.apply(
-								null,
-								await this.promisifyExpression(
-									...expectedExpression
-								)
-							)
-						).resolve();
-					} catch (err: unknown) {
-						throw new FormatError(
-							err,
-							"Cannot consume expected value",
-							this.sourcePosition
-						);
-					}
-
-					const difference: {
-						actual: Partial<T>;
-						expected: Partial<T>;
-					} = this.getDifference(actual, expected);
-
-					this.wasSuccessful =
-						[undefined, null].includes(difference.actual) ||
-						!Object.keys(difference.actual).length;
-
-					this.displayActual = difference.actual;
-					this.displayExpected = difference.expected;
-
-					complete();
-				});
-			},
+			expect: expected, // alias
+			expected,
 
 			error: (message: string, ErrorPrototype?: ErrorConstructor) => {
+				if (this.#hasConsumedExpected)
+					throw new SyntaxError("Test case was already consumed");
+				this.#hasConsumedExpected = true;
+
 				Test.mutex.lock(async () => {
-					this.displayExpected = `${ErrorPrototype?.name ? `${ErrorPrototype.name}: ` : ""}${message}`;
+					this.difference = {
+						actual: null,
+						expected: `${ErrorPrototype?.name ? `${ErrorPrototype.name}:` : "thrown:"} ${message}`
+					};
 
 					try {
 						const actual: T = await new Promisification<T>(
@@ -181,7 +192,7 @@ export abstract class Test<T = unknown> {
 
 						this.wasSuccessful = false;
 
-						this.displayActual = actual;
+						this.difference.actual = actual;
 					} catch (err: unknown) {
 						this.wasSuccessful =
 							(ErrorPrototype
@@ -190,9 +201,9 @@ export abstract class Test<T = unknown> {
 							message ===
 								(err instanceof Error ? err.message : err);
 
-						this.displayActual = (err as Error).toString();
+						this.difference.actual = (err as Error).toString();
 					} finally {
-						complete();
+						Test.tryComplete();
 					}
 				});
 			}

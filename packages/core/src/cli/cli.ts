@@ -79,9 +79,9 @@ runSuite()
 					}\n`
 				);
 				console.log("\x1b[1m\x1b[2mEXPECTED:\x1b[0m\n");
-				Printer.value(test.displayExpected);
+				Printer.value(test.difference.expected);
 				console.log("\n\x1b[1m\x1b[2mACTUAL:\x1b[0m\n");
-				Printer.value(test.displayActual);
+				Printer.value(test.difference.actual);
 				console.log(
 					`\x1b[0m\x1b[2m${Array.from(
 						{ length: test.title.length + 2 },

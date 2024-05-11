@@ -13,8 +13,12 @@
 		"format": "npx prettier --check ./packages/*/src/*.ts",
 		"format:fix": "npx prettier --write ./packages/*/src/**/*.ts",
 		"metatest": "./scripts/metatest.sh",
+		"metatest:unit": "./bin.sh unit ./metatest/unit.test.js",
+		"metatest:http": "./bin.sh http ./metatest/http/",
+		"metatest:dom": "./bin.sh dom ./metatest/dom.test.js",
 		"test": "npm run metatest",
-		"generate:suite": "node ./packages/core/build/cli/cli.gen.js suite --path ./packages/ --name @__generated"
+		"generate:suite": "node ./packages/core/build/cli/cli.gen.js suite --path ./packages/ --name @__generated",
+		"validate-examples": "./scripts/validate-examples.sh"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.2.0",
@@ -25,6 +29,7 @@
 		"husky": "^9.0.11",
 		"lint-staged": "^15.2.2",
 		"prettier": "^3.2.5",
-		"typescript-eslint": "^7.8.0"
+		"typescript-eslint": "^7.8.0",
+		"express": "^4.19.2"
 	}
 }
