@@ -30,7 +30,7 @@
     "scripts": {
         "compile": "npx tsc --project ./tsconfig.debug.json",
         "compile:watch": "npm run compile -- --watch",
-        "build": "rm -rf ./build/ && npx tsc --project ./tsconfig.build.json && chmod 755 ./build/cli/cli.js"
+        "build": "rm -rf ./build/ && rm -rf ./types/ && npx tsc --project ./tsconfig.build.json && chmod 755 ./build/cli/cli.js"
     },
     "devDependencies": {
         "@types/node": "^20.10.6",

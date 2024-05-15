@@ -6,6 +6,7 @@ Positionals (required):
     • unit              (@t-ski/otes--unit)
     • http              (@t-ski/otes--http)
     • dom               (@t-ski/otes--dom)
+1:  Path to test target directory (or single test file)
 
 Flags:
 --..., -...             ...

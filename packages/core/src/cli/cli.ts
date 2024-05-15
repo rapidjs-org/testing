@@ -4,41 +4,41 @@ import { readFileSync } from "fs";
 import { join, resolve as resolvePath } from "path";
 
 import { TColor } from "../types";
-import { TResults, init } from "../api";
+import { IResults, init } from "../api";
 
 import { Args } from "./Args";
 import { Printer } from "./Printer";
 
 import OFFICIAL_SUITES from "./suites.json";
 
-async function runSuite(): Promise<TResults> {
+async function runSuite(): Promise<IResults> {
 	if (Args.parsePositional(0) === "help" || Args.parseFlag("help", "H")) {
 		console.log(readFileSync(join(__dirname, "../../help.txt")).toString());
 
 		process.exit(0);
 	}
 
-	const testSuiteModuleReference: string = Args.parsePositional(0);
+	const testSuiteModulePath: string = Args.parsePositional(0);
 
-	if (!testSuiteModuleReference)
+	if (!testSuiteModulePath)
 		throw new ReferenceError("Missing test suite name (pos 0)");
 	if (!Args.parsePositional(1))
 		throw new ReferenceError("Missing test directory path (pos 1)");
 
-	let testSuiteModulePath: string;
+	let testSuiteModuleReference: string;
 	try {
-		testSuiteModulePath = require.resolve(
+		testSuiteModuleReference = require.resolve(
 			(OFFICIAL_SUITES as { [key: string]: string })[
-				testSuiteModuleReference
-			] ?? testSuiteModuleReference
+				testSuiteModulePath
+			] ?? testSuiteModulePath
 		);
 	} catch {
-		testSuiteModulePath = resolvePath(testSuiteModuleReference);
+		testSuiteModuleReference = resolvePath(testSuiteModuleReference);
 	}
 
 	try {
 		const TestClass = Object.values(
-			(await import(testSuiteModulePath)) as
+			(await import(testSuiteModuleReference)) as
 				| { [s: string]: unknown }
 				| ArrayLike<unknown>
 		)[0] as { suiteTitle: string; suiteColor: TColor };
@@ -48,18 +48,27 @@ async function runSuite(): Promise<TResults> {
 		);
 	} catch {}
 
-	return await init(testSuiteModulePath, Args.parsePositional(1));
+	return await init(testSuiteModuleReference, Args.parsePositional(1));
 }
 
 runSuite()
-	.then((results: TResults) => {
+	.then((results: IResults) => {
 		const counter = {
 			success: 0,
 			failure: 0
 		};
 
+		if (!Object.keys(results.record).length) {
+			Printer.warn("No tests defined");
+
+			process.exit(0);
+		}
+
 		for (const filepath in results.record) {
 			console.log(`\n• ${filepath}\x1b[0m`);
+
+			!results.record[filepath].length &&
+				Printer.warn("No test case defined");
 
 			for (const test of results.record[filepath]) {
 				counter.success += +test.wasSuccessful;
@@ -99,14 +108,17 @@ runSuite()
 			} (${Math.round(
 				(counter.success / (counter.success + counter.failure) || 1) *
 					100
-			)}% (${counter.success}/${counter.success + counter.failure}) successful, ${Math.round(
-				results.time * 0.001
-			)}s)\x1b[0m`
+			)}% (${counter.success}/${counter.success + counter.failure}) successful, ${
+				results.time > 1000
+					? `${Math.round((results.time * 0.001 + Number.EPSILON) * 100) / 100}s`
+					: `${results.time}ms`
+			})\x1b[0m`
 		);
 
 		process.exit(counter.failure ? 1 : 0);
 	})
 	.catch((err: Error) => {
+		console.log(err);
 		const testFileMentionRegex = /([^/]+\.test\.js)([^\w\d]|$)/;
 
 		const errorStackLines: string[] = (

@@ -28,7 +28,7 @@ ROUTER.get("/cities/:id", (req, res) => {
 
 ROUTER.post("/cities", (req, res) => {
     const id = CITIES_DB.size;
-    console.log(req.body)
+    
     CITIES_DB.set(id, req.body);
     
     res.send(id.toString());

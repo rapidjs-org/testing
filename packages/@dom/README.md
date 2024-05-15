@@ -1,10 +1,12 @@
-# [OTES](https://github.com/t-ski/OTES) <Suite> Testing
+# [OTES](https://github.com/t-ski/OTES) Unit Testing `dom`
 
-OTES test suite for <purpose> testing providing the expression <symmetrical|asymmetrical> `<Suite>Test` class.
+OTES test suite for unit testing providing the expression asymmetrical `DOMTest` class.
 
 ``` cli
-npx otes <package-reference> <tests-path>
+npx otes dom <tests-path>
 ```
+
+> Integrated in [`t-ski/otes`](https://github.com/t-ski/OTES)
 
 ## Test Anatomy
 
@@ -22,7 +24,7 @@ npx otes <package-reference> <tests-path>
 ### Value-based Assertion
 
 ``` ts
-new <Suite>Test("Example label")
+new DOMTest("Example label")
 .actual(<expression>)
 .expected(<expression>);
 ```
@@ -30,10 +32,12 @@ new <Suite>Test("Example label")
 ### Error-based Assertion
 
 ``` ts
-new <Suite>Test("Example label")
+new DOMTest("Example label")
 .actual(<expression>)
 .error("<error-message>", <ErrorConstructor>);
 ```
+
+<sup>[View More Examples](../../examples/dom)</sup>
 
 ## Comparison Strategy
 
@@ -52,3 +56,11 @@ new <Suite>Test("Example label")
 .actual(<expression>)
 .expected(<expression>)
 ```
+
+## Configuration
+
+...
+
+##
+
+<sub>&copy; Thassilo Martin Schiepanski</sub>

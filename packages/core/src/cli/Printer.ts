@@ -23,11 +23,15 @@ export class Printer {
 		);
 	}
 
-	public static printSuccess(message: string) {
+	public static warn(message: string) {
+		console.log(`\n\x1b[2m\x1b[33m${message}\x1b[0m`);
+	}
+
+	public static success(message: string) {
 		console.log(`\x1b[32m✔\x1b[0m ${message}`);
 	}
 
-	public static printFailure(message: string) {
+	public static failure(message: string) {
 		console.log(`\x1b[31mx\x1b[0m ${message}`);
 	}
 

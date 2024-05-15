@@ -32,7 +32,7 @@ export abstract class Test<T = unknown> {
 	public wasSuccessful: boolean;
 	public difference: IDifference<T>;
 
-	private static tryComplete() {
+	public static tryComplete() {
 		if (--Test.runningTests > 0) return;
 
 		Test.completeTimeout = setTimeout(
@@ -155,12 +155,27 @@ export abstract class Test<T = unknown> {
 
 				this.difference = this.getDifference(actual, expected);
 
+				const isAtomic = (value: unknown): boolean => {
+					return (
+						[undefined, null].includes(value) ||
+						["string", "number", "boolean"].includes(typeof value)
+					);
+				};
+				const wasPartiallySuccessful = (
+					value: Partial<T> | string
+				): boolean => {
+					return (
+						[undefined, null].includes(value) ||
+						(!isAtomic(value) && !Object.keys(value).length)
+					);
+				};
+
 				this.wasSuccessful =
-					[undefined, null].includes(this.difference.actual) ||
-					(!["string", "number", "boolean"].includes(
-						typeof this.difference.actual
-					) &&
-						!Object.keys(this.difference.actual).length);
+					(isAtomic(this.difference.actual)
+						? this.difference.actual == this.difference.expected
+						: true) &&
+					wasPartiallySuccessful(this.difference.actual) &&
+					wasPartiallySuccessful(this.difference.expected);
 
 				Test.tryComplete();
 			});

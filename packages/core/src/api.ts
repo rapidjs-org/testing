@@ -7,12 +7,9 @@ import { Env } from "./Env";
 
 import { FormatError } from "./FormatError";
 
-type TRecord = { [key: string]: Test[] };
-
-export type TResults = {
-	time: number;
-	record: TRecord;
-};
+interface IRecord {
+	[key: string]: Test[];
+}
 
 /* interface IOptions {
 	// TODO (?)
@@ -22,20 +19,20 @@ export type TResults = {
 
 }; */
 
-const curTestRecord: TRecord = {};
+const curTestRecord: IRecord = {};
 const importMutex = new AsyncMutex();
 
-function traversePath(
-	path: string,
-	fileCallback: (filepath: string) => void = () => {}
-) {
+let activeFilepath: string;
+
+function traversePath(path: string) {
 	const handleFilepath = (filepath: string) => {
 		if (!/[^#][^/]+\.test\.js$/.test(filepath)) return;
 
-		fileCallback(filepath);
-
 		importMutex
-			.lock(() => import(filepath))
+			.lock(async () => {
+				activeFilepath = filepath;
+				await import(filepath);
+			})
 			.catch((err: Error) => {
 				throw new FormatError(err, "Cannot evaluate test file");
 			});
@@ -71,31 +68,39 @@ function traversePath(
 
 export { Test } from "./Test";
 
+export interface IResults {
+	time: number;
+	record: IRecord;
+}
+
 export async function init(
-	testSuiteModulePath: string,
+	testSuiteModuleReference: string,
 	testTargetPath: string /* , options?: IOptions */
-): Promise<TResults>;
+): Promise<IResults>;
 export async function init(
 	testSuiteAPI: { [key: string]: Test },
 	testTargetPath: string /* , options?: IOptions */
-): Promise<TResults>;
+): Promise<IResults>;
 export async function init(
 	apiArg: unknown,
 	testTargetPath: string /* , options?: IOptions */
-): Promise<TResults> {
+): Promise<IResults> {
 	type TTestApi = { [key: string]: Test };
 	const testSuiteAPI =
 		typeof apiArg === "string"
 			? await new Promise<TTestApi>(async (resolve, reject) => {
-					const testSuiteModulePath: string = resolvePath(apiArg);
-					!existsSync(testSuiteModulePath)
+					const testSuiteModuleReference: string =
+						resolvePath(apiArg);
+					!existsSync(testSuiteModuleReference)
 						? reject(
 								new ReferenceError(
-									`Test suite module not found '${testSuiteModulePath}'`
+									`Test suite module not found '${testSuiteModuleReference}'`
 								)
 							)
 						: resolve(
-								(await import(testSuiteModulePath)) as TTestApi
+								(await import(
+									testSuiteModuleReference
+								)) as TTestApi
 							);
 				})
 			: (apiArg as { [key: string]: Test });
@@ -128,7 +133,7 @@ export async function init(
 
 	const testEnv = new Env(testTargetPath);
 
-	return new Promise<TResults>(async (resolve, reject) => {
+	return new Promise<IResults>(async (resolve, reject) => {
 		try {
 			await testEnv.call("BEFORE");
 		} catch (err: unknown) {
@@ -164,7 +169,6 @@ export async function init(
 			});
 		});
 
-		let activeFilepath: string;
 		Test.event.on("create", (test: Test) => {
 			curTestRecord[activeFilepath] = [
 				curTestRecord[activeFilepath] ?? [],
@@ -172,8 +176,8 @@ export async function init(
 			].flat();
 		});
 
-		traversePath(resolvedTestTargetPath, (filepath: string) => {
-			activeFilepath = filepath;
-		});
+		Test.tryComplete();
+
+		traversePath(resolvedTestTargetPath);
 	});
 }
