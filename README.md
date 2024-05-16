@@ -118,7 +118,9 @@ Without further ado, the actual as well as the expected expressions can be funct
 .actual(4)                    // ≙ 4
 .actual(2**2)                 // ≙ 4
 .actual(Math.pow(2, 2))       // ≙ 4
-.actual(() => 2**2)           // ≙ 4
+.actual(
+  () => 2**2
+)                             // ≙ 4
 
 .actual(() => {
   return () => 2**2;
@@ -277,6 +279,101 @@ OTES.init("unit", require("path").resolve("./test/"))
 }
 ```
 
-## 
+## Other Frameworks
+
+OTES alleviates the overall usability over existing testing frameworks. The pivotal design decisions are:
+
+- Cluster semantically related test cases within files rather than function scopes
+- Provide a uniform assertion interface abstracting contextual behaviour
+- Hide expression evaluation behind the assertion interface
+
+**🙂 &hairsp; with Jest**
+
+<sub>user.test.js</sub>
+``` js
+describe("User", () => {
+  describe("get", () => {
+    it("gets user (async)", () => {
+      expect.assertions(1);
+      expect(getUserName(97)).resolves.toBe("Justus");
+    });
+    it("gets no user (async)", () => {
+      expect.assertions(1);
+      expect(getUserName(102)).rejects.toEqual({
+        error: "Unknown user ID",
+      });
+    });
+    it("throws error for invalid id", () => {
+      expect.assertions(2);
+      expect(() => getUserName(-1)).toThrow(SyntaxError);
+      expect(() => getUserName(-1)).toThrow("Invalid user ID");
+    });
+  });
+  describe("validate name", () => {
+    it("validates user name syntactically", () => {
+      expect.assertions(1);
+      expect(validateUserName("Peter")).not.toBe(false);
+    });
+  });
+});
+```
+
+**🙂 &hairsp; with Mocha (Chai)**
+
+<sub>user.spec.js</sub>
+``` js
+describe("User", () => {
+  describe("#getUserName()", () => {
+    it("gets user (async)", done => {
+      return getUserName(97)
+      .then(name => {
+        expect.to.equal("Justus");
+        done();
+      });
+    });
+    it("gets no user (async)", async () => {
+      return expect(await getUserName(102)).to.equal({
+        error: "Unknown user ID",
+      });
+    });
+    it("throws error for invalid id", () => {
+      return expect(getUserName(-1)).to.throw(SyntaxError, "Invalid user ID");
+    });
+  });
+  describe("#validateUserName()", () => {
+    it("validates user name syntactically", () => {
+      return expect(validateUserName("Peter")).to.not.equal(false);
+    });
+  });
+});
+```
+
+### 😃 &hairsp; with OTES
+
+<sub>user.get.test.js</sub>
+``` js
+new UnitTest("Gets user (async)")
+.actual(getUserName(97))
+.expected("Justus");
+
+new UnitTest("Gets no user (async)")
+.actual(getUserName(102))
+.expected({
+  error: "Unknown user ID",
+});
+
+new UnitTest("Gets no user (async)")
+.actual(getUserName(102))
+.error("Invalid user ID", SyntaxError);
+```
+
+<sub>user.validate.test.js</sub>
+``` js
+new UnitTest("Gets no user (async)")
+.actual(validateUserName("Peter"))
+.expected(true);
+```
+
+##
 
 <sub>© Thassilo Martin Schiepanski</sub>
