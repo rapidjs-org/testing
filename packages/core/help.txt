@@ -3,9 +3,9 @@ Usage: otes <positional-0> <positional-1> [--<arg:key>|-<arg:shorthand>[ <arg-op
 Positionals (required):
 0:  Reference to test suite module (concrete test class)
     Official test suites:
-    • unit              (@t-ski/otes--unit)
-    • http              (@t-ski/otes--http)
-    • dom               (@t-ski/otes--dom)
+    • unit              (t-ski/otes--unit)
+    • http              (t-ski/otes--http)
+    • dom               (t-ski/otes--dom)
 1:  Path to test target directory (or single test file)
 
 Flags:

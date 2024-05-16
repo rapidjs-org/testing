@@ -81,39 +81,21 @@ export async function init(
 	testSuiteAPI: { [key: string]: Test },
 	testTargetPath: string /* , options?: IOptions */
 ): Promise<IResults>;
-export async function init(
-	apiArg: unknown,
-	testTargetPath: string /* , options?: IOptions */
-): Promise<IResults> {
+export async function init(apiArg: unknown, testTargetPath: string /* , options?: IOptions */): Promise<IResults> {
 	type TTestApi = { [key: string]: Test };
 	const testSuiteAPI =
 		typeof apiArg === "string"
 			? await new Promise<TTestApi>(async (resolve, reject) => {
-					const testSuiteModuleReference: string =
-						resolvePath(apiArg);
+					const testSuiteModuleReference: string = resolvePath(apiArg);
 					!existsSync(testSuiteModuleReference)
-						? reject(
-								new ReferenceError(
-									`Test suite module not found '${testSuiteModuleReference}'`
-								)
-							)
-						: resolve(
-								(await import(
-									testSuiteModuleReference
-								)) as TTestApi
-							);
+						? reject(new ReferenceError(`Test suite module not found '${testSuiteModuleReference}'`))
+						: resolve((await import(testSuiteModuleReference)) as TTestApi);
 				})
 			: (apiArg as { [key: string]: Test });
 
 	const TestClass = Object.entries(testSuiteAPI)[0];
-	if (
-		TestClass[0] === "default" ||
-		(Object.getPrototypeOf(TestClass[1]) as { name: string }).name !==
-			"Test"
-	) {
-		throw new SyntaxError(
-			"Test suite module must provide a single named concrete Test class export"
-		);
+	if (TestClass[0] === "default" || (Object.getPrototypeOf(TestClass[1]) as { name: string }).name !== "Test") {
+		throw new SyntaxError("Test suite module must provide a single named concrete Test class export");
 	}
 
 	const resolvedTestTargetPath: string = resolvePath(testTargetPath);
@@ -170,10 +152,7 @@ export async function init(
 		});
 
 		Test.event.on("create", (test: Test) => {
-			curTestRecord[activeFilepath] = [
-				curTestRecord[activeFilepath] ?? [],
-				test
-			].flat();
+			curTestRecord[activeFilepath] = [curTestRecord[activeFilepath] ?? [], test].flat();
 		});
 
 		Test.tryComplete();
