@@ -1,0 +1,16 @@
+{
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Metatest@unit",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/packages/core/build/cli/cli.js",
+            "args": [
+                "unit", "${workspaceFolder}/metatest/unit.test.js"
+            ]
+        }
+    ]
+}

@@ -1,267 +1,391 @@
 # OTES
 
-**O**bjectified **T**esting of **E**CMA **S**cript applications. Simple and straightforward.  
-Favoring language native TDD with a uniform interface for both synchronous and asynchronous testing.
-
-``` js
-// Test for a value comparison utility
-const valueCompareTest = new UnitTest(util.compare, "Value comparison");
-
-valueCompareTest
-.case(1, 1)
-.for(true,
-    "Compare identical objects");
-
-valueCompareTest
-.case(1, 2)
-.for(false,
-    "Compare different objects");
-```
-
-## Installation
+Context-sensitive, (a)sync-uniform testing framework for JavaScript and TypeScript.
 
 ``` cli
-npm i -G t-ski/otes
+npm install -D t-ski/otes
 ```
 
-> Install **OTES** globally in order to work with the presented CLI interface. Project local installations must prepend subsequently stated commands with `npx`.
+<sub>division.test.js</sub>
+&thinsp;
+<sub>[View More Examples](./examples/)</sub>
+``` js
+function divide(a, b) {
+  if(b === 0) throw new SyntaxError("Division by zero");
+  return a / b;
+}
 
-## CLI Usage
+new UnitTest("Computes quotient of positive integers")
+.actual(divide(4, 2))
+.expected(2);
+
+new UnitTest("Throws error for division by zero")
+.actual(() => divide(2, 0))
+.error("Division by zero", SyntaxError);
+```
+
+#### Official Test Suites
+
+| Alias &thinsp; <sub>Underlying Package</sub> | Test Class | Purpose |
+| :- | :- | :- |
+| `unit` &thinsp; <sub>`t-ski/otes--unit`</sub> | `UnitTest` | Unit testing <sup>([Read Documentation](./packages/@unit/README.md))</sup> |
+| `http` &thinsp; <sub>`t-ski/otes--http`</sub> | `HTTPTest` | HTTP(S) testing <sup>([Read Documentation](./packages/@http/README.md))</sup> |
+| `dom` &thinsp; <sub>`t-ski/otes--dom`</sub> | `DOMTest`| DOM testing <sup>([Read Documentation](./packages/@dom/README.md))</sup> |
+
+## Test Cases
+
+To summarise, a test case is an assertion on how a related test subject (application with a JavaScript API) shall behave. A test case is usually implemented through pairing an actual with an expected value for comparison. OTES is accessible through context-specific test classes whose instances represent individual test cases. An assertion either represents a value-, or an error-based call chain upon a test class instance. Rather than expecting the test cases to compile actual and expected values individually, assertions work on arbitrary expressions that contextually abstract value evaluations.
+
+### Value-based Assertion
+
+``` ts
+new <Suite>Test(label: string)
+.actual(...expression: unknown[])
+.expected(...expression: unknown[]);
+```
+
+Value-based assertion represents the primary test case type. It compares the evaluated values of the actual and the expected expressions. How the evaluation works is context-dependent: The procedure is abstracted through the applied test suite, i.e. underlying test class. Test suites can come either with a symmetrical, or an asymmetrical expression interface. For instance, the fundamental unit test suite (`unit`) compares symmetrically on the very given expressions evaluated by JavaScript alone. On the other hand, the more elaborate HTTP test suite (`http`) asymmetrically accepts request information as an actual expression to perform an HTTP request, but expects the respective response information for comparison.
+
+#### Example with `unit`
+
+**✅ &thinsp; SUCCESS**
+
+``` js
+new UnitTest("Computes quotient of integers")
+.actual(4 / 2)
+.expected(2);
+```
+
+**❌ &thinsp; FAILURE**
+
+``` js
+new UnitTest("Computes quotient of integers")
+.actual(4 / 2)
+.expected(3);   // Incorrect result
+```
+
+**❌ &thinsp; UNCAUGHT ERROR**
+
+``` ts
+new UnitTest("Computes quotient of integers")
+.actual(4 / n)  // Throws error (process termination)
+.expected(2);
+```
+
+### Error-based Assertion
+
+``` ts
+new <Suite>Test(label: string)
+.actual(...expression: unknown[])
+.error(errorMessage: string, ErrorPrototype?: ErrorConstructor);
+```
+
+Error-based assertion describes the secondary type of test case. It works on an intercepted error from the actual expression evaluation. Other than an ordinary expectation call, it implicitly expects the respective error message and optionally error constructor (i.e. error class identifier).
+
+> JavaScript applies a call-by-value rather than call-by-name evaluation strategy on function parameters. This is, any synchronous, non-function actual expression must be wrapped in an anonymous function to not throw the error out of the test case scope.
+
+#### Example with `unit`
+
+**✅ &thinsp; SUCCESS**
+
+``` ts
+new UnitTest("Computes quotient of integers")
+.actual(() => 4 / n)
+.error("n is not defined", ReferenceError);
+```
+
+**❌ &thinsp; FAILURE**
+
+``` ts
+new UnitTest("Computes quotient of integers")
+.actual(() => 4 / n)
+.expect("Forgot to define n!", SyntaxError);  // Incorrect error
+```
+
+**❌ &thinsp; UNCAUGHT ERROR (THROWS OUT OF SCOPE)**
+
+``` ts
+new UnitTest("Computes quotient of integers")
+.actual(4 / n)  // Throws error outside of test case scope (process termination)
+.error("n is not defined", ReferenceError);
+```
+
+## Expression Evaluation
+
+Without further ado, the actual as well as the expected expressions can be functions or promises (i.e. asynchronous). In that case, they are evaluated progressively until a definite (not further function or promise) value could be obtained. Test cases integrating asynchronous expressions are furthermore evaluated in order of appearance (mutex) to prevent race conditions.
+
+``` ts
+.actual(4)                    // ≙ 4
+.actual(2**2)                 // ≙ 4
+.actual(Math.pow(2, 2))       // ≙ 4
+.actual(
+  () => 2**2
+)                             // ≙ 4
+
+.actual(() => {
+  return () => 2**2;
+})                            // ≙ 4
+
+.actual(() => {
+  return new Promise(resolve => {
+    setTimeout(() => resolve(() => {
+      return () => 2**2;
+    }, 1000);
+  });
+})                            // ≙ 4
+```
+
+This strategy results in a single image of compared values (deterministic; or stochastic within deterministic bounds if testable). A test case, i.e. an evaluation of a full call chain, is hence considered as consumed. This means a test case can not be resolved via `.expected()` or `.error()` more than once. Additionally, OTES simplifies testing by merely providing the two above positive assertion interfaces. From a formal perspective, this is sufficient: Given an arbitrary actual value, the expected value can be tested. Any complementary value that would expect a negative assertion (“not equal to”) could easily be inverted to a positive assertion expecting the specific complementary value. Any more abstract assertion, such as an array has at least a certain element, could either be solved through a dedicated test suite, or a complex epression.
+
+``` js
+// with Jest
+expect(STR).toHaveLength(12)
+==
+expect(STR).not.toHaveLength(13)
+==
+expect(STR.length).toBe(12)
+
+// with OTES
+.actual(STR.length).expected(12)
+```
+
+## CLI
+
+The command line interface represents the default user interface for OTES. In short, the`otes` command takes a test suite suited for the context, and a path to the test files which are scanned recursively.
 
 ``` cli
-otes <path-to-test-directory> [(--timeout|-T)=5000] [--no-crop] [--no-individual-log]
+npx otes <test-suite-reference> <tests-path> [--<arg:key>|-<arg:shorthand>[ <arg-option>]?]*
 ```
 
-| Parameter | Shorthand | Description |
-| --------- | --------- | ----------- |
-| **--timeout** | **-T** | *Test case timeout in ms* |
-| **--no-crop** | | *Do not crop exhaustive test info results* |
-| **--no-individual-log** | | *Do not log application individual messages to the console (only valid for console log)* |
+`<test-suite-reference>`
 
-## Test Files
+Reference to the test suite. The test suite is a module implementing the abstract test class ([see here](./#custom-test-suite). Working on the native node module resolution mechanism, the test module reference can be either a path on disc, or a localisable name of a self-contained package. Based on the context, the concrete test suite class (`<Suite>Test`) provides an`.actual().expected()` evaluation mechanism, as well as arbitrary static helpers.
 
-### Test Directory
+`<tests-path>`
 
-All test suite related test files have to be located in a dedicated test file directory that is to be provided to a **OTES** execution command as the first CLI argument. Both absolute and CWD relative paths are legitimite. A test directory is recursively traversed for test file evaluation in alphabetical order.
+Path to the test target directory (also works on a single test file). Test files are required to end with `.test.js` (i.e. fulfill the test direcotry path relative glob pattern `./**/*.test.js`).
 
-### Individual Test Files
+> For test files deployed within a source directory, the source directory corresponds to the test directory. Likewise, an isolated test directory can be utilised.
 
-An individual test file stating an arbitrary amount of tests and related test cases is to be named in the format `*.test.js`. Test files are implicitly granted global access to the below outlined test classes.
+#### Flags
 
-## Generic Test Anatomy
+--..., -...             ...
+--...                   ...
 
-A test does look – no matter what concrete type of test class – as follows:
+#### Options
 
-``` js
-new <Test-Type>Test<T>(testInterface: T, testCaption?: String)
-.case(...args)
-.for(expectedCaseResult, caseCaption?: String);
-.chain(chainedContextCallback: actualCaseResult => {});
-```
+--..., -...             ...
 
-#### `new()` via Constructor
+## Environment Lifecycle Module
 
-Create a new test object representing a certain application interface test binding.
+Depending on the test context, running individual test cases may require an effective environment setup (e.g. serving a REST-API). For that reason, OTES respects the special environment module `__test.env.js` at the root of the test directory if present. Upon certain lifecycle events corresponding members exported from the module are called.
 
-#### `case()`
-
-Perform a test case on the test object providing specific parameter.
-
-#### `for()`
-
-Evaluate test case results for a given expected result in order to feed the global test suite statistics.
-
-#### `chain()`
-
-Chain a test context to the resolved test evaluation being able to act upon the previous result.
-
-| Parameter | Type | Description |
-| --------- | ---- | ----------- |
-| `chainedContextCallback` | **Function** | *Function to invoke upon test case check for an expected value. The actual case result is being passed as an argument to the callback in order to be performed on accordingly.* |
-
-> Each of the provided methods bound to a specific test object `{ case(), for(), chain() }` are optional for being called, but bound to the respective predecessor context.
-
-## Unit Tests
-
-Unit tests describe tests on independent modular parts of an application. Usually performed on the most atomic units, they can actually be used on any level of abstraction as long as they are not relying on side-affected module interdependencies.
-
-### Syntax
-
-``` js
-new UnitTest(func, testCaption?)
-.case(...args)
-.for(expectedResult, caseCaption?)
-.chain(chainedContextCallback);
-```
-
-#### `new()` via Constructor
-
-| Parameter | Type | Description |
-| --------- | ---- | ----------- |
-| `func` | **Function** | *Unit access function to test* |
-| `testCaption` | **Function** optional | *Test caption for associable output* |
-
-#### `case()`
-
-| Parameter | Type | Description |
-| --------- | ---- | ----------- |
-| `...args` | **any[]** | *Arguments to pass to the unit access function as would be provided application internally* |
-
-#### `for()`
-
-| Parameter | Type | Description |
-| --------- | ---- | ----------- |
-| `expectedResult` | **any** | *Expected unit test result* |
-
-> Unit tests work with both synchronous and asynchronous results. In the latter case a result resolution is performed all implicitly.
+| Export / Event | Purpose |
+| :- | :- |
+| `BEFORE` | Evaluates before test files are processed. |
+| `AFTER` | Evaluates after all test files were processed. |
 
 ### Example
 
 ``` js
-const util = require("../src/utilities");
+const restService = require("./lib/rest.service");
 
-// Test for a string length calculation utility
-const strLengthTest = new UnitTest(require("../src/utilities").strLength, "Valu");
+module.exports.BEFORE = async function() {
+  return await restService.listen(8000);
+}
 
-strLengthTest
-.case("Hello world")
-.for(11,
-    "Calculate correct string length");
-
-strLengthTest
-.case("Hello world")
-.for(100,
-    "Calculate incorrect string length");
+module.exports.AFTER = async function() {
+  return await restService.close();
+}
 ```
 
-## Network Tests
+## Custom Test Suite
 
-Network tests describe tests on network endpoints of an application. Technically representing a special type of unit tests, they provide a purpose driven usage class.
+Besides the officially provided test suites, implementation of a custom test suite is simple. In fact, a custom test suite is a module that exports a concrete test class extending the abstract OTES `Test` class:
 
-### Syntax
-
-``` js
-new NetworkTest(endpoint, testCaption?)
-.case(requestOptions, requestBody?)
-.for(expectedResponse, caseCaption?);
+``` ts
+abstract class Test<T> {
+  static readonly suiteTitle: string;
+  static readonly suiteColor: [ number, number, number ];  // RGB
+  constructor(title: string);
+  protected evalActualExpression(...expression: unknown[]): T | Promise<T>;
+  protected evalExpectedExpression(...expression: unknown[]): T | Promise<T>;
+  protected getDifference(actual: T, expected: T): {
+    actual: Partial<T>;
+    expected: Partial<T>;
+  };
+}
 ```
 
-#### `new()` via Constructor
+#### `suiteTitle` and `suiteColor`
 
-| Parameter | Type | Description |
-| --------- | ---- | ----------- |
-| `endpoint` | **String** | *Test endpoint* |
-| `testCaption` | **Function** optional | *Test caption for associable output* |
+Title and color of the related test suite badge printed to the console upon usage.
 
-#### `case()`
+#### Expression Evaluation upon Generic `<T>`
 
-| Parameter | Type | Description |
-| --------- | ---- | ----------- |
-| `requestOptions` | **Object** | *Request options in Request Object format (s.b.)* |
+For convenience, OTES allows the actual and the expected expressions to deviate (e.g. actual is HTTP request information to resolve for a response, but expected is filtered response information). However, the intermediate comparison works on a uniform value typed `T` that is evaluated from both the actual and the expected expression. Given an arbitrary spread of expressions (as passed to `.actual()` and `.expected()`), `.evalActualExpression()` and `.evalExpectedExpression()` compute the comparison values (typed `T`). By default, both methods return the identity of the first expression argument. 
 
-#### `for()`
+#### Difference Helper
 
-| Parameter | Type | Description |
-| --------- | ---- | ----------- |
-| `expectedResponse` | **Object** | *Expected endpoint response in Response Object format (s.b.)* |
+Whether or not a test case succeeds depends on the difference computed from the evaluated actual and expected expressions. OTES does not simply implement a method that checks for contextual equality, but combines display values filtering with an implicit equality check. The difference is hence not (necessarily) the mathematical difference operation, but a production of the actual and expected value to print in case they do not match. Precisely speaking, a test case fails if the partially returned difference values (`.actual` or `.expected`) are not equal (`===`) or at least one is not empty. Emptiness is moreover defined as any value that is `undefined`, `null` or an empty object `{}` (has no abstract properties). By default, the entire values are reflected in case they are not deep equal (non-strict).
 
-> Since network tests have an asynchronous character, test results may not log in order of appearance, but always given a context tag.
+## API
 
-### Request Object
+Although the CLI is the go-to interface for OTES , the underlying API can also be used within programatic pipelines.
 
-To define specific parameters for a specific endpoint request test, an according object may be provided to each respective test case:
+``` ts
+OTES.init(testSuiteModuleReference: string, testTargetPath: string): Promise<IResults>
+```
 
-| Property | Type | Description |
-| --------- | ---- | ----------- |
-| `method` | **String** optional | *Request method (POST by default iff given a body, GET otherwise)* |
-| `headers` | **Object** optional | *A dictionary of request headers in object representation* |
-| `searchParams` | **Object** optional | *A dictionary of search parameters in object representation (implicit URL injection)* |
-| `body` | **\*** optional | *Request body to provide the endpoint with* |
+``` ts
+interface IResults {
+  time: number,	// Time in ms
+  record: {
+    [ key: string ]: Test<T> {
+      title: string,
+      sourcePosition: string;
+      difference: {
+        actual: Partial<T>|string;
+        expected: Partial<T>|string;
+      };
+      wasSuccessful: boolean;
+    }[];	// <key> ≙ Related test file path
+  }
+}
+```
 
-### Response Object
+> The parameter `testSuiteModuleReference` can also be passed a test suite module export object directly (`{ <Suite>Test: Test }`).
 
-To compare for an expected response, the following properties may be checked on and thus provided:
+#### Example
 
-| Property | Type | Description |
-| --------- | ---- | ----------- |
-| `status` | **Number** optional | *Response status code* |
-| `headers` | **Object** optional | *A dictionary of response headers in object representation* |
-| `message` | **String, Object** optional | *Response message as a string or object iff JSON parsable* |
+``` ts
+import OTES from "otes";
 
-> Actual network test results are only compared to provided expected result properties in order to prevent exhaustive expected results.
-
-### Example
-
-``` js
-// Test for an item endpoint
-const itemTest = new NetworkTest("https://localhost/api/item".strLength, "Item endpoint");
-
-itemTest
-.case({ // GET by default
-    searchParams; {
-        id: 31
-    }
-})
-.for({
-    status: 200,
-    message: {
-        productName: "Mens Loafer \"Malibu\"",
-        colors: [ 3, 4, 6 ]
-    }
-},
-    "Retrieve an item");
-
-itemTest
-.case({
-    method: "POST",
-    body: {
-        productName: "Womens Sneaker \"Tokyo\"",
-        colors: [ 1, 2, 4, 6 ]
-    }
-})
-.for({
-    status: 201
-},
-    "Create an item")
-.chain(response => {
-
-    // Delete case based on just created resource
-    itemTest
-    .case({
-        method: "DELETE",
-        body: {
-            id: response.message.id
-        }
-    })
-    .for({
-        status: 204
-    },
-        "Delete an item");
-
+OTES.init("unit", require("path").resolve("./test/"))
+.then(results => {
+	console.log(results);
 });
 ```
 
-### Common Endpoint hostname
-
-To use a common endpoint hostname without requiring an according provision to the endpoint argument of a network test object constructor, a common host name may globally be set:
-
-``` js
-NetworkTest.setCommonHost("https://example.com");
+``` ts
+{
+  time: 297,
+  record: {
+    "/app/test/unit.test.js": [
+      {
+        Test {
+          title: "Test case 1",
+          sourcePosition: "at Object.<anonymous> (/app/test/unit.test.js:9:1)",
+          difference: { actual: null, expected: null },
+          wasSuccessful: true
+        },
+        Test {
+          title: "Test case 2",
+          sourcePosition: "at Object.<anonymous> (/app/test/unit.test.js:17:1)",
+          difference: { actual: 18, expected: 20 },
+          wasSuccessful: false
+        }
+      }
+    ]
+  }
+}
 ```
 
-> If neither a common host has been defined, nor a host has been providied to the endpoint argument, `localhost` is used as such.
+## Other Frameworks
 
-## Environment
+OTES alleviates the overall usability over existing testing frameworks. The pivotal design decisions are:
 
-**OTES** emits internal events throughout the course of a test suite run. Upon each event a file named in the format `<event-name>.event.js` located on the top level of the test directory is evaluated.
+- Cluster semantically related test cases within files rather than function scopes
+- Provide a uniform, unambiguous assertion interface abstracting contextual behaviour
+- Hide expression evaluation behind the assertion interface
 
-| Event | Description |
-| ----- | ----------- |
-| `setup` | *Fires before test suite is run* |
-| `cleanup` | *Fires after test suite has run* |
+**🙂 &hairsp; with Jest**
 
-> Event modules can be used to maintain an essential test environment (e.g. a web server for network testing).
+<sub>user.test.js</sub>
+``` js
+describe("User", () => {
+  describe("get", () => {
+    it("gets user (async)", () => {
+      expect.assertions(1);
+      expect(getUserName(97)).resolves.toBe("Justus");
+    });
+    it("gets no user (async)", () => {
+      expect.assertions(1);
+      expect(getUserName(102)).rejects.toEqual({
+        error: "Unknown user ID",
+      });
+    });
+    it("throws error for invalid id", () => {
+      expect.assertions(2);
+      expect(() => getUserName(-1)).toThrow(SyntaxError);
+      expect(() => getUserName(-1)).toThrow("Invalid user ID");
+    });
+  });
+  describe("validate name", () => {
+    it("validates user name syntactically", () => {
+      expect.assertions(1);
+      expect(validateUserName("Peter")).not.toBe(false);
+    });
+  });
+});
+```
 
-## 
+**🙂 &hairsp; with Mocha (Chai)**
+
+<sub>user.spec.js</sub>
+``` js
+describe("User", () => {
+  describe("#getUserName()", () => {
+    it("gets user (async)", done => {
+      return getUserName(97)
+      .then(name => {
+        expect.to.equal("Justus");
+        done();
+      });
+    });
+    it("gets no user (async)", async () => {
+      return expect(await getUserName(102)).to.equal({
+        error: "Unknown user ID",
+      });
+    });
+    it("throws error for invalid id", () => {
+      return expect(getUserName(-1)).to.throw(SyntaxError, "Invalid user ID");
+    });
+  });
+  describe("#validateUserName()", () => {
+    it("validates user name syntactically", () => {
+      return expect(validateUserName("Peter")).to.not.equal(false);
+    });
+  });
+});
+```
+
+### 😃 &hairsp; with OTES
+
+<sub>user.get.test.js</sub>
+``` js
+new UnitTest("Gets user (async)")
+.actual(getUserName(97))
+.expected("Justus");
+
+new UnitTest("Gets no user (async)")
+.actual(getUserName(102))
+.expected({
+  error: "Unknown user ID",
+});
+
+new UnitTest("Gets no user (async)")
+.actual(getUserName(102))
+.error("Invalid user ID", SyntaxError);
+```
+
+<sub>user.validate.test.js</sub>
+``` js
+new UnitTest("Gets no user (async)")
+.actual(validateUserName("Peter"))
+.expected(true);
+```
+
+##
 
 <sub>© Thassilo Martin Schiepanski</sub>

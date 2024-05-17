@@ -1,33 +1,35 @@
 {
-  "name": "otes",
-  "version": "0.1.0",
-  "description": "Simple and straightforward test framerwork for Java- and TypeScript applications.",
-  "main": "dist/app.js",
-  "scripts": {
-    "compile:once": "tsc --outDir ./dist",
-    "compile:watch": "tsc -w --outDir ./dist",
-    "lint": "./node_modules/.bin/eslint --ext .ts --fix ./src",
-    "test": "node ./dist/app ./test"
-  },
-  "bin": {
-    "otes": "./dist/cli.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/t-ski/otes.git"
-  },
-  "author": "Thassilo Martin Schiepanski",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/t-ski/otes/issues"
-  },
-  "homepage": "https://github.com/t-ski/otes#readme",
-  "devDependencies": {
-    "@types/node": "^16.11.39",
-    "@typescript-eslint/eslint-plugin": "^5.4.0",
-    "@typescript-eslint/parser": "^5.4.0",
-    "eslint": "^7.26.0",
-    "eslint-plugin-typescript": "^0.14.0",
-    "typescript": "^4.5.2"
-  }
+	"private": true,
+	"author": "Thassilo Martin Schiepanski",
+	"workspaces": [
+		"./packages/*"
+	],
+	"scripts": {
+		"prepare": "npx husky install",
+		"compile": "npm run compile -w @t-ski/otes && npm run compile -ws",
+		"build": "npm run build -w @t-ski/otes && npm run build -ws",
+		"lint": "npx eslint ./packages/*/src/*.ts",
+		"lint:fix": "npx eslint --fix ./packages/*/src/*.ts",
+		"format": "npx prettier --check ./packages/*/src/*.ts",
+		"format:fix": "npx prettier --write ./packages/*/src/**/*.ts",
+		"metatest": "./scripts/metatest.sh",
+		"metatest:unit": "./bin.sh unit ./metatest/unit.test.js",
+		"metatest:http": "./bin.sh http ./metatest/http/",
+		"metatest:dom": "./bin.sh dom ./metatest/dom.test.js",
+		"test": "npm run metatest",
+		"generate:suite": "node ./packages/core/build/cli/cli.gen.js suite --path ./packages/ --name @__generated",
+		"validate-examples": "./scripts/validate-examples.sh"
+	},
+	"devDependencies": {
+		"@eslint/js": "^9.2.0",
+		"@typescript-eslint/eslint-plugin": "^7.8.0",
+		"@typescript-eslint/parser": "^7.8.0",
+		"eslint": "^8.57.0",
+		"eslint-plugin-typescript": "^0.14.0",
+		"husky": "^9.0.11",
+		"lint-staged": "^15.2.2",
+		"prettier": "^3.2.5",
+		"typescript-eslint": "^7.8.0",
+		"express": "^4.19.2"
+	}
 }
