@@ -135,7 +135,19 @@ Without further ado, the actual as well as the expected expressions can be funct
 })                            // ≙ 4
 ```
 
-This strategy results in a single image of compared values (deterministic; or stochastic within deterministic bounds if testable). A test case, i.e. an evaluation of a full call chain, is hence considered as consumed. This means a test case can not be resolved via `.expected()` or `.error()` more than once. Additionally, OTES simplifies testing by merely providing the two above positive assertion interfaces. From a formal perspective, this is sufficient: Given an arbitrary actual value, the expected value can be tested. Any complementary value that would expect a negative assertion (“not equal to”) could easily be inverted to a positive assertion expecting the specific complementary value.
+This strategy results in a single image of compared values (deterministic; or stochastic within deterministic bounds if testable). A test case, i.e. an evaluation of a full call chain, is hence considered as consumed. This means a test case can not be resolved via `.expected()` or `.error()` more than once. Additionally, OTES simplifies testing by merely providing the two above positive assertion interfaces. From a formal perspective, this is sufficient: Given an arbitrary actual value, the expected value can be tested. Any complementary value that would expect a negative assertion (“not equal to”) could easily be inverted to a positive assertion expecting the specific complementary value. Any more abstract assertion, such as an array has at least a certain element, could either be solved through a dedicated test suite, or a complex epression.
+
+``` js
+// with Jest
+expect(STR).toHaveLength(12)
+==
+expect(STR).not.toHaveLength(13)
+==
+expect(STR.length).toBe(12)
+
+// with OTES
+.actual(STR.length).expected(12)
+```
 
 ## CLI
 
@@ -284,7 +296,7 @@ OTES.init("unit", require("path").resolve("./test/"))
 OTES alleviates the overall usability over existing testing frameworks. The pivotal design decisions are:
 
 - Cluster semantically related test cases within files rather than function scopes
-- Provide a uniform assertion interface abstracting contextual behaviour
+- Provide a uniform, unambiguous assertion interface abstracting contextual behaviour
 - Hide expression evaluation behind the assertion interface
 
 **🙂 &hairsp; with Jest**

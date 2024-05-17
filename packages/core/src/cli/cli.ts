@@ -38,7 +38,7 @@ async function runSuite(): Promise<IResults> {
 		const TestClass = Object.values(
 			(await import(testSuiteModuleReference)) as { [s: string]: unknown } | ArrayLike<unknown>
 		)[0] as { suiteTitle: string; suiteColor: TColor };
-		Printer.printBadge(
+		Printer.badge(
 			(TestClass.suiteTitle || "").replace(/( ?test(s)?)?$/i, " tests"),
 			TestClass.suiteColor ?? [225, 225, 225]
 		);
@@ -61,48 +61,58 @@ runSuite()
 		}
 
 		for (const filepath in results.record) {
-			console.log(`\n• ${filepath}\x1b[0m`);
+			Printer.newline();
+			Printer.log(`• ${filepath}`);
 
 			!results.record[filepath].length && Printer.warn("No test case defined");
+
+			const separator = `\x1b[2m${"–".repeat(
+				Object.values(results.record[filepath]).reduce(
+					(acc: number, test) => Math.max(acc, test.title.length),
+					0
+				) + 2
+			)}`;
 
 			for (const test of results.record[filepath]) {
 				counter.success += +test.wasSuccessful;
 				counter.failure += +!test.wasSuccessful;
 
+				const indicator = `\x1b[2m\x1b[30m∟\x1b[22m\x1b[39m `;
+
 				if (test.wasSuccessful) {
-					console.log(`\x1b[32m✔ ∟ ${test.title}\x1b[0m`);
+					Printer.success(`${indicator}${test.title}`);
 
 					continue;
 				}
 
-				console.log(
-					`\x1b[31m✘ \x1b[1m∟ ${test.title}\x1b[0m${
-						test.sourcePosition ? ` \x1b[2m(${test.sourcePosition})\x1b[0m` : ""
-					}\n`
+				Printer.failure(
+					`${indicator}${test.title}${
+						test.sourcePosition ? ` \x1b[2m\x1b[30m(${test.sourcePosition})\x1b[0m` : ""
+					}`
 				);
-				console.log("\x1b[1m\x1b[2mEXPECTED:\x1b[0m\n");
+				Printer.newline();
+				Printer.log("\x1b[1m\x1b[2mEXPECTED:");
+				Printer.newline();
 				Printer.value(test.difference.expected);
-				console.log("\n\x1b[1m\x1b[2mACTUAL:\x1b[0m\n");
+				Printer.newline();
+				Printer.log("\x1b[1m\x1b[2mACTUAL:");
+				Printer.newline();
 				Printer.value(test.difference.actual);
-				console.log(
-					`\x1b[0m\x1b[2m${Array.from({ length: test.title.length + 2 }, () => "–").join("")}\x1b[0m`
-				);
+				Printer.log(separator);
 			}
 		}
 
-		console.log(
-			`\n${
-				!counter.failure
-					? "\x1b[32m✔ Test suite \x1b[1msucceeded\x1b[22m"
-					: "\x1b[31m✘ Test suite \x1b[1mfailed\x1b[22m"
-			} (${Math.round(
-				(counter.success / (counter.success + counter.failure) || 1) * 100
-			)}% (${counter.success}/${counter.success + counter.failure}) successful, ${
-				results.time > 1000
-					? `${Math.round((results.time * 0.001 + Number.EPSILON) * 100) / 100}s`
-					: `${results.time}ms`
-			})\x1b[0m`
-		);
+		const testInfo = `\x1b[30m(${Math.round(
+			(counter.success / (counter.success + counter.failure) || 1) * 100
+		)}% (${counter.success}/${counter.success + counter.failure}) successful, ${
+			results.time > 1000
+				? `${Math.round((results.time * 0.001 + Number.EPSILON) * 100) / 100}s`
+				: `${results.time}ms`
+		})`;
+		Printer.newline();
+		!counter.failure
+			? Printer.success(`Test suite \x1b[1msucceeded\x1b[22m ${testInfo}`)
+			: Printer.failure(`Test suite \x1b[1mfailed\x1b[22m ${testInfo}`);
 
 		process.exit(counter.failure ? 1 : 0);
 	})
