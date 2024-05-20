@@ -1,15 +1,15 @@
 {
-    "name": "@t-ski/otes--dom",
+    "name": "@rapidjs.org/test--dom",
     "version": "0.1.0",
     "author": "Thassilo Martin Schiepanski",
-	"homepage": "https://github.com/t-ski/otes/tree/master/packages/@unit",
-    "keywords": [ "otes-testsuite" ],
+	"homepage": "https://github.com/rapidjs-org/test/tree/master/packages/@unit",
+    "keywords": [ "rjs:test-testsuite" ],
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/t-ski/otes.git"
+		"url": "git+https://github.com/rapidjs-org/test.git"
 	},
 	"bugs": {
-		"url": "https://github.com/t-ski/otes/issues"
+		"url": "https://github.com/rapidjs-org/test/issues"
 	},
 	"main": "./build/api.js",
     "types": "./types/api.d.ts",
@@ -27,6 +27,6 @@
         "typescript": "^5.3.3"
     },
     "dependencies": {
-        "@t-ski/otes": "^0.1.0"
+        "@rapidjs.org/test": "^0.1.0"
     }
 }

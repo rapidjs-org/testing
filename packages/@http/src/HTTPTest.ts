@@ -2,7 +2,7 @@ import { ClientRequest, RequestOptions, request as httpRequest } from "http";
 import { join } from "path";
 import { deepEqual } from "assert";
 
-import { Test } from "@t-ski/otes";
+import { Test } from "@rapidjs.org/test";
 
 import { TColor } from "../../common.types";
 
@@ -51,9 +51,7 @@ export class HTTPTest extends Test<IResponse> {
 			const reqOptions: RequestOptions = {
 				...HTTPTest.configuration,
 
-				path: encodeURI(
-					join(HTTPTest.configuration.pathRoot ?? "", path)
-				),
+				path: encodeURI(join(HTTPTest.configuration.pathRoot ?? "", path)),
 
 				...options
 			};
@@ -100,25 +98,17 @@ export class HTTPTest extends Test<IResponse> {
 
 		type TIndexedObject = { [key: string]: unknown };
 
-		const displayExpected: TIndexedObject = Object.assign(
-			{},
-			expected as TIndexedObject
-		);
-		const displayActual: TIndexedObject = Object.assign(
-			{},
-			actual as TIndexedObject
-		);
+		const displayExpected: TIndexedObject = Object.assign({}, expected as TIndexedObject);
+		const displayActual: TIndexedObject = Object.assign({}, actual as TIndexedObject);
 
 		displayExpected["headers"] = Object.fromEntries(
-			Object.entries(displayExpected["headers"] ?? {}).map(
-				(entry: string[]) => [entry[0].toLowerCase(), entry[1]]
-			)
+			Object.entries(displayExpected["headers"] ?? {}).map((entry: string[]) => [
+				entry[0].toLowerCase(),
+				entry[1]
+			])
 		);
 
-		const filterObj = (
-			sourceObj: TIndexedObject,
-			targetObj: TIndexedObject
-		) => {
+		const filterObj = (sourceObj: TIndexedObject, targetObj: TIndexedObject) => {
 			for (const key in targetObj) {
 				if (sourceObj[key]) continue;
 
@@ -135,10 +125,7 @@ export class HTTPTest extends Test<IResponse> {
 			}
 		};
 
-		filterObj(
-			displayExpected["headers"] as TIndexedObject,
-			displayActual["headers"] as TIndexedObject
-		);
+		filterObj(displayExpected["headers"] as TIndexedObject, displayActual["headers"] as TIndexedObject);
 		if (!Object.entries(displayActual["headers"] ?? {}).length) {
 			delete displayExpected["headers"];
 			delete displayActual["headers"];

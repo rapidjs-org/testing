@@ -2,7 +2,7 @@
     "private": true,
     "version": "0.1.0",
     "keywords": [
-        "otes-testsuite"
+        "rjs:test-testsuite"
     ],
 	"main": "./build/api.js",
     "types": "./types/api.d.ts",
@@ -20,6 +20,6 @@
         "typescript": "5.x"
     },
     "dependencies": {
-        "@t-ski/otes": "0.x"
+        "@rapidjs.org/test": "0.x"
     }
 }

@@ -1,9 +1,9 @@
-# [OTES](https://github.com/t-ski/OTES) <Suite> Testing
+# [rJS Test](https://github.com/t-ski/rJS Test) <Suite> Testing
 
-OTES test suite for <purpose> testing providing the expression <symmetrical|asymmetrical> `<Suite>Test` class.
+rJS Test test suite for <purpose> testing providing the expression <symmetrical|asymmetrical> `<Suite>Test` class.
 
 ``` cli
-npx otes <package-reference> <tests-path>
+npx rjs:test <package-reference> <tests-path>
 ```
 
 ## Test Anatomy

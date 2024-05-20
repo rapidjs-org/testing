@@ -1,24 +1,24 @@
 {
-    "name": "@t-ski/otes",
+    "name": "@rapidjs.org/test",
     "version": "0.1.0",
     "description": "Simple and straightforward test framerwork for Java- and TypeScript applications.",
     "author": "Thassilo Martin Schiepanski",
-	"homepage": "https://github.com/t-ski/otes#readme",
+	"homepage": "https://github.com/rapidjs-org/test#readme",
     "keywords": [
         "test",
         "test-framework"
     ],
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/t-ski/otes.git"
+		"url": "git+https://github.com/rapidjs-org/test.git"
 	},
 	"bugs": {
-		"url": "https://github.com/t-ski/otes/issues"
+		"url": "https://github.com/rapidjs-org/test/issues"
 	},
 	"main": "./build/api.js",
 	"bin": {
-		"otes": "./build/cli/cli.js",
-        "otes:gen": "./build/cli/cli.gen.js"
+		"rjs:test": "./build/cli/cli.js",
+        "rjs:test:gen": "./build/cli/cli.gen.js"
 	},
     "types": "./types/api.d.ts",
     "files": [

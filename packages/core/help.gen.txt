@@ -1,4 +1,4 @@
-Usage: otes:gen <positional> [--<arg:key>|-<arg:shorthand>[ <arg-option>]?]*
+Usage: rjs:test:gen <positional> [--<arg:key>|-<arg:shorthand>[ <arg-option>]?]*
 
 Positional (required):
     Generator target:
@@ -8,4 +8,4 @@ Options:
 --name, -N              Optional target name
 --path, -P              Optional target path
 
-Visit https://github.com/t-ski/OTES for more information.
+Visit https://github.com/t-ski/rJS Test for more information.

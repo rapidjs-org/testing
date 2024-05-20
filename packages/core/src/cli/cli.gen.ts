@@ -1,9 +1,15 @@
 #!/usr/bin/env node
 
-import { cpSync } from "fs";
+import { readFileSync, cpSync } from "fs";
 import { join, resolve as resolvePath } from "path";
 
 import { Args } from "./Args";
+
+if (Args.parsePositional(0) === "help" || Args.parseFlag("help", "H")) {
+	console.log(readFileSync(join(__dirname, "../../help.gen.txt")).toString());
+
+	process.exit(0);
+}
 
 function print(message: string) {
 	console.log(`\x1b[34m\x1b[> \x1b[22m${message}\x1b[0m`);

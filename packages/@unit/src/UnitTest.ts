@@ -1,4 +1,4 @@
-import { Test } from "@t-ski/otes";
+import { Test } from "@rapidjs.org/test";
 
 import { TColor } from "../../common.types";
 

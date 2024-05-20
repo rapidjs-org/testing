@@ -6,8 +6,8 @@
 	],
 	"scripts": {
 		"prepare": "npx husky install",
-		"compile": "npm run compile -w @t-ski/otes && npm run compile -ws",
-		"build": "npm run build -w @t-ski/otes && npm run build -ws",
+		"compile": "npm run compile -w @rapidjs.org/test && npm run compile -ws",
+		"build": "npm run build -w @rapidjs.org/test && npm run build -ws",
 		"lint": "npx eslint ./packages/*/src/*.ts",
 		"lint:fix": "npx eslint --fix ./packages/*/src/*.ts",
 		"format": "npx prettier --check ./packages/*/src/*.ts",

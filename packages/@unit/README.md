@@ -1,12 +1,12 @@
-# [OTES](https://github.com/t-ski/OTES) Unit Testing `unit`
+# [rJS Test](https://github.com/t-ski/rJS Test) Unit Testing `unit`
 
-OTES test suite for unit testing providing the expression symmetrical `UnitTest` class.
+rJS Test test suite for unit testing providing the expression symmetrical `UnitTest` class.
 
 ``` cli
-npx otes unit <tests-path>
+npx rjs:test unit <tests-path>
 ```
 
-> Integrated in [`t-ski/otes`](https://github.com/t-ski/OTES)
+> Integrated in [`rapidjs-org/test`](https://github.com/t-ski/rJS Test)
 
 ## Test Anatomy
 

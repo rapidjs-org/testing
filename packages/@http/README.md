@@ -1,12 +1,12 @@
-# [OTES](https://github.com/t-ski/OTES) Unit Testing `http`
+# [rJS Test](https://github.com/t-ski/rJS Test) Unit Testing `http`
 
-OTES test suite for unit testing providing the expression symmetrical `HTTPTest` class.
+rJS Test test suite for unit testing providing the expression symmetrical `HTTPTest` class.
 
 ``` cli
-npx otes http <tests-path>
+npx rjs:test http <tests-path>
 ```
 
-> Integrated in [`t-ski/otes`](https://github.com/t-ski/OTES)
+> Integrated in [`rapidjs-org/test`](https://github.com/t-ski/rJS Test)
 
 ## Configuration
 

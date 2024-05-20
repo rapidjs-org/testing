@@ -1,12 +1,12 @@
-# [OTES](https://github.com/t-ski/OTES) Unit Testing `dom`
+# [rJS Test](https://github.com/t-ski/rJS Test) Unit Testing `dom`
 
-OTES test suite for unit testing providing the expression asymmetrical `DOMTest` class.
+rJS Test test suite for unit testing providing the expression asymmetrical `DOMTest` class.
 
 ``` cli
-npx otes dom <tests-path>
+npx rjs:test dom <tests-path>
 ```
 
-> Integrated in [`t-ski/otes`](https://github.com/t-ski/OTES)
+> Integrated in [`rapidjs-org/test`](https://github.com/t-ski/rJS Test)
 
 ## Test Anatomy
 
