@@ -26,7 +26,7 @@ let activeFilepath: string;
 
 function traversePath(path: string) {
 	const handleFilepath = (filepath: string) => {
-		if (!/[^#][^/]+\.test\.js$/.test(filepath)) return;
+		if (!/[^#][^/]+\.test\.[cm]?js$/.test(filepath)) return;
 
 		importMutex
 			.lock(async () => {

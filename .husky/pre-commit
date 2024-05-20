@@ -1,5 +1,4 @@
-npm run build -ws
-
+npm run build
 npm run test
 
 npx lint-staged
