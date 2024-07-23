@@ -9,6 +9,7 @@ npm install -D rapidjs-org/test
 <sub>division.test.js</sub>
 &thinsp;
 <sub>[View More Examples](./examples/)</sub>
+
 ``` js
 function divide(a, b) {
   if(b === 0) throw new SyntaxError("Division by zero");
@@ -30,7 +31,6 @@ new UnitTest("Throws error for division by zero")
 | :- | :- | :- |
 | `unit` &thinsp; <sub>`rapidjs-org/test--unit`</sub> | `UnitTest` | Unit testing <sup>([Read Documentation](./packages/@unit/README.md))</sup> |
 | `http` &thinsp; <sub>`rapidjs-org/test--http`</sub> | `HTTPTest` | HTTP(S) testing <sup>([Read Documentation](./packages/@http/README.md))</sup> |
-| `dom` &thinsp; <sub>`rapidjs-org/test--dom`</sub> | `DOMTest`| DOM testing <sup>([Read Documentation](./packages/@dom/README.md))</sup> |
 
 ## Test Cases
 
@@ -45,6 +45,8 @@ new <Suite>Test(label: string)
 ```
 
 Value-based assertion represents the primary test case type. It compares the evaluated values of the actual and the expected expressions. How the evaluation works is context-dependent: The procedure is abstracted through the applied test suite, i.e. underlying test class. Test suites can come either with a symmetrical, or an asymmetrical expression interface. For instance, the fundamental unit test suite (`unit`) compares symmetrically on the very given expressions evaluated by JavaScript alone. On the other hand, the more elaborate HTTP test suite (`http`) asymmetrically accepts request information as an actual expression to perform an HTTP request, but expects the respective response information for comparison.
+
+> The common methods `actual()` and `expected()` are named in relation with atomic value assertions. Abstract expession evaluation, such as comparing a URL with an expected response, might not fit that terminology. For this, the methods have aliases `eval()` and `expect()` that serve a more generic assertion scenario.
 
 #### Example with `unit`
 
@@ -140,21 +142,20 @@ This strategy results in a single image of compared values (deterministic; or st
 ``` js
 // with Jest
 expect(STR).toHaveLength(12)
-==
 expect(STR).not.toHaveLength(13)
-==
 expect(STR.length).toBe(12)
 
 // with rJS Test
+.actual(STR.length == 13).expected(false)
 .actual(STR.length).expected(12)
 ```
 
 ## CLI
 
-The command line interface represents the default user interface for rJS Test. In short, the `rjs:test` command takes a test suite suited for the context, and a path to the test files which are scanned recursively.
+The command line interface represents the default user interface for rJS Test. In short, the `rjs-test` command takes a test suite suited for the context, and a path to the test files which are scanned recursively.
 
 ``` cli
-npx rjs:test <test-suite-reference> <tests-path> [--<arg:key>|-<arg:shorthand>[ <arg-option>]?]*
+npx rjs-test <test-suite-reference> <tests-path> [--<arg:key>|-<arg:shorthand>[ <arg-option>]?]*
 ```
 
 `<test-suite-reference>`
@@ -166,15 +167,6 @@ Reference to the test suite. The test suite is a module implementing the abstrac
 Path to the test target directory (also works on a single test file). Test files are required to end with `.test.js` (i.e. fulfill the test direcotry path relative glob pattern `./**/*.test.js`).
 
 > For test files deployed within a source directory, the source directory corresponds to the test directory. Likewise, an isolated test directory can be utilised.
-
-#### Flags
-
---..., -...             ...
---...                   ...
-
-#### Options
-
---..., -...             ...
 
 ## Environment Lifecycle Module
 
@@ -217,7 +209,7 @@ abstract class Test<T> {
 }
 ```
 
-> The CLI generator tool helps setting up a template test suite package. Run `rjs:test:gen help` for more information.
+> The CLI generator tool helps setting up a template test suite package. Run `rjs-test gen help` for more information.
 
 #### `suiteTitle` and `suiteColor`
 
@@ -229,7 +221,7 @@ For convenience, rJS Test allows the actual and the expected expressions to devi
 
 #### Difference Helper
 
-Whether or not a test case succeeds depends on the difference computed from the evaluated actual and expected expressions. rJS Test does not simply implement a method that checks for contextual equality, but combines display values filtering with an implicit equality check. The difference is hence not (necessarily) the mathematical difference operation, but a production of the actual and expected value to print in case they do not match. Precisely speaking, a test case fails if the partially returned difference values (`.actual` or `.expected`) are not equal (`===`) or at least one is not empty. Emptiness is moreover defined as any value that is `undefined`, `null` or an empty object `{}` (has no abstract properties). By default, the entire values are reflected in case they are not deep equal (non-strict).
+Whether or not a test case is successful depends on the difference computed from the actual and expected expression evaluations. rJS Test does not simply implement a method that checks for contextual equality, but combines display values filtering with an implicit equality check. The difference is hence not (necessarily) the mathematical difference operation, but a production of the actual and expected value to print in case they do not match. Precisely speaking, a test case fails if the partially returned difference values (`.actual` or `.expected`) are not equal (`===`) or at least one is not empty. Emptiness is moreover defined as any value that is `undefined`, `null` or an empty object `{}` (has no abstract properties). By default, the entire values are reflected in case they are not deep equal (non-strict).
 
 ## API
 
@@ -384,7 +376,7 @@ new UnitTest("Gets no user (async)")
 <sub>user.validate.test.js</sub>
 ``` js
 new UnitTest("Gets no user (async)")
-.actual(validateUserName("Peter"))
+.actual(validateUserName("Peter") !== false)
 .expected(true);
 ```
 

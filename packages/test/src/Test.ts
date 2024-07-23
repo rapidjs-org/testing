@@ -35,10 +35,7 @@ export abstract class Test<T = unknown> {
 	public static tryComplete() {
 		if (--Test.runningTests > 0) return;
 
-		Test.completeTimeout = setTimeout(
-			() => Test.event.emit("complete"),
-			_config.completeTimeout
-		);
+		Test.completeTimeout = setTimeout(() => Test.event.emit("complete"), _config.completeTimeout);
 	}
 
 	constructor(title: string) {
@@ -50,9 +47,7 @@ export abstract class Test<T = unknown> {
 			try {
 				this.sourcePosition = (err as Error).stack
 					.split(/\n/g)
-					.filter((line: string) =>
-						/\.test\.js([^\w\d]|$)/.test(line.trim())
-					)
+					.filter((line: string) => /\.test\.js([^\w\d]|$)/.test(line.trim()))
 					.map((line: string) => line.trim())
 					.join("\n");
 			} catch {}
@@ -68,9 +63,7 @@ export abstract class Test<T = unknown> {
 		const resolvedExpression: T[] = [];
 
 		for (const expr of expression) {
-			resolvedExpression.push(
-				await new Promisification<T>(expr).resolve()
-			);
+			resolvedExpression.push(await new Promisification<T>(expr).resolve());
 		}
 
 		return resolvedExpression;
@@ -106,13 +99,11 @@ export abstract class Test<T = unknown> {
 	public actual(...expression: unknown[]) {
 		const actualExpression: unknown[] = expression;
 
-		if (this.#hasConsumedActual)
-			throw new SyntaxError("Test case was already consumed");
+		if (this.#hasConsumedActual) throw new SyntaxError("Test case was already consumed");
 		this.#hasConsumedActual = true;
 
 		const expected = (...expression: unknown[]) => {
-			if (this.#hasConsumedExpected)
-				throw new SyntaxError("Test case was already consumed");
+			if (this.#hasConsumedExpected) throw new SyntaxError("Test case was already consumed");
 			this.#hasConsumedExpected = true;
 
 			Test.mutex.lock(async () => {
@@ -121,59 +112,32 @@ export abstract class Test<T = unknown> {
 				let actual: T;
 				try {
 					actual = await new Promisification<T>(
-						this.evalActualExpression(
-							...(await this.promisifyExpression(
-								...actualExpression
-							))
-						)
+						this.evalActualExpression(...(await this.promisifyExpression(...actualExpression)))
 					).resolve();
 				} catch (err: unknown) {
-					throw new FormatError(
-						err,
-						"Cannot consume actual value",
-						this.sourcePosition
-					);
+					throw new FormatError(err, "Cannot consume actual value", this.sourcePosition);
 				}
 
 				let expected: T;
 				try {
 					expected = await new Promisification<T>(
-						this.evalExpectedExpression.apply(
-							null,
-							await this.promisifyExpression(
-								...expectedExpression
-							)
-						)
+						this.evalExpectedExpression.apply(null, await this.promisifyExpression(...expectedExpression))
 					).resolve();
 				} catch (err: unknown) {
-					throw new FormatError(
-						err,
-						"Cannot consume expected value",
-						this.sourcePosition
-					);
+					throw new FormatError(err, "Cannot consume expected value", this.sourcePosition);
 				}
 
 				this.difference = this.getDifference(actual, expected);
 
 				const isAtomic = (value: unknown): boolean => {
-					return (
-						[undefined, null].includes(value) ||
-						["string", "number", "boolean"].includes(typeof value)
-					);
+					return [undefined, null].includes(value) || ["string", "number", "boolean"].includes(typeof value);
 				};
-				const wasPartiallySuccessful = (
-					value: Partial<T> | string
-				): boolean => {
-					return (
-						[undefined, null].includes(value) ||
-						(!isAtomic(value) && !Object.keys(value).length)
-					);
+				const wasPartiallySuccessful = (value: Partial<T> | string): boolean => {
+					return [undefined, null].includes(value) || (!isAtomic(value) && !Object.keys(value).length);
 				};
 
 				this.wasSuccessful =
-					(isAtomic(this.difference.actual)
-						? this.difference.actual == this.difference.expected
-						: true) &&
+					(isAtomic(this.difference.actual) ? this.difference.actual == this.difference.expected : true) &&
 					wasPartiallySuccessful(this.difference.actual) &&
 					wasPartiallySuccessful(this.difference.expected);
 
@@ -186,8 +150,7 @@ export abstract class Test<T = unknown> {
 			expected,
 
 			error: (message: string, ErrorPrototype?: ErrorConstructor) => {
-				if (this.#hasConsumedExpected)
-					throw new SyntaxError("Test case was already consumed");
+				if (this.#hasConsumedExpected) throw new SyntaxError("Test case was already consumed");
 				this.#hasConsumedExpected = true;
 
 				Test.mutex.lock(async () => {
@@ -198,11 +161,7 @@ export abstract class Test<T = unknown> {
 
 					try {
 						const actual: T = await new Promisification<T>(
-							this.evalActualExpression(
-								...(await this.promisifyExpression(
-									...actualExpression
-								))
-							)
+							this.evalActualExpression(...(await this.promisifyExpression(...actualExpression)))
 						).resolve();
 
 						this.wasSuccessful = false;
@@ -210,11 +169,8 @@ export abstract class Test<T = unknown> {
 						this.difference.actual = actual;
 					} catch (err: unknown) {
 						this.wasSuccessful =
-							(ErrorPrototype
-								? err.constructor === ErrorPrototype
-								: true) &&
-							message ===
-								(err instanceof Error ? err.message : err);
+							(ErrorPrototype ? err.constructor === ErrorPrototype : true) &&
+							message === (err instanceof Error ? err.message : err);
 
 						this.difference.actual = (err as Error).toString();
 					} finally {

@@ -1,9 +1,6 @@
 {
     "private": true,
     "version": "0.1.0",
-    "keywords": [
-        "rjs:test-testsuite"
-    ],
 	"main": "./build/api.js",
     "types": "./types/api.d.ts",
     "files": [
@@ -11,8 +8,8 @@
         "./types/"
     ],
     "scripts": {
-        "compile": "npx tsc --project ./tsconfig.debug.json",
-        "compile:watch": "npm run compile -- --watch",
+        "debug": "npx tsc --project ./tsconfig.debug.json",
+        "debug:watch": "npm run debug -- --watch",
         "build": "rm -rf ./build/ && rm -rf ./types/ && npx tsc --project ./tsconfig.build.json"
     },
     "devDependencies": {

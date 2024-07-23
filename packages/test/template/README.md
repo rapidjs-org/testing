@@ -1,12 +1,10 @@
-# [rJS Test](https://github.com/t-ski/rJS Test) Unit Testing `dom`
+# [rJS Test](https://github.com/t-ski/rJS Test) <Suite> Testing
 
-rJS Test test suite for unit testing providing the expression asymmetrical `DOMTest` class.
+rJS Test test suite for <purpose> testing providing the expression <symmetrical|asymmetrical> `<Suite>Test` class.
 
 ``` cli
-npx rjs:test dom <tests-path>
+npx rjs-test <package-reference> <tests-path>
 ```
-
-> Integrated in [`rapidjs-org/test`](https://github.com/t-ski/rJS Test)
 
 ## Test Anatomy
 
@@ -24,7 +22,7 @@ npx rjs:test dom <tests-path>
 ### Value-based Assertion
 
 ``` ts
-new DOMTest("Example label")
+new <Suite>Test("Example label")
 .actual(<expression>)
 .expected(<expression>);
 ```
@@ -32,12 +30,10 @@ new DOMTest("Example label")
 ### Error-based Assertion
 
 ``` ts
-new DOMTest("Example label")
+new <Suite>Test("Example label")
 .actual(<expression>)
 .error("<error-message>", <ErrorConstructor>);
 ```
-
-<sup>[View More Examples](../../examples/dom)</sup>
 
 ## Comparison Strategy
 
@@ -56,11 +52,3 @@ new DOMTest("Example label")
 .actual(<expression>)
 .expected(<expression>)
 ```
-
-## Configuration
-
-...
-
-##
-
-<sub>&copy; Thassilo Martin Schiepanski</sub>

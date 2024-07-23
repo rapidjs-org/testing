@@ -1,18 +1,10 @@
-Usage: rjs:test <positional-0> <positional-1> [--<arg:key>|-<arg:shorthand>[ <arg-option>]?]*
+Usage: rjs-test <positional-0> <positional-1> [--<arg:key>|-<arg:shorthand>[ <arg-option>]?]*
 
 Positionals (required):
 0:  Reference to test suite module (concrete test class)
     Official test suites:
     • unit              (rapidjs-org/test--unit)
     • http              (rapidjs-org/test--http)
-    • dom               (rapidjs-org/test--dom)
 1:  Path to test target directory (or single test file)
-
-Flags:
---..., -...             ...
---...                   ...
-
-Options:
---..., -...             ...
 
 Visit https://github.com/t-ski/rJS Test for more information.

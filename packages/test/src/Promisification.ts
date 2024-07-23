@@ -21,20 +21,11 @@ export class Promisification<T> {
 			let resolveValue: unknown = this.expression;
 
 			let i = 0;
-			while (
-				resolveValue instanceof Function ||
-				resolveValue instanceof Promise
-			) {
+			while (resolveValue instanceof Function || resolveValue instanceof Promise) {
 				try {
-					resolveValue =
-						resolveValue instanceof Function
-							? resolveValue()
-							: resolveValue;
+					resolveValue = resolveValue instanceof Function ? resolveValue() : resolveValue;
 
-					resolveValue =
-						resolveValue instanceof Promise
-							? await resolveValue
-							: resolveValue;
+					resolveValue = resolveValue instanceof Promise ? await resolveValue : resolveValue;
 				} catch (err: unknown) {
 					rejectInner(err);
 

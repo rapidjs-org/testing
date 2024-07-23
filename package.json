@@ -5,8 +5,8 @@
 		"./packages/*"
 	],
 	"scripts": {
-		"prepare": "npx husky install",
-		"compile": "npm run compile -w @rapidjs.org/test && npm run compile -ws",
+		"prepare": "npx husky",
+		"debug": "npm run debug -w @rapidjs.org/test && npm run debug -ws",
 		"build": "npm run build -w @rapidjs.org/test && npm run build -ws",
 		"lint": "npx eslint ./packages/*/src/*.ts",
 		"lint:fix": "npx eslint --fix ./packages/*/src/*.ts",
@@ -15,9 +15,8 @@
 		"metatest": "./scripts/metatest.sh",
 		"metatest:unit": "./bin.sh unit ./metatest/unit.test.js",
 		"metatest:http": "./bin.sh http ./metatest/http/",
-		"metatest:dom": "./bin.sh dom ./metatest/dom.test.js",
 		"test": "npm run metatest",
-		"generate:suite": "node ./packages/core/build/cli/cli.gen.js suite --path ./packages/ --name @__generated",
+		"generate:suite": "node ./packages/test/build/cli/cli.gen.js suite --path ./packages/ --name @__generated",
 		"validate-examples": "./scripts/validate-examples.sh"
 	},
 	"devDependencies": {
@@ -29,7 +28,6 @@
 		"husky": "^9.0.11",
 		"lint-staged": "^15.2.2",
 		"prettier": "^3.2.5",
-		"typescript-eslint": "^7.8.0",
-		"express": "^4.19.2"
+		"typescript-eslint": "^7.8.0"
 	}
 }

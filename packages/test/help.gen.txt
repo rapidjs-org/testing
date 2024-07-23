@@ -1,4 +1,4 @@
-Usage: rjs:test:gen <positional> [--<arg:key>|-<arg:shorthand>[ <arg-option>]?]*
+Usage: rjs-test-gen <positional> [--<arg:key>|-<arg:shorthand>[ <arg-option>]?]*
 
 Positional (required):
     Generator target:

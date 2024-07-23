@@ -1,6 +1,6 @@
 #!/bin/bash
 
 
-[ ! -d ./packages/core/build ] && npm run compile
+[ ! -d ./packages/test/build ] && npm run debug
 
-node ./packages/core/build/cli/cli.js $@
+node ./packages/test/build/cli/cli.js $@

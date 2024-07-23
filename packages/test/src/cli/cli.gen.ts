@@ -5,7 +5,7 @@ import { join, resolve as resolvePath } from "path";
 
 import { Args } from "./Args";
 
-if (Args.parsePositional(0) === "help" || Args.parseFlag("help", "H")) {
+if (Args.parsePositional(1) === "help" || Args.parseFlag("help", "H")) {
 	console.log(readFileSync(join(__dirname, "../../help.gen.txt")).toString());
 
 	process.exit(0);
@@ -22,12 +22,12 @@ function handleError(err: Error) {
 process.on("uncaughtException", handleError);
 process.on("unhandledRejection", handleError);
 
-const command: string = Args.parsePositional(0);
+const command: string = Args.parsePositional(1);
 
-if (!command) throw new SyntaxError("Missing command (pos 0)");
+if (!command) throw new SyntaxError("Missing command (pos 1) (gen)");
 
 switch (command) {
-	case "suite": {
+	case "template": {
 		const targetPath: string = resolvePath(
 			Args.parseOption("path", "P") ?? "",
 			Args.parseOption("name", "N") ?? "generated-suite"
@@ -42,5 +42,5 @@ switch (command) {
 		break;
 	}
 	default:
-		throw new SyntaxError(`Unknown command '${command}'`);
+		throw new SyntaxError(`Unknown command '${command}' (gen)`);
 }

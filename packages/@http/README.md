@@ -3,7 +3,7 @@
 rJS Test test suite for unit testing providing the expression symmetrical `HTTPTest` class.
 
 ``` cli
-npx rjs:test http <tests-path>
+npx rjs-test http <tests-path>
 ```
 
 > Integrated in [`rapidjs-org/test`](https://github.com/t-ski/rJS Test)

@@ -19,9 +19,7 @@ export class AsyncMutex {
 				resolveInner();
 			})
 				.then(async () => {
-					const value: T = await new Promisification<T>(
-						expression
-					).resolve();
+					const value: T = await new Promisification<T>(expression).resolve();
 
 					this.isLocked = !!this.acquireQueue.length;
 

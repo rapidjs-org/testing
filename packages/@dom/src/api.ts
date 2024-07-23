@@ -1,1 +1,0 @@
-export { DOMTest } from "./DOMTest";

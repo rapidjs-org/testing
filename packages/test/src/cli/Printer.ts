@@ -57,7 +57,7 @@ export class Printer {
 			JSON.stringify(value, (_, value: unknown) => (value === undefined ? `undefined` : value), 2)
 				.split(/\n/g)
 				.map((line: string) => {
-					const parts = line.split(/:(.*)/s);
+					const parts = line.split(/:(.*)/);
 					if (!parts[1]) return colorValue(line);
 
 					const isTrailing = /,$/.test(parts[1]);
