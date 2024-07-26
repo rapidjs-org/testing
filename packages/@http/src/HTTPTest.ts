@@ -124,13 +124,11 @@ export class HTTPTest extends Test<IResponse> {
 				} catch {}
 			}
 		};
-
 		filterObj(displayExpected["headers"] as TIndexedObject, displayActual["headers"] as TIndexedObject);
-		if (!Object.entries(displayActual["headers"] ?? {}).length) {
+		if (!Object.entries(displayExpected["headers"] ?? {}).length) {
 			delete displayExpected["headers"];
 			delete displayActual["headers"];
 		}
-
 		filterObj(displayExpected, displayActual);
 
 		return {
