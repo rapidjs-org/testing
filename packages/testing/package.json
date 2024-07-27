@@ -1,11 +1,11 @@
 {
     "name": "@rapidjs.org/testing",
     "version": "0.0.9",
-    "description": "Simple and straightforward test framerwork for Java- and TypeScript applications.",
+    "description": "Context-sensitive, (a)sync-uniform testing framework for JavaScript and TypeScript.",
     "author": "Thassilo Martin Schiepanski",
     "homepage": "https://github.com/rapidjs-org/testing#readme",
     "keywords": [
-        "test",
+        "testing",
         "test-framework"
     ],
     "repository": {
@@ -31,7 +31,7 @@
         "debug": "npx tsc --project ./tsconfig.debug.json",
         "debug:watch": "npm run debug -- --watch",
         "build": "rm -rf ./build/ && rm -rf ./types/ && npx tsc --project ./tsconfig.build.json",
-        "metatest": "./scripts/metatest.sh",
+        "metatest": "../../scripts/metatest.sh",
         "test": "npm run build && npm run metatest",
         "release:minor": "npm run test && npx release --minor",
         "release:patch": "npm run test && npx release --patch"

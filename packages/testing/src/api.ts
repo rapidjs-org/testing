@@ -97,7 +97,6 @@ export async function init(apiArg: unknown, testTargetPath: string /* , options?
 	if (TestClass[0] === "default" || (Object.getPrototypeOf(TestClass[1]) as { name: string }).name !== "Test") {
 		throw new SyntaxError("Test suite module must provide a single named concrete Test class export");
 	}
-
 	const resolvedTestTargetPath: string = resolvePath(testTargetPath);
 	if (!existsSync(resolvedTestTargetPath)) {
 		throw new ReferenceError(

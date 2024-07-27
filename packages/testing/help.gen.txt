@@ -8,4 +8,4 @@ Options:
 --name, -N              Optional target name
 --path, -P              Optional target path
 
-Visit https://github.com/t-ski/rJS Test for more information.
+Visit https://github.com/t-ski/rJS Testing for more information.

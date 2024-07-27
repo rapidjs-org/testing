@@ -1,12 +1,12 @@
-# [rJS Test](https://github.com/rapidjs-org/testing) UnitTest `unit`
+# [rJS Testing](https://github.com/rapidjs-org/testing) UnitTest `unit`
 
-rJS Test test suite for unit testing providing the expression symmetrical `UnitTest` class.
+rJS Testing test suite for unit testing providing the expression symmetrical `UnitTest` class.
 
 ``` cli
 npx rjs-test unit <tests-path>
 ```
 
-> Integrated in [`rapidjs-org/testing`](https://github.com/t-ski/rJS Test)
+> Integrated in [`rapidjs-org/testing`](https://github.com/t-ski/rJS Testing)
 
 ## Test Anatomy
 

@@ -12,19 +12,20 @@ import { Printer } from "./Printer";
 import OFFICIAL_SUITES from "./suites.json";
 
 async function runSuite(): Promise<IResults> {
-	if (Args.parsePositional(0) === "help" || Args.parseFlag("help", "H")) {
+	const commandOrTestSuiteModulePath = Args.parsePositional(0);
+
+	if (commandOrTestSuiteModulePath === "help" || Args.parseFlag("help", "H")) {
 		console.log(readFileSync(join(__dirname, "../../help.txt")).toString());
 		return;
 	}
 
-	if (Args.parsePositional(0) === "gen") {
+	if (commandOrTestSuiteModulePath === "gen") {
 		await import("./cli.gen");
 
 		return;
 	}
 
-	const testSuiteModulePath: string = Args.parsePositional(0);
-
+	const testSuiteModulePath: string = commandOrTestSuiteModulePath;
 	if (!testSuiteModulePath) throw new ReferenceError("Missing test suite name (pos 0)");
 	if (!Args.parsePositional(1)) throw new ReferenceError("Missing test directory path (pos 1)");
 

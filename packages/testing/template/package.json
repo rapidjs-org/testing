@@ -1,6 +1,6 @@
 {
     "private": true,
-    "version": "0.0.9",
+    "version": "0.0.1",
 	"main": "./build/api.js",
     "types": "./types/api.d.ts",
     "files": [

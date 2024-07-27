@@ -1,6 +1,6 @@
-# [rJS Test](https://github.com/t-ski/rJS Test) <Suite> Testing
+# [rJS Testing](https://github.com/t-ski/rJS Testing) <Suite> Testing
 
-rJS Test test suite for <purpose> testing providing the expression <symmetrical|asymmetrical> `<Suite>Test` class.
+rJS Testing test suite for <purpose> testing providing the expression <symmetrical|asymmetrical> `<Suite>Test` class.
 
 ``` cli
 npx rjs-test <package-reference> <tests-path>

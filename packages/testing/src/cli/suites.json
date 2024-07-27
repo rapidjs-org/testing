@@ -1,5 +1,5 @@
 {
-    "unit": "@rapidjs.org/test--unit",
-    "http": "@rapidjs.org/test--http",
-    "dom": "@rapidjs.org/test--dom"
+    "unit": "@rapidjs.org/testing-unit",
+    "http": "@rapidjs.org/testing-http",
+    "dom": "@rapidjs.org/testing-dom"
 }

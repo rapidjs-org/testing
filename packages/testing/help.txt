@@ -7,4 +7,4 @@ Positionals (required):
     • http              (rapidjs-org/testing--http)
 1:  Path to test target directory (or single test file)
 
-Visit https://github.com/t-ski/rJS Test for more information.
+Visit https://github.com/t-ski/rJS Testing for more information.

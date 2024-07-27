@@ -1,4 +1,4 @@
-# rJS Test
+# rJS Testing
 
 Context-sensitive, (a)sync-uniform testing framework for JavaScript and TypeScript.
 
@@ -34,7 +34,7 @@ new UnitTest("Throws error for division by zero")
 
 ## Test Cases
 
-To summarise, a test case is an assertion on how a related test subject (application with a JavaScript API) shall behave. A test case is usually implemented through pairing an actual with an expected value for comparison. rJS Test is accessible through context-specific test classes whose instances represent individual test cases. An assertion either represents a value-, or an error-based call chain upon a test class instance. Rather than expecting the test cases to compile actual and expected values individually, assertions work on arbitrary expressions that contextually abstract value evaluations.
+To summarise, a test case is an assertion on how a related test subject (application with a JavaScript API) shall behave. A test case is usually implemented through pairing an actual with an expected value for comparison. rJS Testing is accessible through context-specific test classes whose instances represent individual test cases. An assertion either represents a value-, or an error-based call chain upon a test class instance. Rather than expecting the test cases to compile actual and expected values individually, assertions work on arbitrary expressions that contextually abstract value evaluations.
 
 ### Value-based Assertion
 
@@ -137,7 +137,7 @@ Without further ado, the actual as well as the expected expressions can be funct
 })                            // ≙ 4
 ```
 
-This strategy results in a single image of compared values (deterministic; or stochastic within deterministic bounds if testable). A test case, i.e. an evaluation of a full call chain, is hence considered as consumed. This means a test case can not be resolved via `.expected()` or `.error()` more than once. Additionally, rJS Test simplifies testing by merely providing the two above positive assertion interfaces. From a formal perspective, this is sufficient: Given an arbitrary actual value, the expected value can be tested. Any complementary value that would expect a negative assertion (“not equal to”) could easily be inverted to a positive assertion expecting the specific complementary value. Any more abstract assertion, such as an array has at least a certain element, could either be solved through a dedicated test suite, or a complex epression.
+This strategy results in a single image of compared values (deterministic; or stochastic within deterministic bounds if testable). A test case, i.e. an evaluation of a full call chain, is hence considered as consumed. This means a test case can not be resolved via `.expected()` or `.error()` more than once. Additionally, rJS Testing simplifies testing by merely providing the two above positive assertion interfaces. From a formal perspective, this is sufficient: Given an arbitrary actual value, the expected value can be tested. Any complementary value that would expect a negative assertion (“not equal to”) could easily be inverted to a positive assertion expecting the specific complementary value. Any more abstract assertion, such as an array has at least a certain element, could either be solved through a dedicated test suite, or a complex epression.
 
 ``` js
 // with Jest
@@ -145,14 +145,14 @@ expect(STR).toHaveLength(12)
 expect(STR).not.toHaveLength(13)
 expect(STR.length).toBe(12)
 
-// with rJS Test
+// with rJS Testing
 .actual(STR.length == 13).expected(false)
 .actual(STR.length).expected(12)
 ```
 
 ## CLI
 
-The command line interface represents the default user interface for rJS Test. In short, the `rjs-test` command takes a test suite suited for the context, and a path to the test files which are scanned recursively.
+The command line interface represents the default user interface for rJS Testing. In short, the `rjs-test` command takes a test suite suited for the context, and a path to the test files which are scanned recursively.
 
 ``` cli
 npx rjs-test <test-suite-reference> <tests-path> [--<arg:key>|-<arg:shorthand>[ <arg-option>]?]*
@@ -170,7 +170,7 @@ Path to the test target directory (also works on a single test file). Test files
 
 ## Environment Lifecycle Module
 
-Depending on the test context, running individual test cases may require an effective environment setup (e.g. serving a REST-API). For that reason, rJS Test respects the special environment module `__test.env.js` at the root of the test directory if present. Upon certain lifecycle events corresponding members exported from the module are called.
+Depending on the test context, running individual test cases may require an effective environment setup (e.g. serving a REST-API). For that reason, rJS Testing respects the special environment module `__test.env.js` at the root of the test directory if present. Upon certain lifecycle events corresponding members exported from the module are called.
 
 | Export / Event | Purpose |
 | :- | :- |
@@ -193,7 +193,7 @@ module.exports.AFTER = async function() {
 
 ## Custom Test Suite
 
-Besides the officially provided test suites, implementation of a custom test suite is simple. In fact, a custom test suite is a module that exports a concrete test class extending the abstract rJS Test `Test` class:
+Besides the officially provided test suites, implementation of a custom test suite is simple. In fact, a custom test suite is a module that exports a concrete test class extending the abstract rJS Testing `Test` class:
 
 ``` ts
 abstract class Test<T> {
@@ -217,18 +217,18 @@ Title and color of the related test suite badge printed to the console upon usag
 
 #### Expression Evaluation upon Generic `<T>`
 
-For convenience, rJS Test allows the actual and the expected expressions to deviate (e.g. actual is HTTP request information to resolve for a response, but expected is filtered response information). However, the intermediate comparison works on a uniform value typed `T` that is evaluated from both the actual and the expected expression. Given an arbitrary spread of expressions (as passed to `.actual()` and `.expected()`), `.evalActualExpression()` and `.evalExpectedExpression()` compute the comparison values (typed `T`). By default, both methods return the identity of the first expression argument. 
+For convenience, rJS Testing allows the actual and the expected expressions to deviate (e.g. actual is HTTP request information to resolve for a response, but expected is filtered response information). However, the intermediate comparison works on a uniform value typed `T` that is evaluated from both the actual and the expected expression. Given an arbitrary spread of expressions (as passed to `.actual()` and `.expected()`), `.evalActualExpression()` and `.evalExpectedExpression()` compute the comparison values (typed `T`). By default, both methods return the identity of the first expression argument. 
 
 #### Difference Helper
 
-Whether or not a test case is successful depends on the difference computed from the actual and expected expression evaluations through `getDifference()`. rJS Test does not simply implement a method that checks for contextual equality, but combines display values filtering with an implicit equality check. The difference is hence not (necessarily) the mathematical difference operation, but a production of the actual and expected value to print in case they do not match. Precisely speaking, a test case fails if the partially returned difference values (`.actual` or `.expected`) are not equal (`===`) or at least one is not empty. Emptiness is moreover defined as any value that is `undefined`, `null` or an empty object `{}` (has no abstract properties). By default, the entire values are reflected in case they are not deep equal (non-strict).
+Whether or not a test case is successful depends on the difference computed from the actual and expected expression evaluations through `getDifference()`. rJS Testing does not simply implement a method that checks for contextual equality, but combines display values filtering with an implicit equality check. The difference is hence not (necessarily) the mathematical difference operation, but a production of the actual and expected value to print in case they do not match. Precisely speaking, a test case fails if the partially returned difference values (`.actual` or `.expected`) are not equal (`===`) or at least one is not empty. Emptiness is moreover defined as any value that is `undefined`, `null` or an empty object `{}` (has no abstract properties). By default, the entire values are reflected in case they are not deep equal (non-strict).
 
 ## API
 
-Although the CLI is the go-to interface for rJS Test , the underlying API can also be used within programatic pipelines.
+Although the CLI is the go-to interface for rJS Testing , the underlying API can also be used within programatic pipelines.
 
 ``` ts
-rJS Test.init(testSuiteModuleReference: string, testTargetPath: string): Promise<IResults>
+rJS Testing.init(testSuiteModuleReference: string, testTargetPath: string): Promise<IResults>
 ```
 
 ``` ts
@@ -253,9 +253,9 @@ interface IResults {
 #### Example
 
 ``` ts
-import rJS Test from "rapidjs-org/testing";
+import rJS Testing from "rapidjs-org/testing";
 
-rJS Test.init("unit", require("path").resolve("./test/"))
+rJS Testing.init("unit", require("path").resolve("./test/"))
 .then(results => {
 	console.log(results);
 });
@@ -287,7 +287,7 @@ rJS Test.init("unit", require("path").resolve("./test/"))
 
 ## Other Frameworks
 
-rJS Test alleviates the overall usability over existing testing frameworks. The pivotal design decisions are:
+rJS Testing alleviates the overall usability over existing testing frameworks. The pivotal design decisions are:
 
 - Cluster semantically related test cases within files rather than function scopes
 - Provide a uniform, unambiguous assertion interface abstracting contextual behaviour
@@ -354,7 +354,7 @@ describe("User", () => {
 });
 ```
 
-### 😃 &hairsp; with rJS Test
+### 😃 &hairsp; with rJS Testing
 
 <sub>user.get.test.js</sub>
 ``` js
