@@ -3,6 +3,10 @@
 rJS Testing test suite for unit testing providing the expression symmetrical `HTTPTest` class.
 
 ``` cli
+npm i -D @rapidjs.org/testing-http
+```
+
+``` cli
 npx rjs-test http <tests-path>
 ```
 

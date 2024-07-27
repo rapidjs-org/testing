@@ -86,11 +86,11 @@ export async function init(apiArg: unknown, testTargetPath: string /* , options?
 	const testSuiteAPI =
 		typeof apiArg === "string"
 			? await new Promise<TTestApi>(async (resolve, reject) => {
-					const testSuiteModuleReference: string = resolvePath(apiArg);
-					!existsSync(testSuiteModuleReference)
-						? reject(new ReferenceError(`Test suite module not found '${testSuiteModuleReference}'`))
-						: resolve((await import(testSuiteModuleReference)) as TTestApi);
-				})
+				const testSuiteModuleReference: string = resolvePath(apiArg);
+				!existsSync(testSuiteModuleReference)
+					? reject(new ReferenceError(`Test suite module not found '${testSuiteModuleReference}'`))
+					: resolve((await import(testSuiteModuleReference)) as TTestApi);
+			})
 			: (apiArg as { [key: string]: Test });
 
 	const TestClass = Object.entries(testSuiteAPI)[0];

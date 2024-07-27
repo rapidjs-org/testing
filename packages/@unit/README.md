@@ -3,6 +3,10 @@
 rJS Testing test suite for unit testing providing the expression symmetrical `UnitTest` class.
 
 ``` cli
+npm i -D @rapidjs.org/testing-unit
+```
+
+``` cli
 npx rjs-test unit <tests-path>
 ```
 
