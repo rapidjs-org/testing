@@ -10,4 +10,4 @@ new UnitTest("Tolerance")
 
 new UnitTest("Not equal")
 .actual(REF !== 1)
-.expected(true);
+.expected(false);

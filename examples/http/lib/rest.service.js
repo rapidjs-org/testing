@@ -41,7 +41,7 @@ module.exports.listen = function(port) {
     return new Promise(resolve => {
         server = APP.listen(port, () => {
             console.log(`REST API listening on port ${port}`);
-
+            
             resolve();
         });
     });

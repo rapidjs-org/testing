@@ -2,7 +2,7 @@ import { ClientRequest, RequestOptions, request as httpRequest } from "http";
 import { join } from "path";
 import { deepEqual } from "assert";
 
-import { Test } from "@rapidjs.org/test";
+import { Test } from "@rapidjs.org/testing";
 
 import { TColor } from "../../common.types";
 
@@ -19,7 +19,7 @@ interface IResponse {
 }
 
 export class HTTPTest extends Test<IResponse> {
-	public static readonly suiteTitle: string = "Request";
+	public static readonly suiteTitle: string = "HTTP";
 	public static readonly suiteColor: TColor = [177, 66, 179];
 
 	private static configuration: TConfiguration = {

@@ -3,7 +3,7 @@
 Context-sensitive, (a)sync-uniform testing framework for JavaScript and TypeScript.
 
 ``` cli
-npm install -D rapidjs-org/test
+npm install -D rapidjs-org/testing
 ```
 
 <sub>division.test.js</sub>
@@ -29,8 +29,8 @@ new UnitTest("Throws error for division by zero")
 
 | Alias &thinsp; <sub>Underlying Package</sub> | Test Class | Purpose |
 | :- | :- | :- |
-| `unit` &thinsp; <sub>`rapidjs-org/test--unit`</sub> | `UnitTest` | Unit testing <sup>([Read Documentation](./packages/@unit/README.md))</sup> |
-| `http` &thinsp; <sub>`rapidjs-org/test--http`</sub> | `HTTPTest` | HTTP(S) testing <sup>([Read Documentation](./packages/@http/README.md))</sup> |
+| `unit` &thinsp; <sub>`rapidjs-org/testing--unit`</sub> | `UnitTest` | Unit testing <sup>([Read Documentation](./packages/@unit/README.md))</sup> |
+| `http` &thinsp; <sub>`rapidjs-org/testing--http`</sub> | `HTTPTest` | HTTP(S) testing <sup>([Read Documentation](./packages/@http/README.md))</sup> |
 
 ## Test Cases
 
@@ -221,7 +221,7 @@ For convenience, rJS Test allows the actual and the expected expressions to devi
 
 #### Difference Helper
 
-Whether or not a test case is successful depends on the difference computed from the actual and expected expression evaluations. rJS Test does not simply implement a method that checks for contextual equality, but combines display values filtering with an implicit equality check. The difference is hence not (necessarily) the mathematical difference operation, but a production of the actual and expected value to print in case they do not match. Precisely speaking, a test case fails if the partially returned difference values (`.actual` or `.expected`) are not equal (`===`) or at least one is not empty. Emptiness is moreover defined as any value that is `undefined`, `null` or an empty object `{}` (has no abstract properties). By default, the entire values are reflected in case they are not deep equal (non-strict).
+Whether or not a test case is successful depends on the difference computed from the actual and expected expression evaluations through `getDifference()`. rJS Test does not simply implement a method that checks for contextual equality, but combines display values filtering with an implicit equality check. The difference is hence not (necessarily) the mathematical difference operation, but a production of the actual and expected value to print in case they do not match. Precisely speaking, a test case fails if the partially returned difference values (`.actual` or `.expected`) are not equal (`===`) or at least one is not empty. Emptiness is moreover defined as any value that is `undefined`, `null` or an empty object `{}` (has no abstract properties). By default, the entire values are reflected in case they are not deep equal (non-strict).
 
 ## API
 
@@ -253,7 +253,7 @@ interface IResults {
 #### Example
 
 ``` ts
-import rJS Test from "rapidjs-org/test";
+import rJS Test from "rapidjs-org/testing";
 
 rJS Test.init("unit", require("path").resolve("./test/"))
 .then(results => {

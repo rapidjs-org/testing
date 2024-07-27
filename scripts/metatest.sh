@@ -1,9 +1,11 @@
 #!/bin/bash
 
 
-echo "• $(tput bold)TEST OF TEST FRAMEWORK$(tput sgr0) (METATEST)"
+echo "$(tput bold)[METATEST]$(tput sgr0) TEST OF TESTING FRAMEWORK"
 
-./bin.sh unit ./metatest/unit.test.js   \
-&& ./bin.sh http ./metatest/http/       \
-\
+cd $(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)/../
+
+    ./bin.sh unit ./metatest/unit.test.js           \
+&&  ./bin.sh http ./metatest/http/                  \
+                                                    \
 && echo -e "\n✔ $(tput bold)SUCCESS$(tput sgr0)\n"

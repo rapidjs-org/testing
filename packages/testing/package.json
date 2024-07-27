@@ -1,8 +1,13 @@
 {
-    "name": "@rapidjs.org/testing-unit",
+    "name": "@rapidjs.org/testing",
     "version": "0.0.9",
+    "description": "Simple and straightforward test framerwork for Java- and TypeScript applications.",
     "author": "Thassilo Martin Schiepanski",
-    "homepage": "https://github.com/rapidjs-org/testing/tree/master/packages/@unit",
+    "homepage": "https://github.com/rapidjs-org/testing#readme",
+    "keywords": [
+        "test",
+        "test-framework"
+    ],
     "repository": {
         "type": "git",
         "url": "git+https://github.com/rapidjs-org/testing.git"
@@ -11,16 +16,22 @@
         "url": "https://github.com/rapidjs-org/testing/issues"
     },
     "main": "./build/api.js",
+    "bin": {
+        "rjs-test": "./build/cli/cli.js"
+    },
     "types": "./types/api.d.ts",
     "files": [
         "./build/",
-        "./types/"
+        "./types/",
+        "./template/",
+        "./help.txt",
+        "./help.gen.txt"
     ],
     "scripts": {
         "debug": "npx tsc --project ./tsconfig.debug.json",
         "debug:watch": "npm run debug -- --watch",
         "build": "rm -rf ./build/ && rm -rf ./types/ && npx tsc --project ./tsconfig.build.json",
-        "metatest": "../../bin.sh unit ../../metatest/unit.test.js",
+        "metatest": "./scripts/metatest.sh",
         "test": "npm run build && npm run metatest",
         "release:minor": "npm run test && npx release --minor",
         "release:patch": "npm run test && npx release --patch"
@@ -29,8 +40,5 @@
         "@t-ski/gh-npm-release": "github:t-ski/gh-npm-release",
         "@types/node": "^20.10.6",
         "typescript": "^5.3.3"
-    },
-    "dependencies": {
-        "@rapidjs.org/testing": "^0.1.0"
     }
 }

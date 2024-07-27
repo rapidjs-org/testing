@@ -1,4 +1,4 @@
-import { Test } from "@rapidjs.org/test";
+import { Test } from "@rapidjs.org/testing";
 
 import { TColor } from "../../common.types";
 

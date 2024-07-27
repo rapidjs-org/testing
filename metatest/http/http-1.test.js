@@ -25,18 +25,10 @@ new HTTPTest("Get movies")
     body: movieData.MOVIES.concat(movieData.NEW_MOVIE)
 });
 
+// TODO: Errors?
+
 /* new HTTPTest("Create movie")
 .post(movieData.MOVIES_PATH, {
     name: "Husky"
 })
-.expected(200);
-
-new HTTPTest("Get movies")
-.actual(movieData.MOVIES_PATH, {
-    headers: {
-        "Accept-Language": "en;q=1.0, de;q=0.75, *;q=0.5"
-    }
-})
-.expected("abc"); */
-
-// TODO: Error
+.expected(200); */

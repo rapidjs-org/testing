@@ -1,16 +1,16 @@
 {
-    "name": "@rapidjs.org/test--http",
-    "version": "0.1.0",
+    "name": "@rapidjs.org/testing-http",
+    "version": "0.0.9",
     "author": "Thassilo Martin Schiepanski",
-	"homepage": "https://github.com/rapidjs-org/test/tree/master/packages/@unit",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/rapidjs-org/test.git"
-	},
-	"bugs": {
-		"url": "https://github.com/rapidjs-org/test/issues"
-	},
-	"main": "./build/api.js",
+    "homepage": "https://github.com/rapidjs-org/testing/tree/master/packages/@unit",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/rapidjs-org/testing.git"
+    },
+    "bugs": {
+        "url": "https://github.com/rapidjs-org/testing/issues"
+    },
+    "main": "./build/api.js",
     "types": "./types/api.d.ts",
     "files": [
         "./build/",
@@ -19,13 +19,18 @@
     "scripts": {
         "debug": "npx tsc --project ./tsconfig.debug.json",
         "debug:watch": "npm run debug -- --watch",
-        "build": "rm -rf ./build/ && rm -rf ./types/ && npx tsc --project ./tsconfig.build.json"
+        "build": "rm -rf ./build/ && rm -rf ./types/ && npx tsc --project ./tsconfig.build.json",
+        "metatest": "../../bin.sh http ../../metatest/http",
+        "test": "npm run build && npm run metatest",
+        "release:minor": "npm run test && npx release --minor",
+        "release:patch": "npm run test && npx release --patch"
     },
     "devDependencies": {
+        "@t-ski/gh-npm-release": "github:t-ski/gh-npm-release",
         "@types/node": "^20.10.6",
         "typescript": "^5.3.3"
     },
     "dependencies": {
-        "@rapidjs.org/test": "^0.1.0"
+        "@rapidjs.org/testing": "^0.1.0"
     }
 }

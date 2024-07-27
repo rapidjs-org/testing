@@ -1,4 +1,4 @@
-# [rJS Test](https://github.com/t-ski/rJS Test) Unit Testing `http`
+# [rJS Test](https://github.com/rapidjs-org/testing) HTTPTest `http`
 
 rJS Test test suite for unit testing providing the expression symmetrical `HTTPTest` class.
 
@@ -6,7 +6,7 @@ rJS Test test suite for unit testing providing the expression symmetrical `HTTPT
 npx rjs-test http <tests-path>
 ```
 
-> Integrated in [`rapidjs-org/test`](https://github.com/t-ski/rJS Test)
+> Integrated in [`rapidjs-org/testing`](https://github.com/t-ski/rJS Test)
 
 ## Configuration
 

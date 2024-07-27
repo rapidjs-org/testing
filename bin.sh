@@ -1,6 +1,6 @@
 #!/bin/bash
 
 
-[ ! -d ./packages/test/build ] && npm run debug
+[ ! -d ./packages/testing/build ] && npm run build
 
-node ./packages/test/build/cli/cli.js $@
+node $(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)/packages/testing/build/cli/cli.js $@

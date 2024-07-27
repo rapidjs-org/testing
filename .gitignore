@@ -6,4 +6,3 @@ types/
 packages/@__generated/
 
 .DS_Store
-package-lock.json
