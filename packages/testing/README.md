@@ -8,7 +8,7 @@ npm install -D @rapidjs-org/testing
 
 <sub>division.test.js</sub>
 &thinsp;
-<sub>[View More Examples](./examples/)</sub>
+<sub>[View More Examples](../../examples/)</sub>
 
 ``` js
 function divide(a, b) {

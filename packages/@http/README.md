@@ -1,6 +1,6 @@
 # [rJS Testing](https://github.com/rapidjs-org/testing) HTTPTest `http`
 
-rJS Testing test suite for unit testing providing the expression symmetrical `HTTPTest` class.
+rJS Testing unit testing suite (`HTTPTest`): Test HTTP(S) endpoints based on expectation filtered responses.
 
 ``` cli
 npm i -D @rapidjs.org/testing-http

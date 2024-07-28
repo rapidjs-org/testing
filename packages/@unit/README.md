@@ -1,6 +1,7 @@
 # [rJS Testing](https://github.com/rapidjs-org/testing) UnitTest `unit`
 
-rJS Testing test suite for unit testing providing the expression symmetrical `UnitTest` class.
+rJS Testing unit testing suite (`UnitTest`): Test arbitrary units of code based on deep expectation comparisons.
+
 
 ``` cli
 npm i -D @rapidjs.org/testing-unit
