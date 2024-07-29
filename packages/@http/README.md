@@ -10,7 +10,7 @@ npm i -D @rapidjs.org/testing-http
 npx rjs-test http <tests-path>
 ```
 
-> Integrated in [`rapidjs-org/testing`](https://github.com/t-ski/rJS Testing)
+> Integrated in [`rapidjs-org/testing`](https://github.com/rapidjs-org/testing)
 
 ## Configuration
 

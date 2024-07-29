@@ -21,8 +21,9 @@
         "debug": "npx tsc --project ./tsconfig.debug.json",
         "debug:watch": "npm run debug -- --watch",
         "build": "rm -rf ./build/ && rm -rf ./types/ && npx tsc --project ./tsconfig.build.json",
+        "metatest:single-file": "../../bin.sh http ./metatest/http-1.test.js",
         "metatest": "../../bin.sh http ./metatest/",
-        "test": "npm run build && npm run metatest",
+        "test": "npm run build && npm run metatest && npm run metatest:single-file",
         "release:minor": "npm run test && npx release --minor",
         "release:patch": "npm run test && npx release --patch"
     },

@@ -1,5 +1,5 @@
 import { readdir, existsSync, lstatSync } from "fs";
-import { join, resolve as resolvePath } from "path";
+import { dirname, join, resolve as resolvePath } from "path";
 
 import { Test } from "./Test";
 import { AsyncMutex } from "./AsyncMutex";
@@ -86,22 +86,22 @@ export async function init(apiArg: unknown, testTargetPath: string /* , options?
 	const testSuiteAPI =
 		typeof apiArg === "string"
 			? await new Promise<TTestApi>(async (resolve, reject) => {
-				const testSuiteModuleReference: string = resolvePath(apiArg);
-				!existsSync(testSuiteModuleReference)
-					? reject(new ReferenceError(`Test suite module not found '${testSuiteModuleReference}'`))
-					: resolve((await import(testSuiteModuleReference)) as TTestApi);
-			})
+					const testSuiteModuleReference: string = resolvePath(apiArg);
+					!existsSync(testSuiteModuleReference)
+						? reject(new ReferenceError(`Test suite module not found '${testSuiteModuleReference}'`))
+						: resolve((await import(testSuiteModuleReference)) as TTestApi);
+				})
 			: (apiArg as { [key: string]: Test });
 
 	const TestClass = Object.entries(testSuiteAPI)[0];
 	if (TestClass[0] === "default" || (Object.getPrototypeOf(TestClass[1]) as { name: string }).name !== "Test") {
 		throw new SyntaxError("Test suite module must provide a single named concrete Test class export");
 	}
+
 	const resolvedTestTargetPath: string = resolvePath(testTargetPath);
+	const targetIsFile: boolean = /\.test\.js$/i.test(testTargetPath);
 	if (!existsSync(resolvedTestTargetPath)) {
-		throw new ReferenceError(
-			`Test ${/\.test\.js$/i.test(testTargetPath) ? "file" : "directory"} not found '${resolvedTestTargetPath}'`
-		);
+		throw new ReferenceError(`Test ${targetIsFile ? "file" : "directory"} not found '${resolvedTestTargetPath}'`);
 	}
 
 	/* const optionsWithDefaults: IOptions = {
@@ -112,7 +112,7 @@ export async function init(apiArg: unknown, testTargetPath: string /* , options?
 	// @ts-expect-error Write to global
 	global[TestClass[0]] = TestClass[1];
 
-	const testEnv = new Env(testTargetPath);
+	const testEnv = new Env(targetIsFile ? dirname(resolvedTestTargetPath) : resolvedTestTargetPath);
 
 	return new Promise<IResults>(async (resolve, reject) => {
 		try {

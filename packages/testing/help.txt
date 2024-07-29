@@ -7,4 +7,7 @@ Positionals (required):
     • http              (rapidjs-org/testing--http)
 1:  Path to test target directory (or single test file)
 
+Flags:
+--no-env                Disable evaluation of environment modules.
+
 Visit https://github.com/t-ski/rJS Testing for more information.

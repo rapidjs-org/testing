@@ -2,6 +2,7 @@ import { resolve as resolvePath } from "path";
 
 import { Promisification } from "./Promisification";
 import { FormatError } from "./FormatError";
+import { Args } from "./cli/Args";
 
 import _config from "./config.json";
 
@@ -22,6 +23,8 @@ export class Env {
 	}
 
 	public async call(identifier: string): Promise<void> {
+		if (Args.parseFlag("no-env")) return;
+
 		try {
 			this.api =
 				this.api ?? ((await import(resolvePath(this.rootDirPath, _config.envModuleFilename))) as IEnvApi);

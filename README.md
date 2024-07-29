@@ -29,7 +29,7 @@ new UnitTest("Throws error for division by zero")
 
 > Test arbitrary units of code based on deep expectation comparisons.
 
-**🔩 &hairsp; [HTTP](./packages/@unit/README.md)** &hairsp; `http`
+**🔩 &hairsp; [HTTP](./packages/@http/README.md)** &hairsp; `http`
 
 > Test HTTP(S) endpoints based on expectation filtered responses.
 
