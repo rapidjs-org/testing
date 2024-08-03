@@ -1,6 +1,6 @@
 {
     "name": "@rapidjs.org/testing",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Context-sensitive, (a)sync-uniform testing framework for JavaScript and TypeScript.",
     "author": "Thassilo Martin Schiepanski",
     "homepage": "https://github.com/rapidjs-org/testing#readme",

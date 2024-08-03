@@ -19,7 +19,7 @@ export abstract class Test<T = unknown> {
 	private static mutex = new AsyncMutex();
 
 	public static readonly suiteTitle: string;
-	public static readonly suiteColor: TColor;
+	public static readonly suiteColor: TColor | [number, number, number];
 
 	public static readonly event = new EventEmitter();
 

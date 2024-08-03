@@ -29,8 +29,8 @@ new UnitTest("Throws error for division by zero")
 
 | Alias &thinsp; <sub>Underlying Package</sub> | Test Class | Purpose |
 | :- | :- | :- |
-| `unit` &thinsp; `@rapidjs.org/testing-unit` | `UnitTest` | Unit testing ([Read Documentation](./packages/@unit/README.md)) |
-| `http` &thinsp; `@rapidjs.org/testing-http` | `HTTPTest` | HTTP(S) testing ([Read Documentation](./packages/@http/README.md)) |
+| `unit` &thinsp; `@rapidjs.org/testing-unit` | `UnitTest` | Unit testing ([Read Documentation](../@unit/README.md)) |
+| `http` &thinsp; `@rapidjs.org/testing-http` | `HTTPTest` | HTTP(S) testing ([Read Documentation](../@http/README.md)) |
 
 ## Test Cases
 

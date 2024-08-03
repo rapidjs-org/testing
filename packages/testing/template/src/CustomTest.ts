@@ -1,4 +1,4 @@
-import { Test } from "@rapidjs.org/test";
+import { Test } from "@rapidjs.org/testing";
 
 
 interface IObject {
@@ -8,7 +8,7 @@ interface IObject {
 
 export class CustomTest extends Test<IObject> {
 	public static readonly suiteTitle: string = "Custom";
-	public static readonly suiteColor: number[] = [ 255, 255, 0 ];
+	public static readonly suiteColor: [number, number, number] = [ 255, 255, 0 ];
 	
     constructor(title: string) {
     	super(title);
@@ -19,17 +19,16 @@ export class CustomTest extends Test<IObject> {
 			Object.entries(obj)
 			.map((entry: [ string, unknown ]) => [ entry[0].toLowerCase(), entry[1] ])
 		) as IObject;
-		
 	}
 
-    protected isEqual(actual: IResponse, expected: IResponse): boolean {
+    protected isEqual(actual: IObject, expected: IObject): boolean {
 		return !Object.keys(this.filterComparedValues(actual, expected).actual).length;
 	}
 
-	protected filterComparedValues(actual: IResponse, expected: IResponse) {
+	protected filterComparedValues(actual: IObject, expected: IObject) {
 		return {
-			actual: displayActual,
-			expected: displayExpected
+			actual: actual,
+			expected: expected
 		}
 	}
 }

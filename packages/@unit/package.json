@@ -1,7 +1,7 @@
 {
     "name": "@rapidjs.org/testing-unit",
     "version": "0.1.0",
-    "description": "rJS Testing – Unit test suite.",
+    "description": "rJS Testing – Unit testing suite.",
     "author": "Thassilo Martin Schiepanski",
     "homepage": "https://github.com/rapidjs-org/testing/tree/master/packages/@unit",
     "repository": {

@@ -1,6 +1,6 @@
 # [rJS Testing](https://github.com/rapidjs-org/testing) HTTPTest `http`
 
-rJS Testing unit testing suite (`HTTPTest`): Test HTTP(S) endpoints based on expectation filtered responses.
+rJS Testing HTTP(S) testing suite (`HTTPTest`): Test endpoints based on expectation filtered responses.
 
 ``` cli
 npm i -D @rapidjs.org/testing-http
@@ -10,7 +10,7 @@ npm i -D @rapidjs.org/testing-http
 npx rjs-test http <tests-path>
 ```
 
-> Integrated in [`rapidjs-org/testing`](https://github.com/rapidjs-org/testing)
+> Integrated in [`rapidjs-org/testing`](https://github.com/rapidjs-org/testing).
 
 ## Configuration
 

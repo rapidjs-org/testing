@@ -1,6 +1,16 @@
-# [rJS Testing](https://github.com/rapidjs-org/testing) <Suite>Test `<alias>`
+# [rJS Testing](https://github.com/rapidjs-org/testing) CLITest `cli`
 
-rJS Testing <alias> testing suite (`<Suite>Test`): …
+rJS Testing CLI testing suite (`CLITest`): Test command line interfaces based on stdout and -err.
+
+``` cli
+npm i -D @rapidjs.org/testing-cli
+```
+
+``` cli
+npx rjs-test cli <tests-path>
+```
+
+> Integrated in [`rapidjs-org/testing`](https://github.com/rapidjs-org/testing).
 
 ## Test Anatomy
 
@@ -48,3 +58,7 @@ new <Suite>Test("Example label")
 .actual(<expression>)
 .expected(<expression>)
 ```
+
+##
+
+<sub>&copy; Thassilo Martin Schiepanski</sub>
