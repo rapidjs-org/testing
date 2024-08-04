@@ -32,10 +32,10 @@ export abstract class Test<T = unknown> {
 	public wasSuccessful: boolean;
 	public difference: IDifference<T>;
 
-	public static tryComplete() {
+	public static tryComplete(timeout: number = _config.completeTimeout) {
 		if (--Test.runningTests > 0) return;
 
-		Test.completeTimeout = setTimeout(() => Test.event.emit("complete"), _config.completeTimeout);
+		Test.completeTimeout = setTimeout(() => Test.event.emit("complete"), timeout);
 	}
 
 	constructor(title: string) {

@@ -7,6 +7,8 @@ import { Env } from "./Env";
 
 import { FormatError } from "./FormatError";
 
+import _config from "./config.json";
+
 interface IRecord {
 	[key: string]: Test[];
 }
@@ -154,8 +156,8 @@ export async function init(apiArg: unknown, testTargetPath: string /* , options?
 			curTestRecord[activeFilepath] = [curTestRecord[activeFilepath] ?? [], test].flat();
 		});
 
-		Test.tryComplete();
-
 		traversePath(resolvedTestTargetPath);
+
+		Test.tryComplete(_config.dryCompleteTimeout);
 	});
 }

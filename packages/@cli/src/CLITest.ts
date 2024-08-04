@@ -45,6 +45,7 @@ export class CLITest extends Test<IOutput> {
 	protected evalActualExpression(binary: string, args?: string[]): Promise<IOutput>;
 	protected evalActualExpression(binaryOrArgs: string | string[], args: string[] = []): Promise<IOutput> {
 		// TODO: Unix pipes abstraction (?)
+		// TODO: Partial output match option (?)
 		// TODO: Possibility top check underlying effect (and chain with other test suite) (?)
 
 		const effectiveBinary: string =
