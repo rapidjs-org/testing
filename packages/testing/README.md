@@ -31,6 +31,7 @@ new UnitTest("Throws error for division by zero")
 | :- | :- | :- |
 | `unit` &thinsp; `@rapidjs.org/testing-unit` | `UnitTest` | Unit testing ([Read Documentation](../@unit/README.md)) |
 | `http` &thinsp; `@rapidjs.org/testing-http` | `HTTPTest` | HTTP(S) testing ([Read Documentation](../@http/README.md)) |
+| `cli` &thinsp; `@rapidjs.org/testing-cli` | `CLITest` | CLI testing ([Read Documentation](../@cli/README.md)) |
 
 ## Test Cases
 

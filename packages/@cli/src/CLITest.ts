@@ -28,71 +28,72 @@ export class CLITest extends Test<IOutput> {
 
 	private normalizeOutput(output: Partial<IOutput>): IOutput {
 		const normalizeStdValue = (value: string) => {
-			return (value ?? "")
-			.replace(/(\n|\r)+/g, "\n")
-			.replace(/(\t| )+/g, " ")
-			.trim()
-			?? null;
-		}
+			return (
+				(value ?? "")
+					.replace(/(\n|\r)+/g, "\n")
+					.replace(/(\t| )+/g, " ")
+					.trim() ?? null
+			);
+		};
 		return {
 			stdout: normalizeStdValue(output.stdout),
 			stderr: normalizeStdValue(output.stderr)
 		};
 	}
-	
+
 	protected evalActualExpression(args: string[]): Promise<IOutput>;
 	protected evalActualExpression(binary: string, args?: string[]): Promise<IOutput>;
-	protected evalActualExpression(binaryOrArgs: string|string[], args: string[] = []): Promise<IOutput> {
-		// TODO: Pipe chain abstraction (?)
-		const effectiveBinary: string = (!binaryOrArgs || Array.isArray(binaryOrArgs))
-		? CLITest.configuration.commonBinary
-		: binaryOrArgs;
-		if(!effectiveBinary) throw new SyntaxError("Missing binary to execute");
+	protected evalActualExpression(binaryOrArgs: string | string[], args: string[] = []): Promise<IOutput> {
+		// TODO: Unix pipes abstraction (?)
+		// TODO: Possibility top check underlying effect (and chain with other test suite) (?)
 
-		const effectiveArgs: string[] = (args ?? [ binaryOrArgs ].flat()) ?? [];
+		const effectiveBinary: string =
+			!binaryOrArgs || Array.isArray(binaryOrArgs) ? CLITest.configuration.commonBinary : binaryOrArgs;
+		if (!effectiveBinary) throw new SyntaxError("Missing binary to execute");
+
+		const effectiveArgs: string[] = args ?? [binaryOrArgs].flat() ?? [];
 
 		return new Promise((resolve, reject) => {
-			exec([ effectiveBinary, effectiveArgs ].flat().join(" "), (err: Error, stdout: string, stderr: string) => {
-				if(err && !stderr) {
+			exec([effectiveBinary, effectiveArgs].flat().join(" "), (err: Error, stdout: string, stderr: string) => {
+				if (err && !stderr) {
 					reject(err);
 
 					return;
 				}
-				
-				resolve(this.normalizeOutput({
-					stdout, stderr
-				}));
+
+				resolve(
+					this.normalizeOutput({
+						stdout,
+						stderr
+					})
+				);
 			});
 		});
 	}
 
-	protected evalExpectedExpression(expectedOutput: Partial<IOutput>|string): IOutput {
+	protected evalExpectedExpression(expectedOutput: Partial<IOutput> | string): IOutput {
 		return this.normalizeOutput(
-			(typeof(expectedOutput) === "string")
-			? {	
-				stdout: expectedOutput
-			}
-			: {
-				stdout: [ expectedOutput.stdout ].flat().join("\n"),
-				stderr: [ expectedOutput.stderr ].flat().join("\n")
-			}
+			typeof expectedOutput === "string"
+				? {
+						stdout: expectedOutput
+					}
+				: {
+						stdout: [expectedOutput.stdout].flat().join("\n"),
+						stderr: [expectedOutput.stderr].flat().join("\n")
+					}
 		);
 	}
 
 	protected getDifference(actual: IOutput, expected: IOutput) {
 		const filterObj = (sourceObj: IOutput, targetObj: IOutput) => {
 			return {
-				...(sourceObj.stdout !== targetObj.stdout)
-				? { stdout: sourceObj.stdout }
-				: {},
-				...(sourceObj.stderr !== targetObj.stderr)
-				? { stderr: sourceObj.stderr }
-				: {},
-			}
+				...(sourceObj.stdout !== targetObj.stdout ? { stdout: sourceObj.stdout } : {}),
+				...(sourceObj.stderr !== targetObj.stderr ? { stderr: sourceObj.stderr } : {})
+			};
 		};
 		return {
 			actual: filterObj(actual, expected),
 			expected: filterObj(expected, actual)
-		}
+		};
 	}
 }

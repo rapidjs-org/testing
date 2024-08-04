@@ -27,11 +27,15 @@ new UnitTest("Throws error for division by zero")
 
 **🔩 &hairsp; [Unit](./packages/@unit/README.md)** &hairsp; `unit`
 
-> Test arbitrary units of code based on deep expectation comparisons.
+> Test arbitrary units of code based on deep expected value comparisons.
 
 **🔩 &hairsp; [HTTP](./packages/@http/README.md)** &hairsp; `http`
 
 > Test HTTP(S) endpoints based on expectation filtered responses.
+
+**🔩 &hairsp; [CLI](./packages/@cli/README.md)** &hairsp; `cli`
+
+> Test command line interfaces based on expected stdout or stderr.
 
 ##
 

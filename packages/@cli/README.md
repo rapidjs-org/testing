@@ -1,6 +1,6 @@
 # [rJS Testing](https://github.com/rapidjs-org/testing) CLITest `cli`
 
-rJS Testing CLI testing suite (`CLITest`): Test command line interfaces based on stdout and -err.
+rJS Testing CLI testing suite (`CLITest`): Test command line interfaces based on expected stdout or stderr.
 
 ``` cli
 npm i -D @rapidjs.org/testing-cli
@@ -30,40 +30,45 @@ HTTPTest.configure(configuration: RequestOptions & {
 
 ``` ts
 .actual(binary: string, arg?: string[])
-.actual(args: string[]) // imply binary if defined a common
+.actual(args: string[]) // Imply binary if defined a common
 ```
 
 #### Expected
 
 ``` ts
-.expected(binary: string, arg?: string[])
-.expected(args: string[]) // imply binary if defined a common
+.expected(feedback: {
+  stdout?: string|string[];         // Either text as is, or array of lines
+  stderr?: string|string[];
+})
+.expected(stdout: string|string[])  // Only check stdout
 ```
+
+> The execution output to be compared is whitespace normalised, i.e. any non-break whitespace character is condensed to a single space.
 
 ### Value-based Assertion
 
 ``` ts
-new CLITest("List files")
-.actual(<expression>)
-.expected(<expression>);
+new CLITest("Print working directory")
+.actual("pwd")
+.expected("/Users/rjs/app");
 ```
 
 ## Comparison Strategy
 
-...
+Before a comparison of a binary execution output, it is whitespace normalised. This is, any non-break whitespace character is condensed to a single space.
 
 **✅ &thinsp; SUCCESS**
 
 ``` js
-.actual(<expression>)
-.expected(<expression>)
+.actual("ls", [ "-L" ])
+.expected("img1.png img2.png")
 ```
   
 **❌ &thinsp; FAILURE**
 
 ``` js
-.actual(<expression>)
-.expected(<expression>)
+.actual("ls", [ "-L" ])
+.expected("img1.png    img2.png")
 ```
 
 ##
