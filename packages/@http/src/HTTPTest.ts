@@ -35,11 +35,7 @@ export class HTTPTest extends Test<IResponse> {
 			...configuration
 		};
 	}
-
-	constructor(title: string) {
-		super(title);
-	}
-
+	
 	protected evalActualExpression(
 		path: string,
 		options: TConfiguration & {

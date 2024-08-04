@@ -21,9 +21,8 @@
         "debug": "npx tsc --project ./tsconfig.debug.json",
         "debug:watch": "npm run debug -- --watch",
         "build": "rm -rf ./build/ && rm -rf ./types/ && npx tsc --project ./tsconfig.build.json",
-        "metatest:single-file": "../../bin.sh http ./metatest/http-1.test.js",
-        "metatest": "../../bin.sh http ./metatest/",
-        "test": "npm run build && npm run metatest && npm run metatest:single-file",
+        "metatest": "../../bin.sh cli ./metatest/",
+        "test": "npm run build && npm run metatest",
         "release:minor": "npm run test && npx release --minor",
         "release:patch": "npm run test && npx release --patch"
     },
@@ -33,6 +32,6 @@
         "typescript": "^5.3.3"
     },
     "dependencies": {
-        "@rapidjs.org/testing": "^0.1.0"
+        "@rapidjs.org/testing": "0.x"
     }
 }

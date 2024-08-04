@@ -12,33 +12,40 @@ npx rjs-test cli <tests-path>
 
 > Integrated in [`rapidjs-org/testing`](https://github.com/rapidjs-org/testing).
 
+## Configuration
+
+In order to define common CLI aspects, they can be defined through the static `.configure()` method:
+
+``` ts
+HTTPTest.configure(configuration: RequestOptions & {
+  commonBinary?: string;
+});
+```
+
 ## Test Anatomy
 
 ### Expressions
 
-(#### Actual)
+#### Actual
 
 ``` ts
-.actual(expression: any)
-.expected(expression: any)
+.actual(binary: string, arg?: string[])
+.actual(args: string[]) // imply binary if defined a common
 ```
 
-(#### Expected)
+#### Expected
+
+``` ts
+.expected(binary: string, arg?: string[])
+.expected(args: string[]) // imply binary if defined a common
+```
 
 ### Value-based Assertion
 
 ``` ts
-new <Suite>Test("Example label")
+new CLITest("List files")
 .actual(<expression>)
 .expected(<expression>);
-```
-
-### Error-based Assertion
-
-``` ts
-new <Suite>Test("Example label")
-.actual(<expression>)
-.error("<error-message>", <ErrorConstructor>);
 ```
 
 ## Comparison Strategy
