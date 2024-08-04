@@ -121,10 +121,10 @@ export abstract class Test<T = unknown> {
 				let expected: T;
 				try {
 					expected = await new Promisification<T>(
-						this.evalExpectedExpression.apply(null, await this.promisifyExpression(...expectedExpression))
+						this.evalExpectedExpression(...(await this.promisifyExpression(...expectedExpression)))
 					).resolve();
 				} catch (err: unknown) {
-					throw new FormatError(err, "Cannot consume expected value", this.sourcePosition);
+					throw new FormatError(err, "Cannot consume expected value:", this.sourcePosition);
 				}
 
 				this.difference = this.getDifference(actual, expected);

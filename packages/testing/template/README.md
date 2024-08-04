@@ -6,14 +6,17 @@ rJS Testing <alias> testing suite (`<Suite>Test`): …
 
 ### Expressions
 
-(#### Actual)
+#### Actual
 
 ``` ts
 .actual(expression: any)
-.expected(expression: any)
 ```
 
-(#### Expected)
+#### Expected
+
+``` ts
+.expected(expression: any)
+```
 
 ### Value-based Assertion
 

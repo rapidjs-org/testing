@@ -124,7 +124,9 @@ async function runSuite(): Promise<IResults> {
 			if (!(err instanceof Error)) {
 				console.error(
 					`\n\x1b[31mTest suite interrupted by unexpected error${
-						["string", "number", "boolean"].includes(typeof err) ? `:\n\n${(err as number).toString()}` : ""
+						["string", "number", "boolean"].includes(typeof err)
+							? (err as string | number | boolean).toString()
+							: JSON.stringify(err)
 					}\x1b[0m`
 				);
 

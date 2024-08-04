@@ -10,22 +10,23 @@ export class CustomTest extends Test<IObject> {
 	public static readonly suiteTitle: string = "Custom";
 	public static readonly suiteColor: [number, number, number] = [ 255, 255, 0 ];
 	
-    constructor(title: string) {
-    	super(title);
-    }
-	
-    protected async evalActualExpression(obj: IObject): Promise<IObject> {
-    	return Object.fromEntries(
-			Object.entries(obj)
-			.map((entry: [ string, unknown ]) => [ entry[0].toLowerCase(), entry[1] ])
-		) as IObject;
+    protected evalActualExpression(arg1: string, arg2: boolean): IObject {
+		// HINT:
+		// evalActualExpression() and analog. evalExpectedExpression() are
+		// ought to compile a value sharing a common type. he evaluation can
+		// base on an arbitrary amount of heterogeneous arguments.
+		// E.g.: Obtaining an HTTP response based on endpoint information.
+    	return {
+			arg1, arg2
+		}
 	}
 
-    protected isEqual(actual: IObject, expected: IObject): boolean {
-		return !Object.keys(this.filterComparedValues(actual, expected).actual).length;
-	}
-
-	protected filterComparedValues(actual: IObject, expected: IObject) {
+	protected getDifference(actual: IObject, expected: IObject) {
+		// HINT:
+		// Filter the previously evaluated test expression values for
+		// differences in respect to the test purpose.
+		// E.g.: Filtering explicitly provided HTTP response properties on
+		//		 the actaul HTTP response that differ.
 		return {
 			actual: actual,
 			expected: expected

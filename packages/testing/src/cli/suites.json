@@ -1,5 +1,5 @@
 {
-    "unit": "@rapidjs.org/testing-unit",
+    "cli": "@rapidjs.org/testing-cli",
     "http": "@rapidjs.org/testing-http",
-    "dom": "@rapidjs.org/testing-dom"
+    "unit": "@rapidjs.org/testing-unit"
 }

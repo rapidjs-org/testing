@@ -45,7 +45,8 @@ export class Printer {
 				return Printer.colorStr(value, 34);
 			}
 			if (/^("|').*\1$/.test(value)) {
-				return Printer.colorStr(value, 35);
+				const strValue = /\\n/.test(value) ? `\n${value.slice(1, -1).replace(/\\n/g, "\n")}` : value;
+				return Printer.colorStr(strValue, 35);
 			}
 			if (/^\d*(\.\d+)?$/.test(value)) {
 				return Printer.colorStr(value, 36);
