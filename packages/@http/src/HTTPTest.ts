@@ -1,4 +1,7 @@
+process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
+
 import { ClientRequest, RequestOptions, request as httpRequest } from "http";
+import { request as httpsRequest } from "https";
 import { join } from "path";
 import { deepEqual } from "assert";
 
@@ -9,13 +12,14 @@ import { TColor } from "../../common.types";
 type THeaders = { [key: string]: string };
 
 type TConfiguration = RequestOptions & {
+	https?: boolean;
 	pathRoot?: string;
 };
 
 interface IResponse {
-	status?: number;
-	headers?: THeaders;
 	body?: unknown;
+	headers?: THeaders;
+	status?: number;
 }
 
 export class HTTPTest extends Test<IResponse> {
@@ -23,9 +27,9 @@ export class HTTPTest extends Test<IResponse> {
 	public static readonly suiteColor: TColor = [177, 66, 179];
 
 	private static configuration: TConfiguration = {
-		method: "GET",
-		protocol: "http:",
 		hostname: "localhost",
+		https: false,
+		method: "GET",
 		port: 80
 	};
 
@@ -35,7 +39,7 @@ export class HTTPTest extends Test<IResponse> {
 			...configuration
 		};
 	}
-	
+
 	protected evalActualExpression(
 		path: string,
 		options: TConfiguration & {
@@ -44,15 +48,16 @@ export class HTTPTest extends Test<IResponse> {
 	): Promise<IResponse> {
 		// TODO: Overloads
 		return new Promise((resolve, reject) => {
-			const reqOptions: RequestOptions = {
+			const reqOptions: TConfiguration & RequestOptions = {
 				...HTTPTest.configuration,
 
 				path: encodeURI(join(HTTPTest.configuration.pathRoot ?? "", path)),
 
 				...options
 			};
+			reqOptions.protocol = `http${reqOptions.https ? "s" : ""}:`;
 
-			const req: ClientRequest = httpRequest(reqOptions, (res) => {
+			const req: ClientRequest = (reqOptions.https ? httpsRequest : httpRequest)(reqOptions, (res) => {
 				const body: Buffer[] = [];
 				res.on("data", (chunk: Buffer) => {
 					body.push(chunk);
