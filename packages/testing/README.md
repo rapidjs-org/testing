@@ -3,7 +3,7 @@
 Context-sensitive, (a)sync-uniform testing framework for JavaScript and TypeScript.
 
 ``` cli
-npm install -D @rapidjs-org/testing
+npm install -D @rapidjs.org/testing
 ```
 
 <sub>division.test.js</sub>

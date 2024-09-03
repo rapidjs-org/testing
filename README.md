@@ -5,7 +5,7 @@ Context-sensitive, (a)sync-uniform testing framework for JavaScript and TypeScri
 ### 📖 &hairsp; [Read the Docs](./packages/testing/README.md)
 
 ``` cli
-npm install -D @rapidjs-org/testing
+npm install -D @rapidjs.org/testing
 ```
 
 ``` js
