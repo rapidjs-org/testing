@@ -156,7 +156,7 @@ expect(STR.length).toBe(12)
 The command line interface represents the default user interface for rJS Testing. In short, the `rjs-test` command takes a test suite suited for the context, and a path to the test files which are scanned recursively.
 
 ``` cli
-npx rjs-test <test-suite-reference> <tests-path> [--<arg:key>|-<arg:shorthand>[ <arg-option>]?]*
+npx rjs-testing <test-suite-reference> <tests-path> [--<arg:key>|-<arg:shorthand>[ <arg-option>]?]*
 ```
 
 `<test-suite-reference>`

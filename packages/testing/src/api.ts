@@ -10,7 +10,7 @@ import { FormatError } from "./FormatError";
 import _config from "./config.json";
 
 interface IRecord {
-	[key: string]: Test[];
+	[filepath: string]: Test[];
 }
 
 /* interface IOptions {
@@ -21,10 +21,8 @@ interface IRecord {
 
 }; */
 
-const curTestRecord: IRecord = {};
+const curTestRecord: Test[] = [];
 const importMutex = new AsyncMutex();
-
-let activeFilepath: string;
 
 function traversePath(path: string) {
 	const handleFilepath = (filepath: string) => {
@@ -32,7 +30,6 @@ function traversePath(path: string) {
 
 		importMutex
 			.lock(async () => {
-				activeFilepath = filepath;
 				await import(filepath);
 			})
 			.catch((err: Error) => {
@@ -148,13 +145,14 @@ export async function init(apiArg: unknown, testTargetPath: string /* , options?
 
 			resolve({
 				time,
-				record: curTestRecord
+				record: curTestRecord.reduce((acc: IRecord, test: Test) => {
+					acc[test.sourcePosition.path] = (acc[test.sourcePosition.path] ?? []).concat([test]);
+					return acc;
+				}, {})
 			});
 		});
 
-		Test.event.on("create", (test: Test) => {
-			curTestRecord[activeFilepath] = [curTestRecord[activeFilepath] ?? [], test].flat();
-		});
+		Test.event.on("create", (test: Test) => curTestRecord.push(test));
 
 		traversePath(resolvedTestTargetPath);
 

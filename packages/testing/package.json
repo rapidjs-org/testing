@@ -17,6 +17,7 @@
     },
     "main": "./build/api.js",
     "bin": {
+        "rjs-testing": "./build/cli/cli.js",
         "rjs-test": "./build/cli/cli.js"
     },
     "types": "./types/api.d.ts",

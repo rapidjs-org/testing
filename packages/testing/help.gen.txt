@@ -1,4 +1,4 @@
-Usage: rjs-test-gen <positional> [--<arg:key>|-<arg:shorthand>[ <arg-option>]?]*
+Usage: rjs-testing gen <positional> [--<arg:key>|-<arg:shorthand>[ <arg-option>]?]*
 
 Positional (required):
     Generator target:
@@ -7,5 +7,3 @@ Positional (required):
 Options:
 --name, -N              Optional target name
 --path, -P              Optional target path
-
-Visit https://github.com/t-ski/rJS Testing for more information.

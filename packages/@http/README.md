@@ -7,7 +7,7 @@ npm i -D @rapidjs.org/testing-http
 ```
 
 ``` cli
-npx rjs-test http <tests-path>
+npx rjs-testing http <tests-path>
 ```
 
 > Integrated in [`rapidjs-org/testing`](https://github.com/rapidjs-org/testing).

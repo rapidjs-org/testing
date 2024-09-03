@@ -14,7 +14,7 @@ interface IDifference<T> {
 }
 
 export abstract class Test<T = unknown> {
-	private static runningTests = 0;
+	private static runningTests = 1;
 	private static completeTimeout: NodeJS.Timeout;
 	private static mutex = new AsyncMutex();
 
@@ -27,7 +27,12 @@ export abstract class Test<T = unknown> {
 	#hasConsumedExpected = false;
 
 	public readonly title: string;
-	public readonly sourcePosition?: string;
+	public readonly sourcePosition?: {
+		path: string;
+
+		line?: number;
+		column?: number;
+	};
 
 	public wasSuccessful: boolean;
 	public difference: IDifference<T>;
@@ -45,11 +50,18 @@ export abstract class Test<T = unknown> {
 			throw new Error();
 		} catch (err: unknown) {
 			try {
-				this.sourcePosition = (err as Error).stack
+				const source: string = (err as Error).stack
 					.split(/\n/g)
 					.filter((line: string) => /\.test\.js([^\w\d]|$)/.test(line.trim()))
-					.map((line: string) => line.trim())
-					.join("\n");
+					.map((line: string) => line.trim())[0]
+					.match(/(\w:)?([/\\][^/\\]*)+(:\d+){1,2}/i)[0];
+				const indicators: string[] = source.match(/:(\d+)?:(\d+)?$/);
+
+				this.sourcePosition = {
+					path: (source.match(/^((?!(:\d+){1,2}).)*/) ?? [])[0],
+					line: parseInt(indicators[1] ?? indicators[2]),
+					column: parseInt(indicators[2])
+				};
 			} catch {}
 		}
 
@@ -108,6 +120,9 @@ export abstract class Test<T = unknown> {
 
 			Test.mutex.lock(async () => {
 				const expectedExpression: unknown[] = expression;
+				const customStack: string = `${this.sourcePosition.path}${
+					this.sourcePosition.line ? `:${this.sourcePosition.line}` : ""
+				}${this.sourcePosition.column ? `:${this.sourcePosition.column}` : ""}`;
 
 				let actual: T;
 				try {
@@ -115,7 +130,7 @@ export abstract class Test<T = unknown> {
 						this.evalActualExpression(...(await this.promisifyExpression(...actualExpression)))
 					).resolve();
 				} catch (err: unknown) {
-					throw new FormatError(err, "Cannot consume actual value", this.sourcePosition);
+					throw new FormatError(err, "Cannot consume actual value", customStack);
 				}
 
 				let expected: T;
@@ -124,7 +139,7 @@ export abstract class Test<T = unknown> {
 						this.evalExpectedExpression(...(await this.promisifyExpression(...expectedExpression)))
 					).resolve();
 				} catch (err: unknown) {
-					throw new FormatError(err, "Cannot consume expected value:", this.sourcePosition);
+					throw new FormatError(err, "Cannot consume expected value:", customStack);
 				}
 
 				this.difference = this.getDifference(actual, expected);

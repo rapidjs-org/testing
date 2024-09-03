@@ -87,10 +87,11 @@ async function runSuite(): Promise<IResults> {
 						continue;
 					}
 
+					const source: string = `${test.sourcePosition.path}${
+						test.sourcePosition.line ? `:${test.sourcePosition.line}` : ""
+					}${test.sourcePosition.column ? `:${test.sourcePosition.column}` : ""}`;
 					Printer.failure(
-						`${indicator}${test.title}${
-							test.sourcePosition ? ` \x1b[2m\x1b[30m(${test.sourcePosition})\x1b[0m` : ""
-						}`
+						`${indicator}${test.title}${test.sourcePosition ? ` \x1b[2m\x1b[30m(${source})\x1b[0m` : ""}`
 					);
 					Printer.newline();
 					Printer.log("\x1b[1m\x1b[2mEXPECTED:");

@@ -8,7 +8,7 @@ npm i -D @rapidjs.org/testing-unit
 ```
 
 ``` cli
-npx rjs-test unit <tests-path>
+npx rjs-testing unit <tests-path>
 ```
 
 > Integrated in [`rapidjs-org/testing`](https://github.com/rapidjs-org/testing).
