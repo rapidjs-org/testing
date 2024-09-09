@@ -120,9 +120,11 @@ export abstract class Test<T = unknown> {
 
 			Test.mutex.lock(async () => {
 				const expectedExpression: unknown[] = expression;
-				const customStack: string = `${this.sourcePosition.path}${
-					this.sourcePosition.line ? `:${this.sourcePosition.line}` : ""
-				}${this.sourcePosition.column ? `:${this.sourcePosition.column}` : ""}`;
+				const customStack: string = this.sourcePosition
+					? `${this.sourcePosition.path}${
+							this.sourcePosition.line ? `:${this.sourcePosition.line}` : ""
+						}${this.sourcePosition.column ? `:${this.sourcePosition.column}` : ""}`
+					: "unknown source";
 
 				let actual: T;
 				try {

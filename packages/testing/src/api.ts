@@ -146,7 +146,8 @@ export async function init(apiArg: unknown, testTargetPath: string /* , options?
 			resolve({
 				time,
 				record: curTestRecord.reduce((acc: IRecord, test: Test) => {
-					acc[test.sourcePosition.path] = (acc[test.sourcePosition.path] ?? []).concat([test]);
+					const path: string = (test.sourcePosition ?? { path: "unknown source" }).path;
+					acc[path] = (acc[path] ?? []).concat([test]);
 					return acc;
 				}, {})
 			});

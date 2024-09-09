@@ -87,9 +87,11 @@ async function runSuite(): Promise<IResults> {
 						continue;
 					}
 
-					const source: string = `${test.sourcePosition.path}${
-						test.sourcePosition.line ? `:${test.sourcePosition.line}` : ""
-					}${test.sourcePosition.column ? `:${test.sourcePosition.column}` : ""}`;
+					const source: string = test.sourcePosition
+						? `${test.sourcePosition.path}${
+								test.sourcePosition.line ? `:${test.sourcePosition.line}` : ""
+							}${test.sourcePosition.column ? `:${test.sourcePosition.column}` : ""}`
+						: "unknown source";
 					Printer.failure(
 						`${indicator}${test.title}${test.sourcePosition ? ` \x1b[2m\x1b[30m(${source})\x1b[0m` : ""}`
 					);
@@ -106,7 +108,7 @@ async function runSuite(): Promise<IResults> {
 			}
 
 			const testInfo = `\x1b[30m(${Math.round(
-				(counter.success / (counter.success + counter.failure) || 1) * 100
+				(counter.success / (counter.success + counter.failure || 1)) * 100
 			)}% (${counter.success}/${counter.success + counter.failure}) successful, ${
 				results.time > 1000
 					? `${Math.round((results.time * 0.001 + Number.EPSILON) * 100) / 100}s`
@@ -124,7 +126,7 @@ async function runSuite(): Promise<IResults> {
 
 			if (!(err instanceof Error)) {
 				console.error(
-					`\n\x1b[31mTest suite interrupted by unexpected error${
+					`\n\x1b[31mTest suite interrupted by unexpected error:\n${
 						["string", "number", "boolean"].includes(typeof err)
 							? (err as string | number | boolean).toString()
 							: JSON.stringify(err)

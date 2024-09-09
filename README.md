@@ -1,6 +1,6 @@
 # rJS Testing
 
-Context-sensitive, (a)sync-uniform testing framework for JavaScript and TypeScript.
+Context-based, (a)sync-uniform testing framework for JavaScript and TypeScript.
 
 ### 📖 &hairsp; [Read the Docs](./packages/testing/README.md)
 
