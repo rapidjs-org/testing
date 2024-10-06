@@ -58,20 +58,22 @@ export class HTTPTest extends Test<IResponse> {
 			reqOptions.protocol = `http${reqOptions.https ? "s" : ""}:`;
 
 			const req: ClientRequest = (reqOptions.https ? httpsRequest : httpRequest)(reqOptions, (res) => {
-				res.on("data", (body: Buffer) => {
-					let parsedBody: unknown;
+				const body: Buffer[] = [];
+				res.on("data", (chunk: Buffer) => {
+					body.push(chunk);
+				});
+				res.on("end", () => {
+					let parsedBody: unknown = Buffer.concat(body).toString();
 					try {
-						parsedBody = JSON.parse(body.toString());
-					} catch {
-						parsedBody = body.toString();
-					}
-
+						parsedBody = JSON.parse(parsedBody as string);
+					} catch {}
+					
 					resolve({
 						status: res.statusCode ?? -1,
 						headers: res.headers as THeaders,
 						body: parsedBody
 					});
-				});
+				})
 				res.on("error", (err) => reject(err));
 			}).on("error", (err) => reject(err));
 
