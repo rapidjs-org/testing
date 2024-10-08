@@ -18,10 +18,16 @@
 		"test": "npm run metatest",
 		"bin": "./bin.sh",
 		"generate:suite": "npm run bin -- gen template --path ./packages/ --name @__generated",
-		"validate-examples": "./scripts/validate-examples.sh"
+		"validate-examples": "./scripts/validate-examples.sh",
+		"release": "npx rjs-releasing --github",
+		"release:testing": "npm run release -- ./packages/testing",
+		"release:testing-cli": "npm run release -- ./packages/@cli",
+		"release:testing-http": "npm run release -- ./packages/@http",
+		"release:testing-unit": "npm run release -- ./packages/@unit"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.2.0",
+		"@rapidjs.org/releasing": "^0.1.0",
 		"@typescript-eslint/eslint-plugin": "^7.8.0",
 		"@typescript-eslint/parser": "^7.8.0",
 		"eslint": "^8.57.0",

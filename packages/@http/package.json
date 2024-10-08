@@ -24,12 +24,9 @@
         "build": "rm -rf ./build/ && rm -rf ./types/ && npx tsc --project ./tsconfig.build.json",
         "metatest:single-file": "../../bin.sh http ./metatest/http-1.test.js",
         "metatest": "../../bin.sh http ./metatest/",
-        "test": "npm run build && npm run metatest && npm run metatest:single-file",
-        "release:minor": "npm run test && npx release --minor",
-        "release:patch": "npm run test && npx release --patch"
+        "test": "npm run build && npm run metatest && npm run metatest:single-file"
     },
     "devDependencies": {
-        "@t-ski/gh-npm-release": "github:t-ski/gh-npm-release",
         "@types/node": "^20.10.6",
         "typescript": "^5.3.3"
     },

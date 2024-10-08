@@ -23,12 +23,9 @@
         "debug:watch": "npm run debug -- --watch",
         "build": "rm -rf ./build/ && rm -rf ./types/ && npx tsc --project ./tsconfig.build.json",
         "metatest": "../../bin.sh cli ./metatest/",
-        "test": "npm run build && npm run metatest",
-        "release:minor": "npm run test && npx release --minor",
-        "release:patch": "npm run test && npx release --patch"
+        "test": "npm run build && npm run metatest"
     },
     "devDependencies": {
-        "@t-ski/gh-npm-release": "github:t-ski/gh-npm-release",
         "@types/node": "^20.10.6",
         "typescript": "^5.3.3"
     },
