@@ -1,6 +1,6 @@
 {
     "name": "@rapidjs.org/testing",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "description": "Context-sensitive, (a)sync-uniform testing framework for JavaScript and TypeScript.",
     "author": "Thassilo Martin Schiepanski",
     "homepage": "https://github.com/rapidjs-org/testing#readme",
@@ -15,7 +15,7 @@
     "bugs": {
         "url": "https://github.com/rapidjs-org/testing/issues"
     },
-	"license": "Apache-2.0",
+    "license": "Apache-2.0",
     "main": "./build/api.js",
     "bin": {
         "rjs-testing": "./build/cli/cli.js",

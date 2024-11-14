@@ -21,9 +21,9 @@
 		"validate-examples": "./scripts/validate-examples.sh",
 		"release": "npx rjs-releasing --github",
 		"release:testing": "npm run release -- ./packages/testing",
-		"release:testing-cli": "npm run release -- ./packages/@cli",
-		"release:testing-http": "npm run release -- ./packages/@http",
-		"release:testing-unit": "npm run release -- ./packages/@unit"
+		"release:@cli": "npm run release -- ./packages/@cli",
+		"release:@http": "npm run release -- ./packages/@http",
+		"release:@unit": "npm run release -- ./packages/@unit"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.2.0",

@@ -1,6 +1,6 @@
 {
     "name": "@rapidjs.org/testing-http",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "rJS Testing – HTTP testing suite.",
     "author": "Thassilo Martin Schiepanski",
     "homepage": "https://github.com/rapidjs-org/testing/tree/master/packages/@http",
@@ -11,7 +11,7 @@
     "bugs": {
         "url": "https://github.com/rapidjs-org/testing/issues"
     },
-	"license": "Apache-2.0",
+    "license": "Apache-2.0",
     "main": "./build/api.js",
     "types": "./types/api.d.ts",
     "files": [

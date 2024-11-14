@@ -37,6 +37,7 @@ function traversePath(path: string) {
 			});
 	};
 
+	if (!existsSync(path)) return;
 	if (lstatSync(path).isFile()) {
 		handleFilepath(path);
 
